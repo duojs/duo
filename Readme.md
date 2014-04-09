@@ -149,7 +149,7 @@ We'll structure pages like this:
 
 ## Bringing it all together
 
-Use gulp to compile jade, styl files, trigger duo, and watch for changes. Something along these lines:
+Use gulp within a builder to compile jade, styl files, trigger duo, and watch for changes. Something along these lines:
 
 ```js
 /**
@@ -167,7 +167,8 @@ function build(fn) {
 }
 
 /**
- * Compile styles
+ * Compile styles and pass
+ * into duo-css
  *
  * @param {Function} fn
  * @return {Gulp} stream
@@ -180,7 +181,6 @@ function styles(fn) {
     .pipe(styl())
     .on('error', fn)
     .pipe(duocss(opts))
-    .pipe(concat('build.css'))
 
   if (production) {
     s.pipe(csso())
@@ -195,7 +195,8 @@ function styles(fn) {
 }
 
 /**
- * Compile javascript
+ * Compile javascript and pass
+ * into duo-js
  */
 
 function javascript(fn) {
@@ -211,5 +212,7 @@ function javascript(fn) {
   s.pipe(gulp.dest(join(root, 'build/bundles')))
    .on('error', fn)
    .on('end', fn);
+
+  return s;
 }
 ```
