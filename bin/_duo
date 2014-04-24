@@ -1,0 +1,94 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+
+var Command = require('commander').Command;
+var resolve = require('path').resolve;
+var exists = require('fs').existsSync;
+var stat = require('fs').statSync;
+var spawn = require('win-fork');
+var pkg = require('../package');
+
+/**
+ * Program
+ */
+
+var program = new Command('duo')
+  .version(pkg.version)
+  .usage('<command> [options]')
+  .parse(process.argv);
+
+/**
+ * Help
+ */
+
+program.on('--help', function(){
+  console.log('  Commands:');
+  console.log();
+  console.log('    build    Build with optional `type`.');
+  console.log('    install  install all dependencies');
+  console.log();
+  process.exit(0);
+});
+
+/**
+ * Arguments
+ */
+
+var args = process.argv.slice(3);
+
+/**
+ * Command
+ */
+
+var command = program.args[0];
+
+/**
+ * Help
+ */
+
+if (!command) program.help();
+
+/**
+ * PATH
+ */
+
+var paths = [__dirname].concat(process.env.PATH.split(':'));
+
+/**
+ * Bin
+ */
+
+var bin = ['duo', command].join('-');
+
+/**
+ * Find executable.
+ */
+
+var exec = paths.reduce(function(binary, path){
+  path = resolve(path, bin);
+  return exists(path) && stat(path)
+    ? path
+    : binary;
+}, bin);
+
+/**
+ * Does not exists
+ */
+
+if (!exists(exec)) {
+  console.error('\n  %s(1) does not exist', bin);
+  console.error();
+  return;
+}
+
+/**
+ * Spawn
+ */
+
+args.unshift(exec);
+args.unshift('--harmony-generators');
+var proc = spawn('node', args, { stdio: 'inherit', customFds: [0, 1, 2] });
+proc.on('close', process.exit.bind(process));

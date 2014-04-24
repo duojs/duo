@@ -1,0 +1,94 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+
+var program = require('commander');
+var join = require('path').join;
+var assert = require('assert');
+var duo = require('..');
+var fs = require('fs');
+var co = require('co');
+
+/**
+ * Options
+ */
+
+program
+  .usage('duo build')
+  .option('-d, --dev', 'build development dependencies too.')
+  .parse(process.argv);
+
+/**
+ * Examples
+ */
+
+program.on('--help', function(){
+  console.log('  Examples:');
+  console.log();
+  console.log('  # build')
+  console.log('  $ duo build');
+  console.log();
+  process.exit(0);
+});
+
+/**
+ * Build
+ */
+
+co(function*(){
+  try {
+    yield build;
+  } catch (e) {
+    console.error();
+    console.error('  %s', e.stack);
+    console.error();
+    process.exit(1);
+  }
+})();
+
+/**
+ * Build
+ */
+
+function *build(){
+  var root = process.cwd();
+  var meta = yield json(join(root, 'component.json'));
+  var entry = join(root, getEntry(meta));
+
+  assert(entry, 'didn\'t find entry point for "' + meta.name + '"');
+
+  yield duo.build(entry)
+    .development(program.dev)
+    .to('build/build.js')
+    .build();
+}
+
+/**
+ * Read json thunk
+ */
+
+function json(path){
+  return function(done){
+    fs.readFile(path, 'utf8', function(err, buf){
+      if (err) return done(err);
+
+      try {
+        done(null, JSON.parse(buf));
+      } catch (e) {
+        done(e);
+      }
+    });
+  };
+}
+
+/**
+ * Get entry point.
+ * 
+ * TODO: move to utils and search locals etc.. ?
+ */
+
+function getEntry(meta){
+  return meta.main || meta.scripts[0];
+}

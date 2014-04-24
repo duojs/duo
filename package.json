@@ -1,0 +1,20 @@
+{
+  "name": "duo",
+  "version": "0.0.1",
+  "devDependencies": {},
+  "bin": {
+    "duo": "bin/duo",
+    "_duo": "bin/_duo",
+    "duo-build": "bin/duo-build",
+    "duo-install": "bin/duo-install"
+  },
+  "dependencies": {
+    "co": "^3.0.5",
+    "commander": "^2.2.0",
+    "duo-builder": "git+ssh://git@github.com:component/duo-builder.git",
+    "duo-installer": "git+ssh://git@github.com:component/duo-installer.git",
+    "duo-package": "git+ssh://git@github.com:component/duo-package.git",
+    "v8-argv": "^0.2.0",
+    "win-fork": "~1.1.1"
+  }
+}
