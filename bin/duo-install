@@ -1,0 +1,61 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+
+var program = require('commander');
+var duo = require('..');
+var co = require('co');
+
+/**
+ * Program
+ */
+
+program
+  .usage('duo install')
+  .option('-d, --dev', 'install development dependencies')
+  .parse(process.argv);
+
+/**
+ * Examples
+ */
+
+program.on('--help', function(){
+  console.log('  Examples:');
+  console.log();
+  console.log('    # install dependencies');
+  console.log('    $ duo install');
+  console.log();
+  console.log('    # install dev dependencies');
+  console.log('    $ duo install --dev');
+  console.log();
+  process.exit(0);
+});
+
+/**
+ * Install
+ */
+
+co(function*(){
+  try {
+    yield install;
+  } catch (e) {
+    console.error();
+    console.error('  %s', e.stack);
+    console.error();
+    process.exit(1);
+  }
+})();
+
+/**
+ * Install
+ */
+
+function *install(){
+  yield duo.install()
+    .directory('components')
+    .auth(process.env.GITHUB_USERNAME, process.env.GITHUB_PASSWORD)
+    .development(program.dev)
+    .install();
+}

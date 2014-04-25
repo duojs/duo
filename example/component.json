@@ -1,0 +1,8 @@
+{
+  "name": "duo-example",
+  "scripts": ["app.js"],
+  "styles": ["style.css"],
+  "dependencies": {
+    "yields/k": "*"
+  }
+}
