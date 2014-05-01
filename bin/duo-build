@@ -61,6 +61,7 @@ function *build(){
 
   yield duo.build(entry)
     .development(program.dev)
+    .directory(process.cwd())
     .to('build/build.js')
     .build();
 }
