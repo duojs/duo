@@ -15,6 +15,7 @@
     "duo-installer": "git+ssh://git@github.com:component/duo-installer.git#dev",
     "duo-package": "git+ssh://git@github.com:component/duo-package.git#dev",
     "v8-argv": "^0.2.0",
-    "win-fork": "~1.1.1"
+    "win-fork": "~1.1.1",
+    "archy": "0.0.2"
   }
 }
