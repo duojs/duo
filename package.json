@@ -16,6 +16,7 @@
     "duo-package": "git+ssh://git@github.com:component/duo-package.git#dev",
     "v8-argv": "^0.2.0",
     "win-fork": "~1.1.1",
-    "archy": "0.0.2"
+    "archy": "0.0.2",
+    "max-component": "~1.0.0"
   }
 }
