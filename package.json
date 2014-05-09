@@ -6,7 +6,9 @@
     "duo": "bin/duo",
     "_duo": "bin/_duo",
     "duo-build": "bin/duo-build",
-    "duo-install": "bin/duo-install"
+    "duo-install": "bin/duo-install",
+    "duo-duplicates": "bin/duo-duplicates",
+    "duo-ls": "bin/duo-ls"
   },
   "dependencies": {
     "co": "^3.0.5",

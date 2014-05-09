@@ -1,0 +1,134 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+
+var program = require('commander');
+var fmt = require('util').format;
+var join = require('path').join;
+var archy = require('archy');
+
+/**
+ * Program
+ */
+
+program
+  .usage('duo duplicates')
+  .parse(process.argv);
+
+/**
+ * Help
+ */
+
+program.on('--help', function(){
+  console.log('Examples:');
+  console.log();
+  console.log('  #');
+  console.log('  # show all duplicates, their version');
+  console.log('  # and who they belong to');
+  console.log('  #');
+  console.log();
+  console.log('  $ duo duplicates');
+  console.log();
+  console.log('    - component/clone');
+  console.log('    | - org/pkg-a uses 0.1.1');
+  console.log('    | - org/pkg-b uses 0.0.1');
+  console.log();
+});
+
+/**
+ * Get component.json
+ * and mapping.json
+ */
+
+try {
+  var cwd = process.cwd();
+  var map = require(join(cwd, 'components', 'mapping.json'));
+  var component = require(join(cwd, 'component.json'));
+  var root = component.name;
+} catch (e) {
+  console.error();
+  console.error(e);
+  console.error();
+  process.exit(1);
+}
+
+/**
+ * Duplicates
+ */
+
+var dupes = duplicates(map);
+console.log(archy(dupes, '  '));
+
+/**
+ * Get all duplicates
+ * 
+ * @param {Object} map
+ * @return {Object}
+ */
+
+function duplicates(map){
+  var keys = Object.keys(map);
+  var pkgs = {};
+  var ret = [];
+
+  keys.forEach(function(key){
+    var label = '.' == key ? root : key;
+    var repo = label.split('@')[0];
+    var node = {};
+
+    if (pkgs[repo]) return;
+
+    pkgs[repo] = true;
+    node.versions = [];
+    node.nodes = [];
+    
+    keys.forEach(function(_, v){
+      if (!(v = has(map[_], label))) return;
+      _ = ('.' == _ ? root : _).split('@')[0];
+      node.nodes.push({ label: _ + ' uses ' + v });
+      if (!~node.versions.indexOf(v)) node.versions.push(v);
+    });
+
+    node.label = fmt('%s (%s)', repo, node.versions.join(', '));
+
+    ret.push(node);
+  });
+
+  return { nodes: ret.filter(function(node){
+    node.label = fmt('\033[36m%s\033[m', node.label);
+    node.nodes = node.nodes.map(color);
+    return 1 < node.versions.length;
+  })};
+}
+
+/**
+ * Check if `arr` has `dep`.
+ * 
+ * @param {Array} arr
+ * @param {String} dep
+ * @return {Boolean}
+ */
+
+function has(arr, dep){
+  var a = dep.split('@')[0];
+
+  for (var i = 0; i < arr.length; ++i) {
+    var b = arr[i].split('@')[0];
+    if (b == a) return arr[i].split('@')[1];
+  }
+
+  return false;
+}
+
+/**
+ * Color the given `node`.
+ * 
+ * @param {Object} node
+ * @return {Object}
+ */
+
+function color(node){
+  return { label: fmt('\033[90m%s\033[m', node.label) }
+}
