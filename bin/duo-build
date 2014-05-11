@@ -17,6 +17,7 @@ var co = require('co');
 
 program
   .usage('duo build')
+  .option('-e, --entry <file>', 'specify entry point')
   .option('-d, --dev', 'build development dependencies too.', false)
   .option('-t, --to <file>', 'build to the given `path`', 'build/build.js')
   .parse(process.argv);
@@ -56,8 +57,12 @@ co(function*(){
 function *build(){
   var root = process.cwd();
   var meta = yield json(join(root, 'component.json'));
-  var entry = join(root, getEntry(meta));
   var start = new Date;
+
+  // entry
+  var entry = program.entry
+    ? join(process.cwd(), program.entry)
+    : join(root, getEntry(meta));
 
   assert(entry, 'didn\'t find entry point for "' + meta.name + '"');
 
