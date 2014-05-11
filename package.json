@@ -13,7 +13,7 @@
   "dependencies": {
     "co": "^3.0.5",
     "commander": "^2.2.0",
-    "duo-builder": "git+ssh://git@github.com:component/duo-builder.git",
+    "duo-builder": "git+ssh://git@github.com:component/duo-builder.git#dev",
     "duo-installer": "git+ssh://git@github.com:component/duo-installer.git#dev",
     "duo-package": "git+ssh://git@github.com:component/duo-package.git#dev",
     "v8-argv": "^0.2.0",
