@@ -7,6 +7,7 @@
 var program = require('commander');
 var max = require('max-component');
 var fmt = require('util').format;
+var assert = require('assert');
 var duo = require('..');
 var co = require('co');
 
@@ -17,6 +18,7 @@ var co = require('co');
 program
   .usage('duo install')
   .option('-d, --dev', 'install development dependencies')
+  .option('-c, --concurrency', 'set the concurrency', 10)
   .parse(process.argv);
 
 /**
@@ -57,9 +59,14 @@ co(function*(){
  */
 
 function *install(){
+  var concurrency = /^infinity$/i.test(program.concurrency)
+    ? Infinity
+    : parseInt(program.concurrency);
+
   yield duo.install()
     .directory('components')
     .auth(process.env.GITHUB_USERNAME, process.env.GITHUB_PASSWORD)
+    .concurrency(concurrency)
     .development(program.dev)
     .on('install', log('install'))
     .on('installed', log('complete'))
