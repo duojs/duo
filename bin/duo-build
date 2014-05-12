@@ -20,6 +20,7 @@ program
   .option('-e, --entry <file>', 'specify entry point')
   .option('-d, --dev', 'build development dependencies too.', false)
   .option('-t, --to <file>', 'build to the given `path`', 'build/build.js')
+  .option('-c, --concurrency <n>', 'set cuncurrency', 10)
   .parse(process.argv);
 
 /**
@@ -64,11 +65,17 @@ function *build(){
     ? join(process.cwd(), program.entry)
     : join(root, getEntry(meta));
 
+  // concurrency
+  var concurrency = /^infinity$/i.test(program.concurrency)
+    ? Infinity
+    : program.concurrency;
+
   assert(entry, 'didn\'t find entry point for "' + meta.name + '"');
 
   yield duo.build(entry)
     .development(program.dev || false)
     .directory(process.cwd())
+    .concurrency(concurrency)
     .to(program.to)
     .build();
 
