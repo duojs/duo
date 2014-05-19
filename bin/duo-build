@@ -17,7 +17,10 @@ var co = require('co');
 
 program
   .usage('duo build')
-  .option('-d, --dev', 'build development dependencies too.')
+  .option('-e, --entry <file>', 'specify entry point')
+  .option('-d, --dev', 'build development dependencies too.', false)
+  .option('-t, --to <file>', 'build to the given `path`', 'build/build.js')
+  .option('-c, --concurrency <n>', 'set cuncurrency', 10)
   .parse(process.argv);
 
 /**
@@ -55,14 +58,31 @@ co(function*(){
 function *build(){
   var root = process.cwd();
   var meta = yield json(join(root, 'component.json'));
-  var entry = join(root, getEntry(meta));
+  var start = new Date;
+
+  // entry
+  var entry = program.entry
+    ? join(process.cwd(), program.entry)
+    : join(root, getEntry(meta));
+
+  // concurrency
+  var concurrency = /^infinity$/i.test(program.concurrency)
+    ? Infinity
+    : program.concurrency;
 
   assert(entry, 'didn\'t find entry point for "' + meta.name + '"');
 
   yield duo.build(entry)
-    .development(program.dev)
-    .to('build/build.js')
+    .development(program.dev || false)
+    .directory(process.cwd())
+    .concurrency(concurrency)
+    .to(program.to)
     .build();
+
+  console.log();
+  console.log('  \033[36mbuilt\033[m : \033[90m%s\033[m', program.to);
+  console.log('  \033[36mtook\033[m  : \033[90m%sms\033[m', new Date - start);
+  console.log();
 }
 
 /**

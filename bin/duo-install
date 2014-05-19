@@ -5,6 +5,9 @@
  */
 
 var program = require('commander');
+var max = require('max-component');
+var fmt = require('util').format;
+var assert = require('assert');
 var duo = require('..');
 var co = require('co');
 
@@ -15,6 +18,7 @@ var co = require('co');
 program
   .usage('duo install')
   .option('-d, --dev', 'install development dependencies')
+  .option('-c, --concurrency', 'set the concurrency', 10)
   .parse(process.argv);
 
 /**
@@ -39,7 +43,9 @@ program.on('--help', function(){
 
 co(function*(){
   try {
+    console.log();
     yield install;
+    console.log();
   } catch (e) {
     console.error();
     console.error('  %s', e.stack);
@@ -53,9 +59,53 @@ co(function*(){
  */
 
 function *install(){
+  var concurrency = /^infinity$/i.test(program.concurrency)
+    ? Infinity
+    : parseInt(program.concurrency);
+
   yield duo.install()
     .directory('components')
     .auth(process.env.GITHUB_USERNAME, process.env.GITHUB_PASSWORD)
+    .concurrency(concurrency)
     .development(program.dev)
+    .on('install', log('install'))
+    .on('installed', log('complete'))
     .install();
+}
+
+/**
+ * Log
+ */
+
+function log(type){
+  log.types = log.types || [];
+  log.types.push(type);
+  return function(pkg){
+    var name = pretty(pkg);
+    var t = format(type, log.types);
+    console.log('  \033[90m%s\033[m : %s', t, name);
+  };
+}
+
+/**
+ * Format type
+ */
+
+function format(type, types){
+  var m = max(types, '.length');
+  var pad = Array(Math.abs(type.length - m) + 1).join(' ');
+  return type + pad;
+}
+
+/**
+ * Pretty pkg name
+ */
+
+function pretty(pkg){
+  return '\033[36m'
+    + pkg.repo
+    + '\033[m'
+    + '\033[90m@'
+    + pkg.resolved
+    + '\033[m';
 }

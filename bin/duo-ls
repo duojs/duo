@@ -1,0 +1,110 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+
+var program = require('commander');
+var join = require('path').join;
+var archy = require('archy');
+
+/**
+ * Program
+ */
+
+program
+  .usage('duo ls')
+  .option('-d, --depth', 'ls depth, defaults to Infinity', Infinity)
+  .parse(process.argv);
+
+/**
+ * Examples
+ */
+
+program.on('--help', function(){
+  console.log('  Examples:');
+  console.log();
+  console.log('    # list all dependencies');
+  console.log('    $ duo ls');
+  console.log();
+  console.log('    # list all dependencies < 8');
+  console.log('    $ duo ls --depth 8');
+  console.log();
+  process.exit(0);
+});
+
+/**
+ * Mappings path
+ */
+
+var path = join(process.cwd(), 'components', 'mapping.json');
+
+/**
+ * Map
+ */
+
+try {
+  var map = require(join(process.cwd(), 'components', 'mapping.json'));
+  var component = require(join(process.cwd(), 'component.json'));
+} catch (e) {
+  console.error();
+  console.error(e);
+  console.error();
+  process.exit(1);
+}
+
+/**
+ * List
+ */
+
+var ls = list(map, program.depth, {
+  label: pretty(component.name + '@' + (component.version || '')),
+  nodes: [],
+  name: '.'
+});
+
+/**
+ * Print
+ */
+
+console.log();
+console.log(archy(ls, '  '));
+console.log();
+
+/**
+ * List using `map` and `depth`
+ * 
+ * @param {Object} map
+ * @param {Number} depth
+ * @param {Object} node
+ * @return {Array}
+ * @api private
+ */
+
+function list(map, depth, node){
+  var deps = map[node.name];
+
+  deps.forEach(function(dep){
+    var label = pretty(dep);
+    var child = { nodes: [], label: label, name: dep };
+    node.nodes.push(child);
+    list(map, program.depth, child);
+  });
+
+  return node;
+}
+
+/**
+ * Color the given `dep`
+ */
+
+function pretty(dep){
+  var name = dep.split('@')[0];
+  var version = dep.split('@')[1];
+  return '\033[36m'
+    + name
+    + '\033[m'
+    + ' \033[90m'
+    + version
+    + '\033[m';
+}
