@@ -216,3 +216,7 @@ function javascript(fn) {
   return s;
 }
 ```
+
+# More questions?
+
+join the discussion on the `#duo.js` channel on freenode
