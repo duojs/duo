@@ -16,7 +16,7 @@
     "duo-builder": "git+ssh://git@github.com:component/duo-builder.git",
     "duo-installer": "git+ssh://git@github.com:component/duo-installer.git",
     "duo-pack": "git+ssh://git@github.com:component/duo-pack.git",
-    "duo-package": "~0.1.2",
+    "duo-package": "git+ssh://git@github.com:component/duo-package.git#fix/handle-inflight",
     "v8-argv": "^0.2.0",
     "win-fork": "~1.1.1",
     "archy": "0.0.2",
