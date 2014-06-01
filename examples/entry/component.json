@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "dependencies": {
     "component:events": "1.0.4",
-    "segmentio:analytics.js": "1.5.x"
+    "segmentio:analytics.js": "duo"
   },
   "development": {
     "component/assert": "test"

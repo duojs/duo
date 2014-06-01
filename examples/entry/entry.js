@@ -12,4 +12,5 @@ var another = require('./another.js');
  * UID
  */
 
+console.log(another);
 console.log(uid(10));
