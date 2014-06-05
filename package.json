@@ -1,7 +1,9 @@
 {
   "name": "duo",
   "version": "0.0.1",
-  "devDependencies": {},
+  "devDependencies": {
+    "styl": "^0.2.7"
+  },
   "bin": {
     "duo": "bin/duo",
     "_duo": "bin/_duo",

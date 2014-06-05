@@ -1,6 +1,7 @@
 @import "normalize.css";
 @import "twbs/bootstrap/dist/css/bootstrap.css";
 @import './another.css';
+@import './styles.styl';
 
 
 body {
