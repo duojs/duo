@@ -44,9 +44,9 @@ program.on('--help', function(){
 
 try {
   var cwd = process.cwd();
-  var map = require(join(cwd, 'components', 'mapping.json'));
+  var map = require(join(cwd, 'components', 'duo.json'));
   var component = require(join(cwd, 'component.json'));
-  var root = component.name;
+  var root = Object.keys(map)[0];
 } catch (e) {
   console.error();
   console.error(e);
@@ -74,7 +74,8 @@ function duplicates(map){
   var ret = [];
 
   keys.forEach(function(key){
-    var label = '.' == key ? root : key;
+    key = '.' == key ? root : key;
+    var label = normalize(key);
     var repo = label.split('@')[0];
     var node = {};
 
@@ -85,9 +86,11 @@ function duplicates(map){
     node.nodes = [];
     
     keys.forEach(function(_, v){
-      if (!(v = has(map[_], label))) return;
+      var deps = values(map[_].deps);
+      if (!(v = has(deps, label))) return;
       _ = ('.' == _ ? root : _).split('@')[0];
-      node.nodes.push({ label: _ + ' uses ' + v });
+      var dep = normalize(_);
+      push(node.nodes, { label: dep + ' uses ' + v });
       if (!~node.versions.indexOf(v)) node.versions.push(v);
     });
 
@@ -104,6 +107,17 @@ function duplicates(map){
 }
 
 /**
+ * Normalize key.
+ * 
+ * @param {String} key
+ * @return {String}
+ */
+
+function normalize(key){
+  return key.split('/')[1] || key;
+}
+
+/**
  * Check if `arr` has `dep`.
  * 
  * @param {Array} arr
@@ -112,14 +126,41 @@ function duplicates(map){
  */
 
 function has(arr, dep){
-  var a = dep.split('@')[0];
+  var a = normalize(dep).split('@')[0];
 
   for (var i = 0; i < arr.length; ++i) {
-    var b = arr[i].split('@')[0];
-    if (b == a) return arr[i].split('@')[1];
+    var b = normalize(arr[i]).split('@')[0];
+    if (b == a) return normalize(arr[i]).split('@')[1];
   }
 
   return false;
+}
+
+/**
+ * Values.
+ * 
+ * @param {Object} obj
+ * @return {Array}
+ */
+
+function values(obj){
+  var ret = [];
+  for (var k in obj) ret.push(obj[k]);
+  return ret;
+}
+
+/**
+ * Push if `node` to `nodes` if it doesn't exist.
+ * 
+ * @param {Array} nodes
+ * @param {Object} node
+ */
+
+function push(nodes, node){
+  for (var i = 0, n; n = nodes[i++];) {
+    if (n.label == node.label) return;
+  }
+  nodes.push(node);
 }
 
 /**
