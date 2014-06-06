@@ -74,7 +74,7 @@ if (~command.indexOf('.')) {
   duo.run = co(duo.run);
   return duo.run(function(err, str){
     if (err) error(err);
-    process.stdout.write(str);
+    console.log(str);
     process.exit(0);
   });
 }
@@ -118,7 +118,7 @@ if (!exists(exec)) {
 
 function error(err){
   console.error();
-  console.error(err);
+  console.error('  %s', err.stack);
   console.error();
   process.exit(1);
 }

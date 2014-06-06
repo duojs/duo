@@ -140,4 +140,4 @@ module.exports = function(val){
   return typeof val;
 };
 
-}, {}]}, {}, [])
+}, {}]}, {}, [1])
