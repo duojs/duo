@@ -2,11 +2,11 @@
 1: [function(require, module, exports) {
 
 
-var bind = require('ianstormtaylor:bind');
+var bind = require('ianstormtaylor/bind@0.0.2/index.js');
 
 console.log(bind);
 
-}, {"ianstormtaylor:bind":2}],
+}, {"ianstormtaylor/bind@0.0.2/index.js":2}],
 
 2: [function(require, module, exports) {
 
@@ -141,3 +141,4 @@ module.exports = function(val){
 };
 
 }, {}]}, {}, [1])
+
