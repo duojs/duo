@@ -5,15 +5,34 @@
  */
 
 var Command = require('commander').Command;
-var logger = require('component-consoler');
 var resolve = require('path').resolve;
 var exists = require('fs').existsSync;
+var Logger = require('stream-log');
 var stat = require('fs').statSync;
 var spawn = require('win-fork');
 var pkg = require('../package');
 var fs = require('co-fs');
 var Duo = require('..');
 var co = require('co');
+
+/**
+ * Logger
+ */
+
+var logger = new Logger(process.stderr)
+  .type('installing', '36m')
+  .type('installed', '36m')
+  .type('finding', '36m')
+  .type('found', '36m');
+
+/**
+ * Error
+ */
+
+logger.type('error', '31m', function(){
+  logger.end();
+  process.exit(1);
+});
 
 /**
  * Program
@@ -77,12 +96,12 @@ if (~command.indexOf('.')) {
   // events
   duo.on('resolving', log('finding'));
   duo.on('resolve', log('found'));
-
   duo.on('fetching', log('installing'));
   duo.on('fetch', log('installed'));
 
   return duo.run(function(err, str){
-    if (err) error(err);
+    if (err) logger.error(err);
+    logger.end();
     console.log(str);
     process.exit(0);
   });
@@ -120,7 +139,7 @@ var exec = paths.reduce(function(binary, path){
 
 function log (event) {
   return function(pkg) {
-    logger.log(event, pkg.slug());
+    logger[event](pkg.slug());
   }
 }
 
@@ -131,20 +150,8 @@ function log (event) {
  */
 
 if (!exists(exec)) {
-  console.error();
-  logger.error(bin + '(1) does not exist')
-  console.error();
+  logger.error(bin + '(1) does not exist');
   return;
-}
-
-/**
- * Error
- *
- * @param {Error} err
- */
-
-function error(err){
-  logger.fatal(err);
 }
 
 /**
