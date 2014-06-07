@@ -59,10 +59,11 @@ try {
  * Duplicates
  */
 
-// duplicates(map);
-console.log(archy({
-  nodes: duplicates(map)
-}, '  '));
+var dupes = duplicates(map);
+console.log(archy({ nodes: dupes }, '  '));
+
+// Exit with 1 on duplicates
+if (dupes.length) process.exit(1);
 
 /**
  * Get all duplicates.
