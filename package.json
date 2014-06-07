@@ -13,24 +13,25 @@
     "duo-ls": "bin/duo-ls"
   },
   "dependencies": {
+    "archy": "0.0.2",
+    "array": "~0.4.3",
+    "better-error": "0.0.2",
+    "bytes": "^1.0.0",
     "co": "^3.0.5",
+    "co-fs": "~1.2.0",
+    "co-parallel": "~1.0.0",
     "commander": "^2.2.0",
+    "debug": "~0.8.1",
     "duo-builder": "git+ssh://git@github.com:component/duo-builder.git",
     "duo-installer": "git+ssh://git@github.com:component/duo-installer.git",
     "duo-pack": "git+ssh://git@github.com:component/duo-pack.git",
     "duo-package": "git+ssh://git@github.com:component/duo-package.git",
-    "v8-argv": "^0.2.0",
-    "win-fork": "~1.1.1",
-    "archy": "0.0.2",
-    "max-component": "~1.0.0",
-    "better-error": "0.0.2",
-    "debug": "~0.8.1",
-    "co-fs": "~1.2.0",
-    "file-pipe": "0.0.2",
-    "thunkify": "~2.1.1",
-    "file-deps": "0.0.1",
     "extend.js": "0.0.1",
-    "array": "~0.4.3",
-    "co-parallel": "~1.0.0"
+    "file-deps": "0.0.1",
+    "file-pipe": "0.0.2",
+    "max-component": "~1.0.0",
+    "thunkify": "~2.1.1",
+    "v8-argv": "^0.2.0",
+    "win-fork": "~1.1.1"
   }
 }

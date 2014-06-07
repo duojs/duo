@@ -8,6 +8,7 @@ var program = require('commander');
 var fmt = require('util').format;
 var join = require('path').join;
 var archy = require('archy');
+var bytes = require('bytes');
 
 /**
  * Program
@@ -58,52 +59,88 @@ try {
  * Duplicates
  */
 
-var dupes = duplicates(map);
-console.log(archy(dupes, '  '));
+// duplicates(map);
+console.log(archy({
+  nodes: duplicates(map)
+}, '  '));
 
 /**
- * Get all duplicates
+ * Get all duplicates.
  * 
  * @param {Object} map
  * @return {Object}
  */
 
 function duplicates(map){
-  var keys = Object.keys(map);
-  var pkgs = {};
+  var pkgs = Object.keys(map);
+  var dupes = {};
   var ret = [];
 
-  keys.forEach(function(key){
-    key = '.' == key ? root : key;
-    var label = normalize(key);
-    var repo = label.split('@')[0];
-    var node = {};
+  // get all duplicates, get total size.
+  pkgs.forEach(function(id){
+    var name = normalize(id);
+    var parts = name.split('@');
+    var repo = parts.shift();
+    var version = parts.shift();
+    var node = dupes[repo] = dupes[repo] || {};
+    var src = map[id].src;
+    node.versions = node.versions || [];
+    node.ids = node.ids || [];
 
-    if (pkgs[repo]) return;
+    if (!version) return;
+    if (~node.versions.indexOf(version)) return;
 
-    pkgs[repo] = true;
-    node.versions = [];
+    node.repo = repo;
+    node.ids.push(id);
+    node.versions.push(version);
+    var length = Buffer.byteLength(src, 'utf-8');
+    node.size = (node.size || 0) + length;
     node.nodes = [];
-    
-    keys.forEach(function(_, v){
-      var deps = values(map[_].deps);
-      if (!(v = has(deps, label))) return;
-      _ = ('.' == _ ? root : _).split('@')[0];
-      var dep = normalize(_);
-      push(node.nodes, { label: dep + ' uses ' + v });
-      if (!~node.versions.indexOf(v)) node.versions.push(v);
-    });
-
-    node.label = fmt('%s (%s)', repo, node.versions.join(', '));
-
-    ret.push(node);
   });
 
-  return { nodes: ret.filter(function(node){
-    node.label = fmt('\033[36m%s\033[m', node.label);
-    node.nodes = node.nodes.map(color);
-    return 1 < node.versions.length;
-  })};
+  // add nodes.
+  return values(dupes)
+    .filter(Function('_', 'return 1 < _.versions.length'))
+    .sort(Function('a, b', 'return b.size - a.size'))
+    .map(label)
+    .map(users);
+
+  // Set the label.
+  function label(node){
+    var revs = node.versions.join(', ');
+    var size = bytes(node.size);
+    var repo = node.repo.replace('-', '/');
+    node.label = fmt('\033[36m%s - (%s) - %s\033[m', repo, revs, size);
+    return node;
+  }
+
+  // get all users
+  function users(node){
+    pkgs.forEach(function(id){
+      var deps = values(map[id].deps);
+      deps.forEach(function(dep){
+        if (!~node.ids.indexOf(dep)) return;
+        var nodes = node.nodes = node.nodes || [];
+        id = normalize(id).replace('-', '/');
+        var str = '\033[90m' + id + ' uses ' + version(dep) + '\033[m';
+        if (!~nodes.indexOf(str)) nodes.push(str);
+      });
+    });
+
+    return node;
+  }
+}
+
+/**
+ * Get version of `dep`.
+ * 
+ * @return {String}
+ */
+
+function version(dep){
+  var repo = dep.split('/')[1];
+  if (!repo) return dep;
+  return repo.split('@')[1];
 }
 
 /**
@@ -118,25 +155,6 @@ function normalize(key){
 }
 
 /**
- * Check if `arr` has `dep`.
- * 
- * @param {Array} arr
- * @param {String} dep
- * @return {Boolean}
- */
-
-function has(arr, dep){
-  var a = normalize(dep).split('@')[0];
-
-  for (var i = 0; i < arr.length; ++i) {
-    var b = normalize(arr[i]).split('@')[0];
-    if (b == a) return normalize(arr[i]).split('@')[1];
-  }
-
-  return false;
-}
-
-/**
  * Values.
  * 
  * @param {Object} obj
@@ -147,29 +165,4 @@ function values(obj){
   var ret = [];
   for (var k in obj) ret.push(obj[k]);
   return ret;
-}
-
-/**
- * Push if `node` to `nodes` if it doesn't exist.
- * 
- * @param {Array} nodes
- * @param {Object} node
- */
-
-function push(nodes, node){
-  for (var i = 0, n; n = nodes[i++];) {
-    if (n.label == node.label) return;
-  }
-  nodes.push(node);
-}
-
-/**
- * Color the given `node`.
- * 
- * @param {Object} node
- * @return {Object}
- */
-
-function color(node){
-  return { label: fmt('\033[90m%s\033[m', node.label) }
 }
