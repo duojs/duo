@@ -10,6 +10,9 @@ var exists = require('fs').existsSync;
 var stat = require('fs').statSync;
 var spawn = require('win-fork');
 var pkg = require('../package');
+var fs = require('co-fs');
+var Duo = require('..');
+var co = require('co');
 
 /**
  * Program
@@ -25,10 +28,20 @@ var program = new Command('duo')
  */
 
 program.on('--help', function(){
+  console.log('  Usage:');
+  console.log();
+  console.log('  # build in.js and output out.js');
+  console.log('  $ duo in.js > out.js');
+  console.log('  $ duo in.js out.js');
+  console.log();
+  console.log('  # build in.css and output out.css');
+  console.log('  $ duo in.css > out.css');
+  console.log('  $ duo in.css out.css');
+  console.log();
   console.log('  Commands:');
   console.log();
-  console.log('    build    Build with optional `type`.');
-  console.log('    install  install all dependencies');
+  console.log('    ls           list all dependencies.');
+  console.log('    duplicates   show all duplicates.');
   console.log();
   process.exit(0);
 });
@@ -46,10 +59,25 @@ var args = process.argv.slice(3);
 var command = program.args[0];
 
 /**
- * Help
+ * Help.
  */
 
 if (!command) program.help();
+
+/**
+ * Build
+ */
+
+if (~command.indexOf('.')) {
+  var duo = Duo(process.cwd());
+  duo.entry(command);
+  duo.run = co(duo.run);
+  return duo.run(function(err, str){
+    if (err) error(err);
+    console.log(str);
+    process.exit(0);
+  });
+}
 
 /**
  * PATH
@@ -82,6 +110,17 @@ if (!exists(exec)) {
   console.error('\n  %s(1) does not exist', bin);
   console.error();
   return;
+}
+
+/**
+ * Error
+ */
+
+function error(err){
+  console.error();
+  console.error('  %s', err.stack);
+  console.error();
+  process.exit(1);
 }
 
 /**

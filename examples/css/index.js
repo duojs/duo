@@ -4,19 +4,21 @@
 
 var co = require('co');
 var assert = require('assert');
-var Installer = require('../../');
+var Duo = require('../../');
+var styl = require('styl');
 
-assert(process.env.user, 'no process.env.user');
-assert(process.env.token, 'no process.env.token');
 
-var installer = Installer(__dirname)
-  .auth(process.env.user, process.env.token)
-  .entry('main.css')
-  .to('components')
+var duo = Duo(__dirname).entry('main.css');
+duo.run = co(duo.run)
 
-installer.install = co(installer.install)
+duo.use(function*(file){
+  if ('styl' != file.type) return;
+  file.src = styl(file.src, { whitespace: true }).toString();
+  file.type = 'css';
+});
 
-installer.install(function(err) {
+duo.run(function(err, str) {
   if (err) throw err;
   console.log('all done!');
+  console.log(str);
 });

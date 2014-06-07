@@ -1,3 +1,4 @@
+
 /**
  * Module Dependencies
  */
@@ -7,13 +8,10 @@ var assert = require('assert');
 var Duo = require('../../');
 var fs = require('fs');
 
-// assert(process.env.user, 'no process.env.user');
-// assert(process.env.token, 'no process.env.token');
 
 var duo = Duo(__dirname)
-  // .auth(process.env.user, process.env.token)
   .development(true)
-  .entry('entry.js')
+  .entry('main.js')
 
 duo.run = co(duo.run)
 
