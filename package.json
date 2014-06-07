@@ -7,8 +7,6 @@
   "bin": {
     "duo": "bin/duo",
     "_duo": "bin/_duo",
-    "duo-build": "bin/duo-build",
-    "duo-install": "bin/duo-install",
     "duo-duplicates": "bin/duo-duplicates",
     "duo-ls": "bin/duo-ls"
   },
@@ -22,16 +20,17 @@
     "co-parallel": "~1.0.0",
     "commander": "^2.2.0",
     "debug": "~0.8.1",
-    "duo-builder": "git+ssh://git@github.com:component/duo-builder.git",
-    "duo-installer": "git+ssh://git@github.com:component/duo-installer.git",
-    "duo-pack": "git+ssh://git@github.com:component/duo-pack.git",
-    "duo-package": "git+ssh://git@github.com:component/duo-package.git",
+    "duo-builder": "0.0.2",
+    "duo-installer": "0.0.3",
+    "duo-pack": "0.0.4",
+    "duo-package": "~0.1.2",
     "extend.js": "0.0.1",
     "file-deps": "0.0.1",
     "file-pipe": "0.0.2",
     "max-component": "~1.0.0",
     "thunkify": "~2.1.1",
     "v8-argv": "^0.2.0",
-    "win-fork": "~1.1.1"
+    "win-fork": "~1.1.1",
+    "component-consoler": "~1.1.2"
   }
 }

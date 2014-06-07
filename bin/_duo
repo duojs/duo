@@ -5,6 +5,7 @@
  */
 
 var Command = require('commander').Command;
+var logger = require('component-consoler');
 var resolve = require('path').resolve;
 var exists = require('fs').existsSync;
 var stat = require('fs').statSync;
@@ -72,6 +73,14 @@ if (~command.indexOf('.')) {
   var duo = Duo(process.cwd());
   duo.entry(command);
   duo.run = co(duo.run);
+
+  // events
+  duo.on('resolving', log('finding'));
+  duo.on('resolve', log('found'));
+
+  duo.on('fetching', log('installing'));
+  duo.on('fetch', log('installed'));
+
   return duo.run(function(err, str){
     if (err) error(err);
     console.log(str);
@@ -103,24 +112,39 @@ var exec = paths.reduce(function(binary, path){
 }, bin);
 
 /**
+ * Log an event
+ *
+ * @param {String} event
+ * @return {Function}
+ */
+
+function log (event) {
+  return function(pkg) {
+    logger.log(event, pkg.slug());
+  }
+}
+
+/**
  * Does not exists
+ *
+ * @param {String} exec
  */
 
 if (!exists(exec)) {
-  console.error('\n  %s(1) does not exist', bin);
+  console.error();
+  logger.error(bin + '(1) does not exist')
   console.error();
   return;
 }
 
 /**
  * Error
+ *
+ * @param {Error} err
  */
 
 function error(err){
-  console.error();
-  console.error('  %s', err.stack);
-  console.error();
-  process.exit(1);
+  logger.fatal(err);
 }
 
 /**

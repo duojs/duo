@@ -4,9 +4,18 @@
  * Module dependencies.
  */
 
+var logger = require('component-consoler');
 var program = require('commander');
 var join = require('path').join;
 var archy = require('archy');
+var cwd = process.cwd();
+var fs = require('fs');
+
+/**
+ * Paths
+ */
+
+var mapping = join(process.cwd())
 
 /**
  * Program
@@ -38,13 +47,19 @@ program.on('--help', function(){
  */
 
 try {
-  var map = require(join(process.cwd(), 'components', 'duo.json'));
-  var component = require(join(process.cwd(), 'component.json'));
+  var map = JSON.parse(read(join(cwd, 'components', 'duo.json')));
 } catch (e) {
-  console.error();
-  console.error(e);
-  console.error();
-  process.exit(1);
+  logger.fatal(e);
+}
+
+/**
+ * Component
+ */
+
+try {
+  var component = JSON.parse(read(join(cwd, 'component.json')));
+} catch (e) {
+  logger.fatal(e);
 }
 
 /**
@@ -119,6 +134,16 @@ function values(obj){
   var ret = [];
   for (var k in obj) ret.push(obj[k]);
   return ret;
+}
+
+/**
+ * Read
+ *
+ * @param {String} path
+ */
+
+function read(path) {
+  return fs.readFileSync(path, 'utf8');
 }
 
 /**
