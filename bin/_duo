@@ -41,6 +41,7 @@ logger.type('error', '31m', function(){
 var program = new Command('duo')
   .version(pkg.version)
   .usage('<command> [options]')
+  .option('-d, --development', 'include development dependencies.', false)
   .parse(process.argv);
 
 /**
@@ -92,6 +93,7 @@ if (~command.indexOf('.')) {
   var duo = Duo(process.cwd());
   duo.entry(command);
   duo.run = co(duo.run);
+  duo.development(program.development);
 
   // events
   duo.on('resolving', log('finding'));
