@@ -13,6 +13,7 @@
   "dependencies": {
     "archy": "0.0.2",
     "array": "~0.4.3",
+    "mkdirp": "~0.5.0",
     "better-error": "0.0.2",
     "bytes": "^1.0.0",
     "co": "^3.0.5",

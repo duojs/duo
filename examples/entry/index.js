@@ -17,9 +17,11 @@ var duo = Duo(__dirname)
 
 duo.run = co(duo.run)
 
+var start = new Date;
+
 duo.run(function(err, src) {
   if (err) throw err;
   fs.writeFileSync('build.js', src);
   var len = Buffer.byteLength(src);
-  console.log('all done, wrote %dkb', len / 1024 | 0);
+  console.log('all done, wrote %dkb in %sms', len / 1024 | 0, new Date - start);
 });
