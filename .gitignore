@@ -1,3 +1,11 @@
 node_modules
 build
 components/
+npm-debug.log
+coverage.html
+.DS_Store
+lib-cov
+.coverage_data
+cover_html
+.c9revisions
+examples/*/build.*
