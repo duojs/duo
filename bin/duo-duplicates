@@ -8,6 +8,7 @@ var program = require('commander');
 var fmt = require('util').format;
 var join = require('path').join;
 var archy = require('archy');
+var bytes = require('bytes');
 
 /**
  * Program
@@ -44,9 +45,9 @@ program.on('--help', function(){
 
 try {
   var cwd = process.cwd();
-  var map = require(join(cwd, 'components', 'mapping.json'));
+  var map = require(join(cwd, 'components', 'duo.json'));
   var component = require(join(cwd, 'component.json'));
-  var root = component.name;
+  var root = Object.keys(map)[0];
 } catch (e) {
   console.error();
   console.error(e);
@@ -59,76 +60,110 @@ try {
  */
 
 var dupes = duplicates(map);
-console.log(archy(dupes, '  '));
+console.log(archy({ nodes: dupes }, '  '));
+
+// Exit with 1 on duplicates
+if (dupes.length) process.exit(1);
 
 /**
- * Get all duplicates
+ * Get all duplicates.
  * 
  * @param {Object} map
  * @return {Object}
  */
 
 function duplicates(map){
-  var keys = Object.keys(map);
-  var pkgs = {};
+  var pkgs = Object.keys(map);
+  var dupes = {};
   var ret = [];
 
-  keys.forEach(function(key){
-    var label = '.' == key ? root : key;
-    var repo = label.split('@')[0];
-    var node = {};
+  // get all duplicates, get total size.
+  pkgs.forEach(function(id){
+    var name = normalize(id);
+    var parts = name.split('@');
+    var repo = parts.shift();
+    var version = parts.shift();
+    var node = dupes[repo] = dupes[repo] || {};
+    var src = map[id].src;
+    node.versions = node.versions || [];
+    node.ids = node.ids || [];
 
-    if (pkgs[repo]) return;
+    if (!version) return;
+    if (~node.versions.indexOf(version)) return;
 
-    pkgs[repo] = true;
-    node.versions = [];
+    node.repo = repo;
+    node.ids.push(id);
+    node.versions.push(version);
+    var length = Buffer.byteLength(src, 'utf-8');
+    node.size = (node.size || 0) + length;
     node.nodes = [];
-    
-    keys.forEach(function(_, v){
-      if (!(v = has(map[_], label))) return;
-      _ = ('.' == _ ? root : _).split('@')[0];
-      node.nodes.push({ label: _ + ' uses ' + v });
-      if (!~node.versions.indexOf(v)) node.versions.push(v);
-    });
-
-    node.label = fmt('%s (%s)', repo, node.versions.join(', '));
-
-    ret.push(node);
   });
 
-  return { nodes: ret.filter(function(node){
-    node.label = fmt('\033[36m%s\033[m', node.label);
-    node.nodes = node.nodes.map(color);
-    return 1 < node.versions.length;
-  })};
-}
+  // add nodes.
+  return values(dupes)
+    .filter(Function('_', 'return 1 < _.versions.length'))
+    .sort(Function('a, b', 'return b.size - a.size'))
+    .map(label)
+    .map(users);
 
-/**
- * Check if `arr` has `dep`.
- * 
- * @param {Array} arr
- * @param {String} dep
- * @return {Boolean}
- */
-
-function has(arr, dep){
-  var a = dep.split('@')[0];
-
-  for (var i = 0; i < arr.length; ++i) {
-    var b = arr[i].split('@')[0];
-    if (b == a) return arr[i].split('@')[1];
+  // Set the label.
+  function label(node){
+    var revs = node.versions.join(', ');
+    var size = bytes(node.size);
+    var repo = node.repo.replace('-', '/');
+    node.label = fmt('\033[36m%s - (%s) - %s\033[m', repo, revs, size);
+    return node;
   }
 
-  return false;
+  // get all users
+  function users(node){
+    pkgs.forEach(function(id){
+      var deps = values(map[id].deps);
+      deps.forEach(function(dep){
+        if (!~node.ids.indexOf(dep)) return;
+        var nodes = node.nodes = node.nodes || [];
+        id = normalize(id).replace('-', '/');
+        var str = '\033[90m' + id + ' uses ' + version(dep) + '\033[m';
+        if (!~nodes.indexOf(str)) nodes.push(str);
+      });
+    });
+
+    return node;
+  }
 }
 
 /**
- * Color the given `node`.
+ * Get version of `dep`.
  * 
- * @param {Object} node
- * @return {Object}
+ * @return {String}
  */
 
-function color(node){
-  return { label: fmt('\033[90m%s\033[m', node.label) }
+function version(dep){
+  var repo = dep.split('/')[1];
+  if (!repo) return dep;
+  return repo.split('@')[1];
+}
+
+/**
+ * Normalize key.
+ * 
+ * @param {String} key
+ * @return {String}
+ */
+
+function normalize(key){
+  return key.split('/')[1] || key;
+}
+
+/**
+ * Values.
+ * 
+ * @param {Object} obj
+ * @return {Array}
+ */
+
+function values(obj){
+  var ret = [];
+  for (var k in obj) ret.push(obj[k]);
+  return ret;
 }

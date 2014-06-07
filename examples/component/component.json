@@ -1,0 +1,11 @@
+{
+  "name": "example-app",
+  "version": "0.0.1",
+  "main": "main.js",
+  "dependencies": {
+    "matthewmueller/uid": "0.0.x",
+    "component/infinity": "0.0.5",
+    "component/events": "1.0.4",
+    "matthewmueller/spreadsheet": "master"
+  }
+}

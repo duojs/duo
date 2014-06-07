@@ -1,0 +1,9 @@
+@import "normalize.css";
+@import "twbs/bootstrap/dist/css/bootstrap.css";
+@import './another.css';
+@import './styles.styl';
+
+
+body {
+  background: url('http://wallpapertoon.com/wp-content/uploads/2014/05/macaw-bird-nature-wallpaper.jpg');
+}

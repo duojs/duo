@@ -1,0 +1,11 @@
+{
+  "name": "entry",
+  "version": "0.0.1",
+  "dependencies": {
+    "component/events": "1.0.4",
+    "segmentio/analytics.js": "duo"
+  },
+  "development": {
+    "component/assert": "test"
+  }
+}

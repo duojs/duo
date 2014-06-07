@@ -15,7 +15,7 @@ Duo is the next generation asset pipeline.
 
 ## Inspiration
 
-Duo is the culmination of previous work from browserify and the component package manager. Duo borrows the good and avoids the bad from  browserify and component. 
+Duo is the culmination of previous work from browserify and the component package manager. Duo borrows the good and avoids the bad from browserify and component. 
 
 ## Differences from Component
 
