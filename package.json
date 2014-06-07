@@ -25,9 +25,9 @@
     "extend.js": "0.0.1",
     "file-deps": "0.0.2",
     "max-component": "~1.0.0",
+    "stream-log": "0.1.0",
     "thunkify": "~2.1.1",
     "v8-argv": "^0.2.0",
-    "win-fork": "~1.1.1",
-    "component-consoler": "~1.1.2"
+    "win-fork": "~1.1.1"
   }
 }
