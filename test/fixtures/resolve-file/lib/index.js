@@ -1,2 +1,2 @@
 
-module.exports = 'resolved';
+module.exports = require('../resolved');
