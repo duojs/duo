@@ -47,6 +47,7 @@ var program = new Command('duo')
   .option('-d, --development', 'include development dependencies.', false)
   .option('-g, --global <name>', 'expose entry as a global <name>', null)
   .option('-v, --verbose', 'show as much logs as possible', false)
+  .option('-c, --concurrency <n>', 'set concurrency, defaulted to 50', 50)
   .parse(process.argv);
 
 /**
@@ -101,6 +102,7 @@ if (~command.indexOf('.')) {
   duo.entry(command);
   duo.run = co(duo.run);
   duo.development(program.development);
+  duo.concurrency(program.concurrency);
 
   // out
   if (program.args[1]) {
