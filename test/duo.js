@@ -26,6 +26,12 @@ describe('Duo', function(){
     assert.deepEqual('resolved', ctx.main);
   });
 
+  it('should resolve relative files like `require(./path/file.js`', function*(){
+    var js = yield build('resolve-file').run();
+    var ctx = evaluate(js);
+    assert('resolved' == ctx.main);
+  })
+
   it('should fetch and build direct dependencies', function*(){
     var js = yield build('simple-deps').run();
     var ctx = evaluate(js);
