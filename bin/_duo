@@ -45,6 +45,7 @@ var program = new Command('duo')
   .version(pkg.version)
   .usage('<command> [options]')
   .option('-d, --development', 'include development dependencies.', false)
+  .option('-g, --global <name>', 'expose entry as a global <name>', null)
   .parse(process.argv);
 
 /**
@@ -105,6 +106,11 @@ if (~command.indexOf('.')) {
     var file = path.join(root, program.args[1]);
     mkdirp(path.dirname(file));
     out = write(file);
+  }
+
+  // global
+  if (program.global) {
+    duo.global(program.global);
   }
 
   // events

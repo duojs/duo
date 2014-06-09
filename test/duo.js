@@ -15,29 +15,39 @@ describe('Duo', function(){
   })
 
   it('should build simple modules', function*(){
-    var js = yield build('simple');
+    var js = yield build('simple').run();
     var ctx = evaluate(js);
     assert.deepEqual(['one', 'two'], ctx.main);
   });
 
   it('resolve directories like `require(./lib)`', function*(){
-    var js = yield build('resolve');
+    var js = yield build('resolve').run();
     var ctx = evaluate(js);
     assert.deepEqual('resolved', ctx.main);
   });
 
   it('should fetch and build direct dependencies', function*(){
-    var js = yield build('simple-deps');
+    var js = yield build('simple-deps').run();
     var ctx = evaluate(js);
     var type = ctx.main;
     assert('string' == type(js));
   })
 
   it('should fetch dependencies from manifest', function*(){
-    var js = yield build('manifest-deps');
+    var js = yield build('manifest-deps').run();
     var ctx = evaluate(js);
     var type = ctx.main;
     assert('string' == type(js));
+  })
+
+  describe('.global(name)', function(){
+    it('should expose the entry as a global', function*(){
+      var duo = build('global');
+      duo.global('global-module');
+      var js = yield duo.run();
+      var ctx = evaluate(js);
+      assert('global module' == ctx['global-module']);
+    })
   })
 })
 
@@ -48,11 +58,9 @@ describe('Duo', function(){
  * @return {String}
  */
 
-function *build(fixture){
+function build(fixture){
   var root = join(__dirname, 'fixtures', fixture);
-  return yield Duo(root)
-    .entry('index.js')
-    .run();
+  return Duo(root).entry('index.js');
 }
 
 /**
