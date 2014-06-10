@@ -46,6 +46,18 @@ describe('Duo', function(){
     assert('string' == type(js));
   })
 
+  it('should be idempotent', function*(){
+    var a = yield build('idempotent').run();
+    var b = yield build('idempotent').run();
+    var c = yield build('idempotent').run();
+    a = evaluate(a).main;
+    b = evaluate(b).main;
+    c = evaluate(c).main;
+    assert('string' == a(''));
+    assert('string' == b(''));
+    assert('string' == c(''));
+  })
+
   describe('.global(name)', function(){
     it('should expose the entry as a global', function*(){
       var duo = build('global');
