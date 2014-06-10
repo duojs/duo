@@ -6,6 +6,7 @@ var rmrf = require('rimraf').sync;
 var expect = require('expect.js');
 var join = require('path').join;
 var assert = require('assert');
+var fs = require('co-fs');
 var Duo = require('..');
 var vm = require('vm');
 
@@ -58,6 +59,21 @@ describe('Duo', function(){
     assert('string' == c(''));
   })
 
+  it('should rebuild correctly when a file is touched', function*(){
+    var p = join(path('rebuild'), 'index.js');
+    var js = yield fs.readFile(p, 'utf8');
+    var a = build('rebuild');
+    var b = build('rebuild');
+    var c = build('rebuild');
+    a = yield a.run();
+    fs.writeFile(p, js);
+    b = yield b.run();
+    c = yield c.run();
+    assert(a && b && c);
+    assert(a == b);
+    assert(b == c);
+  })
+
   describe('.global(name)', function(){
     it('should expose the entry as a global', function*(){
       var duo = build('global');
@@ -77,7 +93,7 @@ describe('Duo', function(){
  */
 
 function build(fixture){
-  var root = join(__dirname, 'fixtures', fixture);
+  var root = path(fixture);
   return Duo(root).entry('index.js');
 }
 
@@ -106,4 +122,12 @@ function cleanup(){
     rmrf(path);
     mkdir(path);
   });
+}
+
+/**
+ * Path to `fixture`
+ */
+
+function path(fixture){
+  return join(__dirname, 'fixtures', fixture);
 }
