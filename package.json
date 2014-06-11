@@ -6,7 +6,8 @@
     "mocha": "^1.20.1",
     "rimraf": "^2.2.8",
     "expect.js": "^0.3.1",
-    "styl": "^0.2.7"
+    "styl": "^0.2.7",
+    "coffee-script": "~1.7.1"
   },
   "bin": {
     "duo": "bin/duo",

@@ -1,6 +1,7 @@
 
 var readdir = require('fs').readdirSync;
 var dirname = require('path').dirname;
+var coffee = require('coffee-script');
 var mkdir = require('fs').mkdirSync;
 var rmrf = require('rimraf').sync;
 var expect = require('expect.js');
@@ -83,6 +84,46 @@ describe('Duo', function(){
       assert('global module' == ctx['global-module']);
     })
   })
+
+  describe('duo#use', function() {
+    it('should transform entry files', function*() {
+      var duo = build('coffee', 'index.coffee');
+      duo.use(cs);
+      var js = yield duo.run();
+      var ctx = evaluate(js).main;
+      assert(ctx.a == 'a');
+      assert(ctx.b == 'b');
+      assert(ctx.c == 'c');
+    })
+
+    it('should transform deps', function*() {
+      var duo = build('coffee-deps')
+      duo.use(cs);
+      var js = yield duo.run();
+      var ctx = evaluate(js).main;
+      assert(ctx.a == 'a');
+      assert(ctx.b == 'b');
+      assert(ctx.c == 'c');
+    })
+
+    it('should work with generators', function*() {
+      var duo = build('coffee', 'index.coffee');
+      var called = false;
+      duo.use(cs).use(function *() { called = true; });
+      var js = yield duo.run();
+      var ctx = evaluate(js).main;
+      assert(ctx.a == 'a');
+      assert(ctx.b == 'b');
+      assert(ctx.c == 'c');
+      assert(called);
+    })
+
+    function cs(file) {
+      if ('coffee' != file.type) return;
+      file.type = 'js';
+      file.src = coffee.compile(file.src);
+    }
+  });
 })
 
 /**
@@ -92,9 +133,9 @@ describe('Duo', function(){
  * @return {String}
  */
 
-function build(fixture){
+function build(fixture, file){
   var root = path(fixture);
-  return Duo(root).entry('index.js');
+  return Duo(root).entry(file || 'index.js');
 }
 
 /**
