@@ -22,6 +22,12 @@ describe('Duo', function(){
     assert.deepEqual(['one', 'two'], ctx.main);
   });
 
+  it('should build with no deps', function *() {
+    var js = yield build('no-deps').run();
+    var ctx = evaluate(js).main;
+    assert('a' == ctx)
+  })
+
   it('resolve directories like `require(./lib)`', function*(){
     var js = yield build('resolve').run();
     var ctx = evaluate(js);
@@ -161,7 +167,6 @@ function cleanup(){
   dirs.forEach(function(name){
     var path = join(dir, name, 'components');
     rmrf(path);
-    mkdir(path);
   });
 }
 
