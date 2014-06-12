@@ -130,6 +130,27 @@ describe('Duo', function(){
       file.src = coffee.compile(file.src);
     }
   });
+
+  describe('duo#include(name, source)', function() {
+    it('should include a string as a source', function*() {
+      var duo = build('includes');
+      duo.include('some-include', 'module.exports = "a"');
+      var js = yield duo.run();
+      var ctx = evaluate(js).main;
+      assert(ctx == 'a');
+    })
+
+    it('should be idempotent', function*() {
+      var duo = build('includes');
+      duo.include('some-include', 'module.exports = "a"');
+      var js = yield duo.run();
+      var ctx = evaluate(js).main;
+      assert(ctx == 'a');
+      var js = yield duo.run();
+      var ctx = evaluate(js).main;
+      assert(ctx == 'a');
+    })
+  })
 })
 
 /**
