@@ -4,7 +4,7 @@
  * Module dependencies.
  */
 
-var logger = require('component-consoler');
+var logger = require('stream-log')(process.stderr);
 var program = require('commander');
 var join = require('path').join;
 var archy = require('archy');
@@ -16,6 +16,15 @@ var fs = require('fs');
  */
 
 var mapping = join(process.cwd())
+
+/**
+ * Logger.
+ */
+
+logger.type('error', '31m', function(){
+  logger.end();
+  process.exit(1);
+});
 
 /**
  * Program
@@ -49,7 +58,7 @@ program.on('--help', function(){
 try {
   var map = JSON.parse(read(join(cwd, 'components', 'duo.json')));
 } catch (e) {
-  logger.fatal(e);
+  logger.error(e.stack || e);
 }
 
 /**
@@ -59,7 +68,7 @@ try {
 try {
   var component = JSON.parse(read(join(cwd, 'component.json')));
 } catch (e) {
-  logger.fatal(e);
+  logger.error(e.stack || e);
 }
 
 /**
@@ -88,7 +97,7 @@ console.log();
 
 /**
  * List using `map` and `depth`
- * 
+ *
  * @param {Object} map
  * @param {Number} depth
  * @param {Object} node
@@ -167,7 +176,7 @@ function pretty(dep){
 
 /**
  * Check if `nodes` has `node`.
- * 
+ *
  * @param {Array} nodes
  * @param {Object} node
  */
