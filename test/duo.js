@@ -139,6 +139,17 @@ describe('Duo', function(){
       var ctx = evaluate(js).main;
       assert(ctx == 'a');
     })
+
+    it('should be idempotent', function*() {
+      var duo = build('includes');
+      duo.include('some-include', 'module.exports = "a"');
+      var js = yield duo.run();
+      var ctx = evaluate(js).main;
+      assert(ctx == 'a');
+      var js = yield duo.run();
+      var ctx = evaluate(js).main;
+      assert(ctx == 'a');
+    })
   })
 })
 
