@@ -7,7 +7,8 @@
     "rimraf": "^2.2.8",
     "expect.js": "^0.3.1",
     "styl": "^0.2.7",
-    "coffee-script": "~1.7.1"
+    "coffee-script": "~1.7.1",
+    "regenerator": "~0.4.9"
   },
   "bin": {
     "duo": "bin/duo",
