@@ -56,10 +56,23 @@ try {
 }
 
 /**
- * Duplicates
+ * All duplicates
  */
 
 var dupes = duplicates(map);
+
+/**
+ * Show total bytes saved if duplicates
+ * are removed.
+ */
+
+console.log();
+console.log('  \033[36mtotal duplicates\033[m : \033[90m%s\033[m', bytes(total(dupes)));
+
+/**
+ * Duplicates
+ */
+
 console.log(archy({ nodes: dupes }, '  '));
 
 // Exit with 1 on duplicates
@@ -67,7 +80,7 @@ if (dupes.length) process.exit(1);
 
 /**
  * Get all duplicates.
- * 
+ *
  * @param {Object} map
  * @return {Object}
  */
@@ -94,7 +107,7 @@ function duplicates(map){
     node.repo = repo;
     node.ids.push(id);
     node.versions.push(version);
-    var length = Buffer.byteLength(src, 'utf-8');
+    var length = size(id, map);
     node.size = (node.size || 0) + length;
     node.nodes = [];
   });
@@ -133,8 +146,32 @@ function duplicates(map){
 }
 
 /**
+ * Get size of `id` using `map`.
+ *
+ * @parma {String} id
+ * @param {Object} map
+ * @return {Number}
+ */
+
+function size(id, map){
+  var deps = map[id].deps;
+  var src = map[id].src;
+  var length = Buffer.byteLength(src);
+  var visited = {};
+
+  for (var dep in deps) {
+    if ('.' != dep[0]) continue;
+    if (visited[dep]) continue;
+    visited[dep] = true;
+    length += Buffer.byteLength(map[deps[dep]].src);
+  }
+
+  return length;
+}
+
+/**
  * Get version of `dep`.
- * 
+ *
  * @return {String}
  */
 
@@ -146,7 +183,7 @@ function version(dep){
 
 /**
  * Normalize key.
- * 
+ *
  * @param {String} key
  * @return {String}
  */
@@ -156,8 +193,21 @@ function normalize(key){
 }
 
 /**
+ * Get total bytes saved if duplicates are removed.
+ *
+ * @param {Array} dupes
+ * @return {Number} n
+ */
+
+function total(dupes){
+  return dupes.reduce(function(t, d){
+    return t += d.size - d.size / d.versions.length;
+  }, 0);
+}
+
+/**
  * Values.
- * 
+ *
  * @param {Object} obj
  * @return {Array}
  */
