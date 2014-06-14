@@ -56,10 +56,23 @@ try {
 }
 
 /**
- * Duplicates
+ * All duplicates
  */
 
 var dupes = duplicates(map);
+
+/**
+ * Show total bytes saved if duplicates
+ * are removed.
+ */
+
+console.log();
+console.log('  \033[36mtotal duplicates\033[m : \033[90m%s\033[m', bytes(total(dupes)));
+
+/**
+ * Duplicates
+ */
+
 console.log(archy({ nodes: dupes }, '  '));
 
 // Exit with 1 on duplicates
@@ -177,6 +190,19 @@ function version(dep){
 
 function normalize(key){
   return key.split('/')[1] || key;
+}
+
+/**
+ * Get total bytes saved if duplicates are removed.
+ *
+ * @param {Array} dupes
+ * @return {Number} n
+ */
+
+function total(dupes){
+  return dupes.reduce(function(t, d){
+    return t += d.size - d.size / d.versions.length;
+  }, 0);
 }
 
 /**
