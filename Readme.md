@@ -1,6 +1,14 @@
 # Duo
 
-Duo is the next generation asset pipeline.
+Duo is the next [Component](https://github.com/component/component).
+
+Duo was built because the existing client-side packaging solutions are not sufficient for large, consistent, client-side applications built and managed by a distributed team.
+
+Component's lack of versioning made consistent deployments impossible and it's insistence on modularity put a burden on development time. Browserify's reliance on NPM and the package.json leads to ownership issues and environment confusion.
+
+Duo makes the manifest optional, bundles only the JS and CSS that you need, supports source transforms and has built-in github versioning support.
+
+Duo uses the file to determine the dependencies, not the manifest. Adding a dependency to your component.json will not do anything because you have not yet using it in your application. 
 
 ## Features
 
