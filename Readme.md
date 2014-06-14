@@ -8,7 +8,7 @@ Component's lack of versioning made consistent deployments impossible and it's i
 
 Duo makes the manifest optional, bundles only the JS and CSS that you need, supports source transforms and has built-in github versioning support.
 
-Duo uses the file to determine the dependencies, not the manifest. Adding a dependency to your component.json will not do anything because you have not yet using it in your application. 
+Duo uses the file to determine the dependencies, not the manifest. Adding a dependency to your component.json will not do anything because you have not yet used it in your application. 
 
 ## Features
 
