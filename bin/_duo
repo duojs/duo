@@ -101,7 +101,7 @@ if (~command.indexOf('.')) {
   var out = process.stdout;
   duo.entry(command);
   duo.run = co(duo.run);
-  duo.development(program.development);
+  duo.development(!! program.development);
   duo.concurrency(program.concurrency);
 
   // out
