@@ -1,4 +1,27 @@
 
+0.2.0 / 2014-06-18
+==================
+
+ * fix: sourcemaps
+ * fix: new Error typo
+ * remove better-error dep
+ * make: allow custom mocha reporter
+ * duo-duplicates: show total size
+ * duo-duplicates: fix to show real size
+ * added tests for duo#include(name, src)
+ * added duo.include(name, src) + jade example
+ * Merge pull request #53 from component/fix/duo-ls
+ * Merge pull request #56 from component/fix/no-deps
+ * added regenerator plugin example
+ * fix: build with no deps
+ * duo-ls(1): use stream-log
+ * pack: sort names before packing, fixes #49
+ * thunkify => thunk
+ * build: allow entries to be .coffee, .styl, etc. fix generator plugins
+ * deps: pin duo-pack, duo-package
+ * tests: add rebuild .mtime tests and fix
+ * tests: add idempotent test and fix
+
 0.1.0 / 2014-06-10
 ==================
 
