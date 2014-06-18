@@ -81,6 +81,20 @@ describe('Duo', function(){
     assert(b == c);
   })
 
+  describe('.development(boolean)', function(){
+    it('should contain sourcemaps when development is `true`', function*(){
+      var duo = build('simple');
+      duo.development(true);
+      var js = yield duo.run();
+      assert(!!~ js.indexOf('//# sourceMappingURL'));
+    })
+
+    it('should not contain sourcemaps by default', function*(){
+      var js = yield build('simple').run();
+      assert(!~ js.indexOf('//# sourceMappingURL'));
+    })
+  })
+
   describe('.global(name)', function(){
     it('should expose the entry as a global', function*(){
       var duo = build('global');
