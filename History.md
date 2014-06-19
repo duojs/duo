@@ -1,5 +1,11 @@
 
-0.2.6 / 2014-06-19 
+0.2.7 / 2014-06-19
+==================
+
+ * fix: ambiguous repo name see #71
+ * add more tests
+
+0.2.6 / 2014-06-19
 ==================
 
  * Component/NPM compatibility: Support require('{user}-{repo}'). Example: require('component-type') at http://github.com/component/type.
