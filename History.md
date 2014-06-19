@@ -1,4 +1,9 @@
 
+0.2.2 / 2014-06-19 
+==================
+
+ * duo.entry(file) should also work with full file paths
+
 0.2.1 / 2014-06-18
 ==================
 
