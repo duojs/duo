@@ -1,16 +1,8 @@
-0.2.4 / 2014-06-19
-==================
 
- * npm bs
-
-0.2.3 / 2014-06-19 
+0.2.5 / 2014-06-19
 ==================
 
  * component compatibility: support deps with repos that have an extension (ex. guille/ms.js => require('ms'))
-
-0.2.2 / 2014-06-19 
-==================
-
  * duo.entry(file) should also work with full file paths
 
 0.2.1 / 2014-06-18
