@@ -1,4 +1,9 @@
 
+0.2.6 / 2014-06-19 
+==================
+
+ * Component/NPM compatibility: Support require('{user}-{repo}'). Example: require('component-type') at http://github.com/component/type.
+
 0.2.5 / 2014-06-19
 ==================
 
