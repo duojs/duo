@@ -90,6 +90,13 @@ describe('Duo', function(){
     assert(b == c);
   })
 
+  it('should resolve repos with different names', function*() {
+    this.timeout(10000);
+    var js = yield build('different-names').run();
+    var ms = evaluate(js).main;
+    assert(36000000 == ms('10h'));
+  })
+
   describe('.development(boolean)', function(){
     it('should contain sourcemaps when development is `true`', function*(){
       var duo = build('simple');
