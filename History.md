@@ -1,4 +1,9 @@
 
+0.2.3 / 2014-06-19 
+==================
+
+ * component compatibility: support deps with repos that have an extension (ex. guille/ms.js => require('ms'))
+
 0.2.2 / 2014-06-19 
 ==================
 
