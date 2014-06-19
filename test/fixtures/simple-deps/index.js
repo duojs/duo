@@ -1,2 +1,5 @@
 
-module.exports = require('component/type');
+(function(){ return this; })().mods = [
+  require('component/type'),
+  require('trigger-event')
+];

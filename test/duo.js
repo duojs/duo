@@ -53,14 +53,17 @@ describe('Duo', function(){
     var js = yield build('simple-deps').run();
     var ctx = evaluate(js);
     var type = ctx.main;
-    assert('string' == type(js));
+    assert(ctx.mods);
+    assert(2 == ctx.mods.length);
+    assert('string' == ctx.mods[0](''));
+    assert('function' == typeof ctx.mods[1]);
   })
 
   it('should fetch dependencies from manifest', function*(){
     var js = yield build('manifest-deps').run();
     var ctx = evaluate(js);
     var type = ctx.main;
-    assert('string' == type(js));
+    assert('string' == type(''));
   })
 
   it('should be idempotent', function*(){
@@ -109,6 +112,15 @@ describe('Duo', function(){
       duo.development(true);
       var js = yield duo.run();
       assert(!!~ js.indexOf('//# sourceMappingURL'));
+    })
+
+    it('should fetch and build dependencies', function*(){
+      var duo = build('simple-dev-deps');
+      duo.development(true);
+      var js = yield duo.run();
+      var ctx = evaluate(js);
+      assert('trigger' == ctx.mods[0].name);
+      assert('function' == typeof ctx.mods[1].equal);
     })
 
     it('should not contain sourcemaps by default', function*(){
@@ -208,7 +220,7 @@ function build(fixture, file){
  */
 
 function evaluate(js, ctx){
-  var ctx = { window: {} };
+  var ctx = { window: {}, document: {} };
   vm.runInNewContext('main =' + js + '(1)', ctx, 'main.vm');
   vm.runInNewContext('require =' + js + '', ctx, 'require.vm');
   return ctx;
