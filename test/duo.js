@@ -22,6 +22,15 @@ describe('Duo', function(){
     assert.deepEqual(['one', 'two'], ctx.main);
   });
 
+  it('.entry(file) should work with full paths', function*() {
+    var root = path('simple');
+    var entry = join(root, 'index.js');
+    var duo = Duo(root).entry(entry);
+    var js = yield duo.run();
+    var ctx = evaluate(js);
+    assert.deepEqual(['one', 'two'], ctx.main);
+  })
+
   it('should build with no deps', function *() {
     var js = yield build('no-deps').run();
     var ctx = evaluate(js).main;
