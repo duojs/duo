@@ -97,6 +97,12 @@ describe('Duo', function(){
     assert(36000000 == ms('10h'));
   })
 
+  it('should resolve dependencies that use require("{user}-{repo}")', function*() {
+    var js = yield build('user-repo-dep').run();
+    var type = evaluate(js).main;
+    assert('string' == type(js));
+  });
+
   describe('.development(boolean)', function(){
     it('should contain sourcemaps when development is `true`', function*(){
       var duo = build('simple');
