@@ -15,6 +15,7 @@ var spawn = require('win-fork');
 var pkg = require('../package');
 var path = require('path');
 var fs = require('co-fs');
+var cwd = process.cwd();
 var Duo = require('..');
 var co = require('co');
 
@@ -45,6 +46,7 @@ var program = new Command('duo')
   .version(pkg.version)
   .usage('<command> [options]')
   .option('-d, --development', 'include development dependencies.', false)
+  .option('-r, --root <dir>', 'root directory to build from.', null)
   .option('-g, --global <name>', 'expose entry as a global <name>', null)
   .option('-v, --verbose', 'show as much logs as possible', false)
   .option('-c, --concurrency <n>', 'set concurrency, defaulted to 50', 50)
@@ -96,7 +98,7 @@ if (!command) program.help();
  */
 
 if (~command.indexOf('.')) {
-  var root = process.cwd();
+  var root = base(program.root);
   var duo = Duo(root);
   var out = process.stdout;
   duo.entry(command);
@@ -169,6 +171,19 @@ function log (event) {
   return function(pkg) {
     logger[event](pkg.slug());
   }
+}
+
+/**
+ * Resolve the root
+ *
+ * @param {String} path
+ * @return {String}
+ */
+
+function base(path) {
+  return path
+    ? resolve(cwd, path)
+    : cwd;
 }
 
 /**
