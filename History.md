@@ -1,4 +1,10 @@
 
+0.2.8 / 2014-06-20 
+==================
+
+ * bundles: support multiple bundles within duo.json (for caching)
+ * update jade example
+
 0.2.7 / 2014-06-19
 ==================
 
