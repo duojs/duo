@@ -1,0 +1,7 @@
+{
+  "name": "bundles",
+  "dependencies": {
+    "component/type": "*",
+    "guille/ms.js": "*"
+  }
+}
