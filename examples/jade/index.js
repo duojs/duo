@@ -2,11 +2,9 @@
  * Module Dependencies
  */
 
-var runtimepath = require.resolve('jade/runtime.js');
-var read = require('co-fs').readFile;
+var jade = require('duo-jade');
 var Duo = require('../../');
 var path = require('path');
-var Jade = require('jade');
 var fs = require('fs');
 var co = require('co');
 var join = path.join;
@@ -41,29 +39,3 @@ duo.run(function(err, src) {
   var len = Buffer.byteLength(src);
   console.log('all done, wrote %dkb', len / 1024 | 0);
 });
-
-/**
- * Jade plugin
- */
-
-function jade(opts) {
-  opts = opts || {};
-  var first = true;
-
-  return function *(file, duo) {
-    if ('jade' != file.type) return;
-    file.type = 'js'; 
-
-    if (first) {
-      var runtime = yield read(runtimepath, 'utf8');
-      duo.include('jade-runtime', runtime);
-      first = false;
-    }
-
-    // add path for extends, includes, etc.
-    opts.filename = file.path;
-
-    file.src = 'var jade = require(\'jade-runtime\');\n\n' +
-               'module.exports = ' + Jade.compileClient(file.src, opts) + ';';
-  }
-}
