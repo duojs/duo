@@ -50,6 +50,7 @@ describe('Duo', function(){
   })
 
   it('should fetch and build direct dependencies', function*(){
+    this.timeout(15000);
     var js = yield build('simple-deps').run();
     var ctx = evaluate(js);
     var type = ctx.main;
@@ -115,6 +116,7 @@ describe('Duo', function(){
     })
 
     it('should fetch and build dependencies', function*(){
+      this.timeout(15000);
       var duo = build('simple-dev-deps');
       duo.development(true);
       var js = yield duo.run();
@@ -199,6 +201,29 @@ describe('Duo', function(){
       assert(ctx == 'a');
     })
   })
+
+  describe('bundles', function() {
+    it('should support multiple bundles', function*() {
+      this.timeout(10000);
+      var one = build('bundles', 'one.js');
+      var two = build('bundles', 'two.js');
+      var onejs = yield one.run();
+      var twojs = yield two.run();
+      var ms = evaluate(onejs).main;
+      var type = evaluate(twojs).main;
+      assert(36000000 == ms('10h'));
+      assert('string' == type(''));
+
+      // Ensure both bundles are in the manifest
+      var json = yield mapping('bundles');
+      assert(json['one.js'], 'one.js not found in manifest');
+      assert(json['two.js'], 'two.js not found in manifest');
+
+      // don't let pack change the IDs of the deps
+      assert('string' == typeof json['one.js'].deps['ms']);
+      assert('string' == typeof json['two.js'].deps['type']);
+    })
+  })
 })
 
 /**
@@ -237,6 +262,17 @@ function cleanup(){
     var path = join(dir, name, 'components');
     rmrf(path);
   });
+}
+
+/**
+ * Get the mapping
+ */
+
+function *mapping(fixture) {
+  var root = path(fixture);
+  var mapping = join(root, 'components', 'duo.json');
+  var str = yield fs.readFile(mapping, 'utf8');
+  return JSON.parse(str);
 }
 
 /**
