@@ -6,7 +6,6 @@ var jade = require('duo-jade');
 var Duo = require('../../');
 var path = require('path');
 var fs = require('fs');
-var co = require('co');
 var join = path.join;
 
 /**
@@ -22,12 +21,6 @@ out = join(__dirname, 'build.js');
 var duo = Duo(__dirname)
   .use(jade())
   .entry('main.js')
-
-/**
- * Wrap duo#run in `co`
- */
-
-duo.run = co(duo.run)
 
 /**
  * Run duo

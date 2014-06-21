@@ -23,10 +23,8 @@ describe('Duo', function(){
   });
 
   it('.entry(file) should work with full paths', function*() {
-    var root = path('simple');
-    var entry = join(root, 'index.js');
-    var duo = Duo(root).entry(entry);
-    var js = yield duo.run();
+    var entry = join(path('simple'), 'index.js');
+    var js = yield build('simple', entry).run();
     var ctx = evaluate(js);
     assert.deepEqual(['one', 'two'], ctx.main);
   })
@@ -106,6 +104,15 @@ describe('Duo', function(){
     var type = evaluate(js).main;
     assert('string' == type(js));
   });
+
+  it('.run(fn) should work with a function', function(done) {
+    build('simple').run(function(err, js) {
+      assert(!err);
+      var ctx = evaluate(js);
+      assert.deepEqual(['one', 'two'], ctx.main);
+      done();
+    });
+  })
 
   describe('.development(boolean)', function(){
     it('should contain sourcemaps when development is `true`', function*(){
@@ -235,7 +242,8 @@ describe('Duo', function(){
 
 function build(fixture, file){
   var root = path(fixture);
-  return Duo(root).entry(file || 'index.js');
+  var duo = Duo(root).entry(file || 'index.js');
+  return duo;
 }
 
 /**

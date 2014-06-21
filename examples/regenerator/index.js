@@ -2,7 +2,6 @@
  * Module Dependencies
  */
 
-var co = require('co');
 var assert = require('assert');
 var Duo = require('../../');
 var fs = require('fs');
@@ -23,12 +22,6 @@ out = join(__dirname, 'build.js');
 var duo = Duo(__dirname)
   .use(regenerator)
   .entry('main.js')
-
-/**
- * Wrap duo#run in `co`
- */
-
-duo.run = co(duo.run)
 
 /**
  * Run duo

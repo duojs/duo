@@ -17,7 +17,6 @@ var path = require('path');
 var fs = require('co-fs');
 var cwd = process.cwd();
 var Duo = require('..');
-var co = require('co');
 
 /**
  * Logger
@@ -102,7 +101,6 @@ if (~command.indexOf('.')) {
   var duo = Duo(root);
   var out = process.stdout;
   duo.entry(command);
-  duo.run = co(duo.run);
   duo.development(!! program.development);
   duo.concurrency(program.concurrency);
 
