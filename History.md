@@ -1,4 +1,9 @@
 
+0.3.0 / 2014-06-21 
+==================
+
+ * duo#run([fn]) now supports an optional callback function
+
 0.2.9 / 2014-06-21 
 ==================
 
