@@ -4,19 +4,30 @@
 
 var co = require('co');
 var assert = require('assert');
-var fs = require('fs');
 var Duo = require('../../');
+var path = require('path');
+var fs = require('fs');
+var join = path.join;
 
-assert(process.env.user, 'no process.env.user');
-assert(process.env.token, 'no process.env.token');
+/**
+ * Paths
+ */
 
-var duo = Duo(__dirname)
-  .auth(process.env.user, process.env.token)
+var out = join(__dirname, 'build.js');
 
-duo.run = co(duo.run);
+/**
+ * Initialize `duo`
+ */
+
+var duo = Duo(__dirname);
+
+/**
+ * Run `duo`
+ */
 
 duo.run(function(err, src) {
   if (err) throw err;
-  console.log('wrote build.js %dkb', Buffer.byteLength(src) / 1024 | 0);
-  fs.writeFileSync('build.js', src);
+  fs.writeFileSync(out, src);
+  var len = Buffer.byteLength(src);
+  console.log('all done, wrote %dkb', len / 1024 | 0);
 });

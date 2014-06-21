@@ -22,7 +22,7 @@
     "array": "~0.4.3",
     "bytes": "^1.0.0",
     "clone-component": "^0.2.2",
-    "co": "^3.0.5",
+    "co": "^3.0.6",
     "co-fs": "~1.2.0",
     "co-parallel": "~1.0.0",
     "commander": "^2.2.0",

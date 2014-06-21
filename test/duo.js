@@ -3,6 +3,7 @@ var readdir = require('fs').readdirSync;
 var dirname = require('path').dirname;
 var coffee = require('coffee-script');
 var mkdir = require('fs').mkdirSync;
+var thunkify = require('thunkify');
 var rmrf = require('rimraf').sync;
 var expect = require('expect.js');
 var join = require('path').join;
@@ -23,10 +24,8 @@ describe('Duo', function(){
   });
 
   it('.entry(file) should work with full paths', function*() {
-    var root = path('simple');
-    var entry = join(root, 'index.js');
-    var duo = Duo(root).entry(entry);
-    var js = yield duo.run();
+    var entry = join(path('simple'), 'index.js');
+    var js = yield build('simple', entry).run();
     var ctx = evaluate(js);
     assert.deepEqual(['one', 'two'], ctx.main);
   })
@@ -235,7 +234,9 @@ describe('Duo', function(){
 
 function build(fixture, file){
   var root = path(fixture);
-  return Duo(root).entry(file || 'index.js');
+  var duo = Duo(root).entry(file || 'index.js');
+  duo.run = thunkify(duo.run);
+  return duo;
 }
 
 /**
