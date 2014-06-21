@@ -3,7 +3,6 @@ var readdir = require('fs').readdirSync;
 var dirname = require('path').dirname;
 var coffee = require('coffee-script');
 var mkdir = require('fs').mkdirSync;
-var thunkify = require('thunkify');
 var rmrf = require('rimraf').sync;
 var expect = require('expect.js');
 var join = require('path').join;
@@ -105,6 +104,15 @@ describe('Duo', function(){
     var type = evaluate(js).main;
     assert('string' == type(js));
   });
+
+  it('.run(fn) should work with a function', function(done) {
+    build('simple').run(function(err, js) {
+      assert(!err);
+      var ctx = evaluate(js);
+      assert.deepEqual(['one', 'two'], ctx.main);
+      done();
+    });
+  })
 
   describe('.development(boolean)', function(){
     it('should contain sourcemaps when development is `true`', function*(){
@@ -235,7 +243,6 @@ describe('Duo', function(){
 function build(fixture, file){
   var root = path(fixture);
   var duo = Duo(root).entry(file || 'index.js');
-  duo.run = thunkify(duo.run);
   return duo;
 }
 
