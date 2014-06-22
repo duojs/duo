@@ -2,9 +2,9 @@
 
 Duo is the next [Component](https://github.com/component/component).
 
-Duo was built because the existing client-side packaging solutions are not sufficient for lean, consistent, client-side applications built and managed by a distributed team.
+Duo was built because the existing client-side packaging solutions are not sufficient for lean, consistent, client-side applications built and managed by a team.
 
-Component's lack of versioning made consistent deployments impossible and it's modularity focus added too many manual steps. Browserify's reliance on NPM and the package.json leads to ownership issues and environment confusion.
+Component's lack of versioning made consistent deployments impossible and it's focus on modularity added too many manual steps. Browserify's reliance on NPM and the package.json leads to ownership issues and environment confusion.
 
 Duo makes the manifest optional, bundles only the JS and CSS that you need, supports source transforms and has built-in github versioning support.
 
