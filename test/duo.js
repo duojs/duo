@@ -47,6 +47,18 @@ describe('Duo', function(){
     assert('resolved' == ctx.main);
   })
 
+  it('should prevent requires from requiring higher than root', function*() {
+    try {
+      var js = yield build('unsafe').run();
+    } catch (e) {
+      // TODO: ensure correct error message,
+      // better error isn't passing that through
+      return;
+    }
+
+    assert(false);
+  })
+
   it('should fetch and build direct dependencies', function*(){
     this.timeout(15000);
     var js = yield build('simple-deps').run();
