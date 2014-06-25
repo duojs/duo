@@ -114,6 +114,14 @@ describe('Duo', function(){
     });
   })
 
+  it('should support multiple versions in the same file', function*(){
+    var js = yield build('multiple-versions').run();
+    var mimes = evaluate(js).mimes;
+    assert('image/x-nikon-nef' == mimes[0].lookup('.nef')); // 0.0.2
+    assert(null == mimes[1].lookup('.nef')); // 0.0.1
+    assert('image/jpeg' == mimes[1].lookup('.jpg'));
+  })
+
   describe('.development(boolean)', function(){
     it('should contain sourcemaps when development is `true`', function*(){
       var duo = build('simple');
