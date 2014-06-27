@@ -1,21 +1,26 @@
 
-0.3.1 / 2014-06-25 
+0.3.2 / 2014-06-27
+==================
+
+ * fix: edge-case extensions `org/pkg.js` was eql to `org/pkg.js-whatever`.
+
+0.3.1 / 2014-06-25
 ==================
 
  * npm is being wierd
 
-0.3.0 / 2014-06-21 
+0.3.0 / 2014-06-21
 ==================
 
  * duo#run([fn]) now supports an optional callback function
 
-0.2.9 / 2014-06-21 
+0.2.9 / 2014-06-21
 ==================
 
  * expose entry key in duo.json
  * duo(1): add --root option
 
-0.2.8 / 2014-06-20 
+0.2.8 / 2014-06-20
 ==================
 
  * bundles: support multiple bundles within duo.json (for caching)
