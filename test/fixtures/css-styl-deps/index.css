@@ -1,0 +1,7 @@
+@import './one.styl';
+
+.index {
+  color: green;
+}
+
+@import './two.styl';

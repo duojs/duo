@@ -1,5 +1,6 @@
 
 var readdir = require('fs').readdirSync;
+var readfile = require('fs').readFileSync;
 var dirname = require('path').dirname;
 var coffee = require('coffee-script');
 var mkdir = require('fs').mkdirSync;
@@ -7,6 +8,7 @@ var rmrf = require('rimraf').sync;
 var expect = require('expect.js');
 var join = require('path').join;
 var assert = require('assert');
+var styl = require('styl');
 var fs = require('co-fs');
 var Duo = require('..');
 var vm = require('vm');
@@ -93,7 +95,7 @@ describe('Duo', function(){
   })
 
   it('should resolve repos with different names', function*() {
-    this.timeout(10000);
+    this.timeout(15000);
     var js = yield build('different-names').run();
     var ms = evaluate(js).main;
     assert(36000000 == ms('10h'));
@@ -263,10 +265,60 @@ describe('Duo', function(){
       assert('string' == typeof json['two.js'].deps['type']);
     })
   })
+
+  describe('css', function() {
+    
+    it('should work with no deps', function*() {
+      var duo = build('css-no-deps', 'index.css');
+      var css = yield duo.run();
+      var out = read('css-no-deps/index.out.css');
+      assert(css == out);
+    })
+
+    it('should resolve relative files', function*() {
+      var duo = build('css-relative-files', 'index.css');
+      var css = yield duo.run();
+      var out = read('css-relative-files/index.out.css');
+      assert(css == out);
+    })
+
+    it('should support entry transforms', function*() {
+      var duo = build('css-styl', 'index.styl');
+      duo.use(stylus);
+      var css = yield duo.run();
+      var out = read('css-styl/index.out.css');
+      assert(css.trim() == out.trim());
+    })
+
+    it('should support entry transforms', function*() {
+      var duo = build('css-styl-deps', 'index.css');
+      duo.use(stylus);
+      var css = yield duo.run();
+      var out = read('css-styl-deps/index.out.css');
+      assert(css == out);
+    })
+
+    it('should load a simple dep', function*() {
+      this.timeout(10000);
+      var duo = build('css-simple-dep', 'index.css');
+      var css = yield duo.run();
+      var out = read('css-simple-dep/index.out.css');
+      assert(css.trim() == out.trim());
+    })
+  })
+
+  describe('components', function() {
+    it('should build multi-asset components', function*() {
+      this.timeout(15000);
+      var duo = build('complex-dep');
+      var js = yield duo.run();
+      console.log(js);
+    })
+  })
 })
 
 /**
- * Build `fixture` and return `str`.
+ * Build js `fixture` and return `str`.
  *
  * @param {String} fixture
  * @return {String}
@@ -276,6 +328,14 @@ function build(fixture, file){
   var root = path(fixture);
   var duo = Duo(root).entry(file || 'index.js');
   return duo;
+}
+
+/**
+ * Path to `fixture`
+ */
+
+function path(fixture){
+  return join(__dirname, 'fixtures', fixture);
 }
 
 /**
@@ -317,9 +377,20 @@ function *mapping(fixture) {
 }
 
 /**
- * Path to `fixture`
+ * Read the file
  */
 
-function path(fixture){
-  return join(__dirname, 'fixtures', fixture);
+function read(path) {
+  path = join(__dirname, 'fixtures', path);
+  return readfile(path, 'utf8');
+}
+
+/**
+ * Compile stylus
+ */
+
+function stylus(file) {
+  if ('styl' != file.type) return;
+  file.type = 'css';
+  file.src = styl(file.src, { whitespace: true }).toString();
 }

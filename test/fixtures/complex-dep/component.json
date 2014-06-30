@@ -1,0 +1,6 @@
+{
+  "name": "complex",
+  "dependencies": {
+    "component/tip": "2.1.0"
+  }
+}

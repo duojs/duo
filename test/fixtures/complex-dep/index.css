@@ -1,0 +1,5 @@
+.index {
+  color: red;
+}
+
+@import 'tip';

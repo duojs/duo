@@ -3,13 +3,14 @@
   "version": "0.3.4",
   "devDependencies": {
     "co-mocha": "0.0.4",
-    "mocha": "^1.20.1",
-    "rimraf": "^2.2.8",
-    "expect.js": "^0.3.1",
-    "styl": "^0.2.7",
     "coffee-script": "~1.7.1",
+    "duo-jade": "*",
+    "expect.js": "^0.3.1",
+    "mocha": "^1.20.1",
     "regenerator": "~0.4.9",
-    "duo-jade": "*"
+    "rimraf": "^2.2.8",
+    "string-to-js": "0.0.1",
+    "styl": "^0.2.7"
   },
   "bin": {
     "duo": "bin/duo",
