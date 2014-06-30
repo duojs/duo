@@ -2,6 +2,7 @@
   "name": "entry",
   "version": "0.0.1",
   "dependencies": {
-    "necolas/normalize.css": "3.0.0"
+    "necolas/normalize.css": "3.0.0",
+    "component/tip": "*"
   }
 }

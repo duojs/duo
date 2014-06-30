@@ -2,21 +2,51 @@
  * Module Dependencies
  */
 
+var co = require('co');
 var assert = require('assert');
 var Duo = require('../../');
 var styl = require('styl');
+var fs = require('fs');
+var path = require('path');
+var relative = path.relative;
+var mkdir = require('mkdirp').sync;
+var join = path.join;
 
+/**
+ * Paths
+ */
 
-var duo = Duo(__dirname).entry('main.css');
+var build = join(__dirname, 'build');
+var out = join(build, 'build.css')
+var rel = relative(__dirname, out);
 
-duo.use(function*(file){
+// mkdirp
+mkdir(build);
+
+/**
+ * Initialize `duo`
+ */
+
+var duo = Duo(__dirname)
+  .entry('main.css');
+
+/**
+ * Styl plugin
+ */
+
+duo.use(function(file){
   if ('styl' != file.type) return;
-  file.src = styl(file.src, { whitespace: true }).toString();
   file.type = 'css';
+  file.src = styl(file.src, { whitespace: true }).toString();
 });
 
-duo.run(function(err, str) {
+/**
+ * Run `duo`
+ */
+
+duo.run(function(err, src) {
   if (err) throw err;
-  console.log('all done!');
-  console.log(str);
+  fs.writeFileSync(out, src);
+  var len = Buffer.byteLength(src);
+  console.log('all done, wrote %dkb', len / 1024 | 0);
 });

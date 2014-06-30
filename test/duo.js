@@ -286,7 +286,8 @@ function build(fixture, file){
 
 function evaluate(js, ctx){
   var ctx = { window: {}, document: {} };
-  vm.runInNewContext('main =' + js + '(1)', ctx, 'main.vm');
+  vm.runInNewContext('main =' + js + '(1)', c
+    tx, 'main.vm');
   vm.runInNewContext('require =' + js + '', ctx, 'require.vm');
   return ctx;
 }
