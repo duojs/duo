@@ -189,6 +189,30 @@ describe('Duo', function(){
       assert(called);
     })
 
+    it('should work async', function*() {
+      var duo = build('no-deps');
+      var called = false;
+      duo.use(function(file, duo, fn) {
+        setTimeout(function() {
+          called = true;
+          fn();
+        }, 30);
+      });
+      
+      var js = yield duo.run();
+      assert(called);
+    })
+
+    it('should work sync', function*() {
+      var duo = build('no-deps');
+      var called = false;
+      duo.use(function(file, duo) {
+        called = true;
+      });
+      var js = yield duo.run();
+      assert(called);
+    })
+
     function cs(file) {
       if ('coffee' != file.type) return;
       file.type = 'js';
