@@ -27,7 +27,7 @@
     "co-parallel": "~1.0.0",
     "commander": "^2.2.0",
     "debug": "~0.8.1",
-    "duo-pack": "0.x",
+    "duo-pack": "^1.0.0",
     "duo-package": "0.x",
     "duo-test": "0.x",
     "extend.js": "0.0.1",
