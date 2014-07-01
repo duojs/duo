@@ -1,0 +1,6 @@
+{
+  "name": "js-css-dep",
+  "dependencies": {
+    "matthewmueller/pretty-html": "*"
+  }
+}

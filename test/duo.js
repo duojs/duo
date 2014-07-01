@@ -11,6 +11,7 @@ var assert = require('assert');
 var styl = require('styl');
 var fs = require('co-fs');
 var Duo = require('..');
+var noop = function(){};
 var vm = require('vm');
 
 describe('Duo', function(){
@@ -133,7 +134,7 @@ describe('Duo', function(){
     })
 
     it('should fetch and build dependencies', function*(){
-      this.timeout(15000);
+      this.timeout(20000);
       var duo = build('simple-dev-deps');
       duo.development(true);
       var js = yield duo.run();
@@ -299,7 +300,7 @@ describe('Duo', function(){
     })
 
     it('should load a simple dep', function*() {
-      this.timeout(10000);
+      this.timeout(15000);
       var duo = build('css-simple-dep', 'index.css');
       var css = yield duo.run();
       var out = read('css-simple-dep/index.out.css');
@@ -310,10 +311,56 @@ describe('Duo', function(){
   describe('components', function() {
     it('should build multi-asset components', function*() {
       this.timeout(15000);
-      var duo = build('complex-dep');
+      var duo = build('js-css-dep');
       var js = yield duo.run();
-      console.log(js);
+      var ctx = evaluate(js).main;
+      assert(ctx({}).dom);
+      var duo = build('js-css-dep', 'index.css');
+      var out = read('js-css-dep/index.out.css');
+      var css = yield duo.run();
+      assert(css.trim() == out.trim());
     })
+
+    it('should build components with a main object', function*() {
+      var duo = build('main-obj');
+      var js = yield duo.run();
+      var ctx = evaluate(js).main;
+      assert('local' == ctx);
+      var duo = build('main-obj', 'index.css');
+      var out = read('main-obj/index.out.css');
+      var css = yield duo.run();
+      assert(css.trim() == out.trim());
+    })
+
+    // it('should build multi-asset components on single duo instance', function*() {
+    //   this.timeout(20000);
+    //   var duo = build('complex-dep');
+    //   var js = yield duo.run();
+    //   var ctx = evaluate(js).main;
+    //   assert(ctx({}).dom);
+    //   duo.entry('index.css');
+    //   var out = read('complex-dep/index.out.css');
+    //   var css = yield duo.run();
+    //   assert(css.trim() == out.trim());
+    // })
+
+    // it('should build component/tip', function*() {
+    //   this.timeout(15000);
+    //   var globals = {};
+    //   globals.window = {};
+    //   globals.document = { createElement: noop };
+    //   globals.Element = { prototype: {} };
+
+    //   var duo = build('component-tip');
+    //   var js = yield duo.run();
+    //   var ctx = require('jsdom')
+    //   var ctx = evaluate(js, globals).main;
+    //   var duo = build('component-tip', 'index.css');
+    //   var out = read('component-tip/index.out.css');
+    //   var css = yield duo.run();
+    //   console.log(css);
+    //   assert(css.trim() == out.trim());
+    // })
   })
 })
 
@@ -345,9 +392,8 @@ function path(fixture){
  */
 
 function evaluate(js, ctx){
-  var ctx = { window: {}, document: {} };
-  vm.runInNewContext('main =' + js + '(1)', c
-    tx, 'main.vm');
+  var ctx = ctx || { window: {}, document: {} };
+  vm.runInNewContext('main =' + js + '(1)', ctx, 'main.vm');
   vm.runInNewContext('require =' + js + '', ctx, 'require.vm');
   return ctx;
 }

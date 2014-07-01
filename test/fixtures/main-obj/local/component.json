@@ -1,0 +1,7 @@
+{
+  "name": "local",
+  "main": {
+    "js": "local.js",
+    "css": "local.css"
+  }
+}
