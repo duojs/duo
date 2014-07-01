@@ -12,6 +12,15 @@ describe('parse()', function(){
         path: '/index.js'
       });
     })
+
+    // it('should parse with v1.0.0', function(){
+    //   expect(parse('user/repo@v1.0.0/dist/css')).to.eql({
+    //     user: 'user',
+    //     repo: 'repo',
+    //     ref: 'v1.0.0',
+    //     path: '/dist/css'
+    //   });
+    // })
   })
 
   describe('user/repo@ref', function(){

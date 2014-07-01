@@ -1,0 +1,24 @@
+.index {
+  color: red;
+}
+
+.pretty-html {
+  font-family: monospace;
+  color: #222;
+}
+
+.pretty-html .line {
+  padding: 10px 0 ;
+}
+
+.pretty-html .element {
+  padding: 5px 10px;
+  background: #2095F0;
+  color: #FFFFFF;
+  border-radius: 4px;
+}
+
+.pretty-html .whitespace {
+  color: #aaa;
+  padding: 2px;
+}

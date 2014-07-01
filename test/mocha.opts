@@ -1,0 +1,4 @@
+--reporter spec
+--require co-mocha
+--timeout 10s
+--harmony-generators

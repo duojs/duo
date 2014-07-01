@@ -1,9 +1,10 @@
+@import './layout.css';
 @import "normalize.css";
-@import "twbs/bootstrap/dist/css/bootstrap.css";
-@import './another.css';
-@import './styles.styl';
-
+@import "typefaces/clear-sans-light";
 
 body {
   background: url('http://wallpapertoon.com/wp-content/uploads/2014/05/macaw-bird-nature-wallpaper.jpg');
+  background-size: cover;
 }
+
+@import './styles.styl';
