@@ -4,6 +4,7 @@
 
 body {
   background: url('http://wallpapertoon.com/wp-content/uploads/2014/05/macaw-bird-nature-wallpaper.jpg');
+  background-size: cover;
 }
 
 @import './styles.styl';
