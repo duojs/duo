@@ -3,13 +3,13 @@
   "version": "0.3.4",
   "devDependencies": {
     "co-mocha": "0.0.4",
-    "mocha": "^1.20.1",
-    "rimraf": "^2.2.8",
-    "expect.js": "^0.3.1",
-    "styl": "^0.2.7",
     "coffee-script": "~1.7.1",
+    "duo-jade": "*",
+    "expect.js": "^0.3.1",
+    "mocha": "^1.20.1",
     "regenerator": "~0.4.9",
-    "duo-jade": "*"
+    "rimraf": "^2.2.8",
+    "styl": "^0.2.7"
   },
   "bin": {
     "duo": "bin/duo",
@@ -27,16 +27,18 @@
     "co-parallel": "~1.0.0",
     "commander": "^2.2.0",
     "debug": "~0.8.1",
-    "duo-pack": "0.x",
+    "duo-pack": "^1.0.0",
     "duo-package": "0.x",
     "duo-test": "0.x",
+    "duo-string-to-js": "0.x",
     "extend.js": "0.0.1",
-    "file-deps": "0.0.2",
+    "file-deps": "0.0.5",
     "max-component": "~1.0.0",
     "mkdirp": "^0.5.0",
     "stream-log": "0.1.0",
     "thunkify": "~2.1.1",
     "v8-argv": "^0.2.0",
-    "win-fork": "~1.1.1"
+    "win-fork": "~1.1.1",
+    "co-exists": "0.0.1"
   }
 }
