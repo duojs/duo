@@ -1,0 +1,58 @@
+.index {
+  background: green;
+}
+
+.brewster {
+  background-color: #F2F2F2;
+  border: 1px solid #E5E5E5;
+  border-radius: 2px;
+}
+
+.brewster div {
+  border-top: 1px solid #E5E5E5;
+  background-color: #FFFFFF;
+  padding: 21px 7px 7px 7px ;
+  position: relative;
+}
+
+.brewster div:first-child {
+  border-top: none;
+}
+
+.brewster label {
+  position: absolute;
+  top: 5px;
+  font-size: 12px;
+  font-family: "Helvetica Neue";
+  color: #949494;
+}
+
+.brewster input {
+  width: 100%;
+  height: 20px;
+  outline: none;
+  border: none;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.brewster .validation:after {
+  position: absolute;
+}
+
+.brewster .validation.valid:after {
+  content: "\2714";
+  color: #59BA58;
+  right: 10px;
+  top: 13px;
+}
+
+.brewster .validation.invalid:after {
+  content: "\00D7";
+  font-weight: bold;
+  font-size: 20px;
+  right: 12px;
+  top: 10px;
+  color: #DD4E44;
+}
+

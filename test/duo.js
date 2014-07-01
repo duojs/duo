@@ -1,5 +1,6 @@
 
 var readdir = require('fs').readdirSync;
+var readfile = require('fs').readFileSync;
 var dirname = require('path').dirname;
 var coffee = require('coffee-script');
 var mkdir = require('fs').mkdirSync;
@@ -7,8 +8,10 @@ var rmrf = require('rimraf').sync;
 var expect = require('expect.js');
 var join = require('path').join;
 var assert = require('assert');
+var styl = require('styl');
 var fs = require('co-fs');
 var Duo = require('..');
+var noop = function(){};
 var vm = require('vm');
 
 describe('Duo', function(){
@@ -93,7 +96,7 @@ describe('Duo', function(){
   })
 
   it('should resolve repos with different names', function*() {
-    this.timeout(10000);
+    this.timeout(15000);
     var js = yield build('different-names').run();
     var ms = evaluate(js).main;
     assert(36000000 == ms('10h'));
@@ -131,7 +134,7 @@ describe('Duo', function(){
     })
 
     it('should fetch and build dependencies', function*(){
-      this.timeout(15000);
+      this.timeout(20000);
       var duo = build('simple-dev-deps');
       duo.development(true);
       var js = yield duo.run();
@@ -263,10 +266,106 @@ describe('Duo', function(){
       assert('string' == typeof json['two.js'].deps['type']);
     })
   })
+
+  describe('css', function() {
+    
+    it('should work with no deps', function*() {
+      var duo = build('css-no-deps', 'index.css');
+      var css = yield duo.run();
+      var out = read('css-no-deps/index.out.css');
+      assert(css == out);
+    })
+
+    it('should resolve relative files', function*() {
+      var duo = build('css-relative-files', 'index.css');
+      var css = yield duo.run();
+      var out = read('css-relative-files/index.out.css');
+      assert(css == out);
+    })
+
+    it('should support entry transforms', function*() {
+      var duo = build('css-styl', 'index.styl');
+      duo.use(stylus);
+      var css = yield duo.run();
+      var out = read('css-styl/index.out.css');
+      assert(css.trim() == out.trim());
+    })
+
+    it('should support entry transforms', function*() {
+      var duo = build('css-styl-deps', 'index.css');
+      duo.use(stylus);
+      var css = yield duo.run();
+      var out = read('css-styl-deps/index.out.css');
+      assert(css == out);
+    })
+
+    it('should load a simple dep', function*() {
+      this.timeout(15000);
+      var duo = build('css-simple-dep', 'index.css');
+      var css = yield duo.run();
+      var out = read('css-simple-dep/index.out.css');
+      assert(css.trim() == out.trim());
+    })
+  })
+
+  describe('components', function() {
+    it('should build multi-asset components', function*() {
+      this.timeout(15000);
+      var duo = build('js-css-dep');
+      var js = yield duo.run();
+      var ctx = evaluate(js).main;
+      assert(ctx({}).dom);
+      var duo = build('js-css-dep', 'index.css');
+      var out = read('js-css-dep/index.out.css');
+      var css = yield duo.run();
+      assert(css.trim() == out.trim());
+    })
+
+    it('should build components with a main object', function*() {
+      var duo = build('main-obj');
+      var js = yield duo.run();
+      var ctx = evaluate(js).main;
+      assert('local' == ctx);
+      var duo = build('main-obj', 'index.css');
+      var out = read('main-obj/index.out.css');
+      var css = yield duo.run();
+      assert(css.trim() == out.trim());
+    })
+
+    // it('should build multi-asset components on single duo instance', function*() {
+    //   this.timeout(20000);
+    //   var duo = build('complex-dep');
+    //   var js = yield duo.run();
+    //   var ctx = evaluate(js).main;
+    //   assert(ctx({}).dom);
+    //   duo.entry('index.css');
+    //   var out = read('complex-dep/index.out.css');
+    //   var css = yield duo.run();
+    //   assert(css.trim() == out.trim());
+    // })
+
+    // it('should build component/tip', function*() {
+    //   this.timeout(15000);
+    //   var globals = {};
+    //   globals.window = {};
+    //   globals.document = { createElement: noop };
+    //   globals.Element = { prototype: {} };
+
+    //   var duo = build('component-tip');
+    //   var js = yield duo.run();
+    //   var ctx = require('jsdom')
+    //   var ctx = evaluate(js, globals).main;
+    //   var duo = build('component-tip', 'index.css');
+    //   var out = read('component-tip/index.out.css');
+    //   var css = yield duo.run();
+    //   console.log(css);
+    //   assert(css.trim() == out.trim());
+    // })
+  })
 })
 
 /**
- * Build `fixture` and return `str`.
+ * Build js `fixture` and return `str`.
  *
  * @param {String} fixture
  * @return {String}
@@ -279,13 +378,21 @@ function build(fixture, file){
 }
 
 /**
+ * Path to `fixture`
+ */
+
+function path(fixture){
+  return join(__dirname, 'fixtures', fixture);
+}
+
+/**
  * Evaluate `js`.
  *
  * @return {Object}
  */
 
 function evaluate(js, ctx){
-  var ctx = { window: {}, document: {} };
+  var ctx = ctx || { window: {}, document: {} };
   vm.runInNewContext('main =' + js + '(1)', ctx, 'main.vm');
   vm.runInNewContext('require =' + js + '', ctx, 'require.vm');
   return ctx;
@@ -316,9 +423,20 @@ function *mapping(fixture) {
 }
 
 /**
- * Path to `fixture`
+ * Read the file
  */
 
-function path(fixture){
-  return join(__dirname, 'fixtures', fixture);
+function read(path) {
+  path = join(__dirname, 'fixtures', path);
+  return readfile(path, 'utf8');
+}
+
+/**
+ * Compile stylus
+ */
+
+function stylus(file) {
+  if ('styl' != file.type) return;
+  file.type = 'css';
+  file.src = styl(file.src, { whitespace: true }).toString();
 }

@@ -1,0 +1,5 @@
+.one {
+  color: green;
+}
+
+@import './two.css';
