@@ -29,6 +29,7 @@
     "debug": "~0.8.1",
     "duo-pack": "0.x",
     "duo-package": "0.x",
+    "duo-test": "0.x",
     "extend.js": "0.0.1",
     "file-deps": "0.0.2",
     "max-component": "~1.0.0",
