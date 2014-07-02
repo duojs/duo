@@ -1,10 +1,18 @@
 
-0.3.4 / 2014-06-30 
+0.4.0 / 2014-07-02
+==================
+
+ * fix: make sure */* works only in css mode
+ * fix parsing ambiguity: require(user/repo@ref/path) => require(user/repo@ref:/path)
+ * clean up example
+ * add css support
+
+0.3.4 / 2014-06-30
 ==================
 
  * rootext => type
 
-0.3.3 / 2014-06-30 
+0.3.3 / 2014-06-30
 ==================
 
  * fix duo#use
