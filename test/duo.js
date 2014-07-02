@@ -44,7 +44,7 @@ describe('Duo', function(){
     assert.deepEqual('resolved', ctx.main);
   });
 
-  it('should resolve relative files like `require(../path/file.js`', function*(){
+  it('should resolve relative files like `require(../path/file.js`)', function*(){
     var js = yield build('resolve-file').run();
     var ctx = evaluate(js);
     assert('resolved' == ctx.main);
@@ -201,7 +201,7 @@ describe('Duo', function(){
           fn();
         }, 30);
       });
-      
+
       var js = yield duo.run();
       assert(called);
     })
@@ -268,7 +268,7 @@ describe('Duo', function(){
   })
 
   describe('css', function() {
-    
+
     it('should work with no deps', function*() {
       var duo = build('css-no-deps', 'index.css');
       var css = yield duo.run();
@@ -306,6 +306,17 @@ describe('Duo', function(){
       var out = read('css-simple-dep/index.out.css');
       assert(css.trim() == out.trim());
     })
+
+
+    it('should work with user/repo@ref:path', function*() {
+      this.timeout(15000);
+      var duo = build('user-repo-ref-path', 'index.css');
+      var css = yield duo.run();
+      var out = read('user-repo-ref-path/index.out.css');
+      assert(css.trim() == out.trim());
+    })
+
+
   })
 
   describe('components', function() {
