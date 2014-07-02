@@ -5,7 +5,7 @@ var expect = require('expect.js');
 describe('parse()', function(){
   describe('user/repo@ref/path', function(){
     it('should parse correctly', function(){
-      expect(parse('user/repo@1.0.0/index.js')).to.eql({
+      expect(parse('user/repo@1.0.0:/index.js')).to.eql({
         user: 'user',
         repo: 'repo',
         ref: '1.0.0',
@@ -13,14 +13,41 @@ describe('parse()', function(){
       });
     })
 
-    // it('should parse with v1.0.0', function(){
-    //   expect(parse('user/repo@v1.0.0/dist/css')).to.eql({
-    //     user: 'user',
-    //     repo: 'repo',
-    //     ref: 'v1.0.0',
-    //     path: '/dist/css'
-    //   });
-    // })
+    it('should parse with v1.0.0', function(){
+      expect(parse('user/repo@v1.0.0:/dist/css')).to.eql({
+        user: 'user',
+        repo: 'repo',
+        ref: 'v1.0.0',
+        path: '/dist/css'
+      });
+    })
+
+    it('should handle refs with "/" and a path', function() {
+      expect(parse('user/repo@add/feature:/dist/css')).to.eql({
+        user: 'user',
+        repo: 'repo',
+        ref: 'add/feature',
+        path: '/dist/css'
+      });
+    })
+
+    it('should handle refs with "/" and a path with "."', function() {
+      expect(parse('user/repo@add/feature:./dist/css')).to.eql({
+        user: 'user',
+        repo: 'repo',
+        ref: 'add/feature',
+        path: './dist/css'
+      });
+    })
+
+    it('should handle refs with "/" and a path with "."', function() {
+      expect(parse('user/repo@add/feature:dist/css')).to.eql({
+        user: 'user',
+        repo: 'repo',
+        ref: 'add/feature',
+        path: 'dist/css'
+      });
+    })
   })
 
   describe('user/repo@ref', function(){
@@ -35,7 +62,7 @@ describe('parse()', function(){
 
   describe('user/repo/path', function(){
     it('should parse correctly', function(){
-      expect(parse('user/repo/index.js')).to.eql({
+      expect(parse('user/repo:/index.js')).to.eql({
         user: 'user',
         repo: 'repo',
         path: '/index.js'
