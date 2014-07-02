@@ -23,14 +23,15 @@
     "bytes": "^1.0.0",
     "clone-component": "^0.2.2",
     "co": "^3.0.6",
+    "co-exists": "0.0.1",
     "co-fs": "~1.2.0",
     "co-parallel": "~1.0.0",
     "commander": "^2.2.0",
     "debug": "~0.8.1",
     "duo-pack": "^1.0.0",
-    "duo-package": "0.x",
-    "duo-test": "0.x",
+    "duo-package": "^0.2.9",
     "duo-string-to-js": "0.x",
+    "duo-test": "0.x",
     "extend.js": "0.0.1",
     "file-deps": "0.0.5",
     "max-component": "~1.0.0",
@@ -38,7 +39,6 @@
     "stream-log": "0.1.0",
     "thunkify": "~2.1.1",
     "v8-argv": "^0.2.0",
-    "win-fork": "~1.1.1",
-    "co-exists": "0.0.1"
+    "win-fork": "~1.1.1"
   }
 }
