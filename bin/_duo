@@ -8,6 +8,7 @@ var write = require('fs').createWriteStream;
 var Command = require('commander').Command;
 var resolve = require('path').resolve;
 var exists = require('fs').existsSync;
+var type = require('component-type');
 var mkdirp = require('mkdirp').sync;
 var Logger = require('stream-log');
 var stat = require('fs').statSync;
@@ -148,7 +149,7 @@ if (command) {
   }
 
   duo.run(function(err, str) {
-    if (err) error(err);
+    if (err) throw error(err);
     if (program.quiet) return;
     out.write(str);
   })
@@ -171,13 +172,17 @@ mains.forEach(function(main) {
   logger.building(main);
 
   batch.push(function(fn) {
-    duo.write(fn);
+    duo.write(function(err) {
+      if (err) return fn(err);
+      logger.built(main);
+      fn();
+    });
   })
 })
 
 // run duo all the entries
 batch.end(function(err) {
-  if (err) error(err);
+  if (err) throw error(err);
   logger.end();
 });
 
@@ -230,7 +235,6 @@ function log (event) {
 function error(err) {
   logger.error(err.stack);
   logger.end();
-  process.exit(1);
 }
 
 /**
@@ -241,10 +245,14 @@ function entries(root) {
   if (command) return [command];
   var manifest = require(join(root, 'component.json'));
   var main = manifest.main || [];
+  var t = type(main);
 
-  return 'string' == typeof main
-    ? [main]
-    : main;
+  switch(t) {
+    case 'array': return main;
+    case 'string': return [main];
+    case 'object': return Object.keys(main);
+    default: throw error(new Error(t + ': unknown main type'));
+  }
 }
 
 /**

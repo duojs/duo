@@ -28,6 +28,7 @@
     "co-fs": "~1.2.0",
     "co-parallel": "~1.0.0",
     "commander": "^2.2.0",
+    "component-type": "^1.0.0",
     "debug": "~0.8.1",
     "duo-pack": "^1.0.0",
     "duo-package": "^0.2.10",
