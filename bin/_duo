@@ -8,21 +8,27 @@ var write = require('fs').createWriteStream;
 var Command = require('commander').Command;
 var resolve = require('path').resolve;
 var exists = require('fs').existsSync;
+var type = require('component-type');
 var mkdirp = require('mkdirp').sync;
 var Logger = require('stream-log');
 var stat = require('fs').statSync;
 var spawn = require('win-fork');
 var pkg = require('../package');
+var Batch = require('batch');
 var path = require('path');
+var dirname = path.dirname;
 var fs = require('co-fs');
 var cwd = process.cwd();
 var Duo = require('..');
+var join = path.join;
 
 /**
  * Logger
  */
 
 var logger = new Logger(process.stderr)
+  .type('building', '36m')
+  .type('built', '36m')
   .type('installing', '36m')
   .type('installed', '36m')
   .type('finding', '36m')
@@ -87,55 +93,6 @@ var args = process.argv.slice(3);
 var command = program.args[0];
 
 /**
- * Help.
- */
-
-if (!command) program.help();
-
-/**
- * Build
- */
-
-if (~command.indexOf('.')) {
-  var root = base(program.root);
-  var duo = Duo(root);
-  var out = process.stdout;
-  duo.entry(command);
-  duo.development(!! program.development);
-  duo.concurrency(program.concurrency);
-
-  // out
-  if (program.args[1]) {
-    var file = path.join(root, program.args[1]);
-    mkdirp(path.dirname(file));
-    out = write(file);
-  }
-
-  // global
-  if (program.global) {
-    duo.global(program.global);
-  }
-
-  // verbose
-  if (program.verbose) {
-    duo.on('resolving', log('finding'));
-    duo.on('resolve', log('found'));
-    duo.on('fetching', log('installing'));
-  }
-
-  // installed
-  duo.on('fetch', log('installed'));
-
-  return duo.run(function(err, str){
-    if (err) logger.error(err.stack);
-    logger.end();
-    out.write(str, function(){
-      process.exit(0);
-    });
-  });
-}
-
-/**
  * PATH
  */
 
@@ -148,15 +105,113 @@ var paths = [__dirname].concat(process.env.PATH.split(':'));
 var bin = ['duo', command].join('-');
 
 /**
- * Find executable.
+ * Custom executable
  */
 
-var exec = paths.reduce(function(binary, path){
-  path = resolve(path, bin);
-  return exists(path) && stat(path)
-    ? path
-    : binary;
-}, bin);
+if (command && !~command.indexOf('.')) {
+  // find executable
+  var exec = paths.reduce(function(binary, path){
+    path = resolve(path, bin);
+    return exists(path) && stat(path)
+      ? path
+      : binary;
+  }, bin);
+
+  // does not exist
+  if (!exists(exec)) {
+    logger.error(bin + '(1) does not exist');
+    return;
+  }
+
+  // spawn
+  args.unshift(exec);
+  args.unshift('--harmony-generators');
+  var proc = spawn('node', args, { stdio: 'inherit', customFds: [0, 1, 2] });
+  proc.on('close', process.exit.bind(process));
+
+  return;
+}
+
+/**
+ * Build a single file
+ */
+
+if (command) {
+  var root = base(program.root);
+  var duo = create(root, command);
+  var out = process.stdout;
+
+  if (program.args[1]) {
+    var file = path.join(root, program.args[1]);
+    mkdirp(path.dirname(file));
+    out = write(file);
+  }
+
+  duo.run(function(err, str) {
+    if (err) throw error(err);
+    out.write(str);
+  })
+
+  return;
+}
+
+/**
+ * Build multiple files
+ */
+
+var root = findroot(cwd);
+var mains = entries(root);
+var batch = Batch();
+var srcs = {};
+
+// add entries
+mains.forEach(function(main) {
+  var duo = create(root, main);
+  logger.building(main);
+
+  batch.push(function(fn) {
+    duo.write(function(err) {
+      if (err) return fn(err);
+      logger.built(main);
+      fn();
+    });
+  })
+})
+
+// run duo all the entries
+batch.end(function(err) {
+  if (err) throw error(err);
+  logger.end();
+});
+
+/**
+ * Create a duo instance
+ *
+ * @param {String} root
+ * @param {entry} entry
+ */
+
+function create(root, entry) {
+  var duo = Duo(root)
+    .development(!! program.development)
+    .concurrency(program.concurrency)
+    .entry(entry);
+
+  // global
+  program.global && duo.global(program.global);
+
+  // verbose
+  if (program.verbose) {
+    duo.on('resolving', log('finding'));
+    duo.on('resolve', log('found'));
+    duo.on('fetching', log('installing'));
+  }
+
+  // installed
+  duo.on('fetch', log('installed'));
+
+  return duo;
+}
 
 /**
  * Log an event
@@ -172,6 +227,53 @@ function log (event) {
 }
 
 /**
+ * Error
+ */
+
+function error(err) {
+  logger.error(err.stack);
+  logger.end();
+}
+
+/**
+ * Get the entries
+ */
+
+function entries(root) {
+  if (command) return [command];
+  var manifest = require(join(root, 'component.json'));
+  var main = manifest.main || [];
+  var t = type(main);
+
+  switch(t) {
+    case 'array': return main;
+    case 'string': return [main];
+    case 'object': return Object.keys(main);
+    default: throw error(new Error(t + ': unknown main type'));
+  }
+}
+
+/**
+ * Find the root
+ *
+ * @param {String} root
+ * @param {String}
+ */
+
+function findroot(root) {
+  while (!exists(join(root, 'component.json')) && '/' != root) {
+    root = dirname(root);
+  }
+
+  if ('/' == root) {
+    logger.error('no manifest found');
+    process.exit(1);
+  }
+
+  return root;
+}
+
+/**
  * Resolve the root
  *
  * @param {String} path
@@ -184,22 +286,3 @@ function base(path) {
     : cwd;
 }
 
-/**
- * Does not exists
- *
- * @param {String} exec
- */
-
-if (!exists(exec)) {
-  logger.error(bin + '(1) does not exist');
-  return;
-}
-
-/**
- * Spawn
- */
-
-args.unshift(exec);
-args.unshift('--harmony-generators');
-var proc = spawn('node', args, { stdio: 'inherit', customFds: [0, 1, 2] });
-proc.on('close', process.exit.bind(process));
