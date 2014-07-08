@@ -31,7 +31,7 @@
     "component-type": "^1.0.0",
     "debug": "~0.8.1",
     "duo-pack": "^1.0.0",
-    "duo-package": "^0.2.10",
+    "duo-package": "^0.2.13",
     "duo-string-to-js": "0.x",
     "duo-test": "0.x",
     "extend.js": "0.0.1",
