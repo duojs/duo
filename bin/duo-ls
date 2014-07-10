@@ -27,15 +27,6 @@ logger.type('error', '31m', function(){
 });
 
 /**
- * Program
- */
-
-program
-  .usage('duo ls')
-  .option('-d, --depth <depth>', 'ls depth, defaults to Infinity', Infinity)
-  .parse(process.argv);
-
-/**
  * Examples
  */
 
@@ -50,6 +41,15 @@ program.on('--help', function(){
   console.log();
   process.exit(0);
 });
+
+/**
+ * Program
+ */
+
+program
+  .usage('duo ls')
+  .option('-d, --depth <depth>', 'ls depth, defaults to Infinity', Infinity)
+  .parse(process.argv);
 
 /**
  * Map
