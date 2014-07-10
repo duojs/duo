@@ -49,6 +49,7 @@ program.on('--help', function(){
 program
   .usage('duo install [options] <pkg, ...>')
   .option('-r, --root <dir>', 'root directory to build from.', cwd)
+  .option('-v, --verbose', 'root directory to build from.', false)
   .parse(process.argv);
 
 /**
@@ -89,6 +90,13 @@ function *install(pkg) {
     .directory(root)
     .on('fetching', log('installing'))
     .on('fetch', log('installed'));
+
+  // verbose
+  if (program.verbose) {
+    pkg
+      .on('resolving', log('finding'))
+      .on('resolve', log('found'));
+  }
 
   // fetch the package
   yield pkg.fetch();
