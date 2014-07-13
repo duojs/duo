@@ -32,9 +32,9 @@ program.on('--help', function(){
   console.log();
   console.log('  $ duo duplicates');
   console.log();
-  console.log('    - component/clone');
-  console.log('    | - org/pkg-a uses 0.1.1');
-  console.log('    | - org/pkg-b uses 0.0.1');
+  console.log('    - component-clone (0.0.1, 0.1.1)');
+  console.log('    | - org-pkg-a uses 0.1.1');
+  console.log('    | - org-pkg-b uses 0.0.1');
   console.log();
 });
 
@@ -123,8 +123,7 @@ function duplicates(map){
   function label(node){
     var revs = node.versions.join(', ');
     var size = bytes(node.size);
-    var repo = node.repo.replace('-', '/');
-    node.label = fmt('\033[36m%s - (%s) - %s\033[m', repo, revs, size);
+    node.label = fmt('\033[36m%s - (%s) - %s\033[m', node.repo, revs, size);
     return node;
   }
 
@@ -135,7 +134,7 @@ function duplicates(map){
       deps.forEach(function(dep){
         if (!~node.ids.indexOf(dep)) return;
         var nodes = node.nodes = node.nodes || [];
-        id = normalize(id).replace('-', '/');
+        id = normalize(id);
         var str = '\033[90m' + id + ' uses ' + version(dep) + '\033[m';
         if (!~nodes.indexOf(str)) nodes.push(str);
       });
@@ -193,7 +192,7 @@ function normalize(key){
 }
 
 /**
- * Get total bytes saved if duplicates are removed.
+ * Get total bytes of all `dupes`.
  *
  * @param {Array} dupes
  * @return {Number} n
