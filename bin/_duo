@@ -15,6 +15,7 @@ var stat = require('fs').statSync;
 var spawn = require('win-fork');
 var pkg = require('../package');
 var Batch = require('batch');
+var isArray = Array.isArray;
 var path = require('path');
 var dirname = path.dirname;
 var fs = require('co-fs');
@@ -236,22 +237,58 @@ function error(err) {
 }
 
 /**
- * Get the entries
+ * Get the entries of a package
+ *
+ * @param {String} root
+ * @return {Array}
  */
 
 function entries(root) {
-  if (command) return [command];
-  var manifest = require(join(root, 'component.json'));
-  var main = manifest.main || [];
-  var t = type(main);
+  var manifest = join(root, 'component.json');
+  var obj = json(manifest);
+  var main = obj.main;
+  var entries = [];
 
-  switch(t) {
-    case 'array': return main;
-    case 'string': return [main];
-    case 'object': return Object.keys(main);
-    default: throw error(new Error(t + ': unknown main type'));
+  // mains
+  if (obj.main) return mains(main);
+  else throw error(new Error('no "main" in component.json'));
+
+  function mains(main) {
+    if (!main) return [];
+    return 'string' == typeof main
+      ? [main]
+      : isArray(main)
+      ? main
+      : values(main);
   }
 }
+
+/**
+ * Object values
+ *
+ * @param {Object} obj
+ * @return {Array}
+ */
+
+function values(obj) {
+  return Object.keys(obj).map(function(k) { return obj[k]; });
+}
+
+/**
+ * Read JSON
+ *
+ * @param {String} path
+ * @return {Object}
+ * @api private
+ */
+
+function json(path) {
+  try {
+    return require(path);
+  } catch(e) {
+    return {};
+  }
+};
 
 /**
  * Find the root
