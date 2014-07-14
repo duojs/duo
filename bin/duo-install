@@ -1,0 +1,128 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+
+var Package = require('duo-package');
+var program = require('commander');
+var Logger = require('stream-log');
+var fmt = require('util').format;
+var join = require('path').join;
+var cwd = process.cwd();
+var co = require('co');
+
+/**
+ * Logger
+ */
+
+var logger = new Logger(process.stderr)
+  .type('installing', '36m')
+  .type('installed', '36m')
+  .type('finding', '36m')
+  .type('found', '36m');
+
+/**
+ * Help
+ */
+
+program.on('--help', function(){
+  console.log('Examples:');
+  console.log();
+  console.log('  # install a component');
+  console.log();
+  console.log('  # Single package');
+  console.log('  $ duo install component/type');
+  console.log();
+  console.log('  # Multiple packages');
+  console.log('  $ duo install component/type component/emitter@1.0.0');
+  console.log();
+  console.log('  # Brace expansion');
+  console.log('  $ duo install component/{type,events}');
+  console.log();
+});
+
+/**
+ * Program
+ */
+
+program
+  .usage('duo install [options] <pkg, ...>')
+  .option('-r, --root <dir>', 'root directory to build from.', cwd)
+  .option('-v, --verbose', 'root directory to build from.', false)
+  .parse(process.argv);
+
+/**
+ * Root
+ */
+
+var root = join(program.root, 'components');
+
+/**
+ * Run the program
+ */
+
+co(main)(program.args);
+
+/**
+ * Packages
+ */
+
+function *main(packages) {
+  yield packages.map(install);
+  logger.end();
+}
+
+/**
+ * Install packages
+ *
+ * @param {String} package
+ */
+
+function *install(pkg) {
+  var repo = pkg.split('@')[0];
+  var ref = pkg.split('@')[1];
+  pkg = new Package(repo, ref);
+  var log = logging(pkg);
+
+  // logging
+  pkg
+    .directory(root)
+    .on('fetching', log('installing'))
+    .on('fetch', log('installed'));
+
+  // verbose
+  if (program.verbose) {
+    pkg
+      .on('resolving', log('finding'))
+      .on('resolve', log('found'));
+  }
+
+  // fetch the package
+  yield pkg.fetch();
+}
+
+/**
+ * Log an event
+ *
+ * @param {String} event
+ * @return {Function}
+ */
+
+function logging (pkg) {
+  return function(event) {
+    return function() {
+      logger[event](pkg.slug());
+    }
+  }
+}
+
+/**
+ * stdout
+ */
+
+function stdout(str) {
+  process.stdout.clearLine();
+  process.stdout.cursorTo(0)
+  process.stdout.write(str);
+}

@@ -11,14 +11,6 @@ var archy = require('archy');
 var bytes = require('bytes');
 
 /**
- * Program
- */
-
-program
-  .usage('duo duplicates')
-  .parse(process.argv);
-
-/**
  * Help
  */
 
@@ -37,6 +29,14 @@ program.on('--help', function(){
   console.log('    | - org-pkg-b uses 0.0.1');
   console.log();
 });
+
+/**
+ * Program
+ */
+
+program
+  .usage('duo duplicates')
+  .parse(process.argv);
 
 /**
  * Get component.json
