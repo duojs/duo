@@ -195,7 +195,7 @@ describe('Duo', function(){
     it('should work async', function*() {
       var duo = build('no-deps');
       var called = false;
-      duo.use(function(file, duo, fn) {
+      duo.use(function(file, entry, duo, fn) {
         setTimeout(function() {
           called = true;
           fn();
