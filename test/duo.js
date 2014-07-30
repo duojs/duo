@@ -1,3 +1,6 @@
+/**
+ * Module Dependencies
+ */
 
 var readdir = require('fs').readdirSync;
 var readfile = require('fs').readFileSync;
@@ -13,6 +16,10 @@ var fs = require('co-fs');
 var Duo = require('..');
 var noop = function(){};
 var vm = require('vm');
+
+/**
+ * Tests
+ */
 
 describe('Duo', function(){
   beforeEach(function(){
@@ -195,7 +202,7 @@ describe('Duo', function(){
     it('should work async', function*() {
       var duo = build('no-deps');
       var called = false;
-      duo.use(function(file, duo, fn) {
+      duo.use(function(file, entry, fn) {
         setTimeout(function() {
           called = true;
           fn();
@@ -209,7 +216,7 @@ describe('Duo', function(){
     it('should work sync', function*() {
       var duo = build('no-deps');
       var called = false;
-      duo.use(function(file, duo) {
+      duo.use(function(file, entry) {
         called = true;
       });
       var js = yield duo.run();
@@ -342,36 +349,6 @@ describe('Duo', function(){
       var css = yield duo.run();
       assert(css.trim() == out.trim());
     })
-
-    // it('should build multi-asset components on single duo instance', function*() {
-    //   this.timeout(20000);
-    //   var duo = build('complex-dep');
-    //   var js = yield duo.run();
-    //   var ctx = evaluate(js).main;
-    //   assert(ctx({}).dom);
-    //   duo.entry('index.css');
-    //   var out = read('complex-dep/index.out.css');
-    //   var css = yield duo.run();
-    //   assert(css.trim() == out.trim());
-    // })
-
-    // it('should build component/tip', function*() {
-    //   this.timeout(15000);
-    //   var globals = {};
-    //   globals.window = {};
-    //   globals.document = { createElement: noop };
-    //   globals.Element = { prototype: {} };
-
-    //   var duo = build('component-tip');
-    //   var js = yield duo.run();
-    //   var ctx = require('jsdom')
-    //   var ctx = evaluate(js, globals).main;
-    //   var duo = build('component-tip', 'index.css');
-    //   var out = read('component-tip/index.out.css');
-    //   var css = yield duo.run();
-    //   console.log(css);
-    //   assert(css.trim() == out.trim());
-    // })
   })
 })
 

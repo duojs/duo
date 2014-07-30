@@ -8,12 +8,12 @@ var write = require('fs').createWriteStream;
 var Command = require('commander').Command;
 var resolve = require('path').resolve;
 var exists = require('fs').existsSync;
-var type = require('component-type');
 var mkdirp = require('mkdirp').sync;
 var Logger = require('stream-log');
 var stat = require('fs').statSync;
 var spawn = require('win-fork');
 var pkg = require('../package');
+var main = require('duo-main');
 var Batch = require('batch');
 var isArray = Array.isArray;
 var path = require('path');
@@ -161,14 +161,16 @@ if (command) {
  */
 
 var root = findroot(cwd);
-var mains = entries(root);
+var obj = json(join(root, 'component.json'));
+var name = obj.repo || obj.name;
+var mains = main(obj);
 var batch = Batch();
 var srcs = {};
 
 // add entries
 mains.forEach(function(main) {
   var duo = create(root, main);
-  logger.building(main);
+  logger.building(name ? name + ' - ' + main : main);
 
   batch.push(function(fn) {
     duo.write(function(err) {
@@ -176,8 +178,8 @@ mains.forEach(function(main) {
       logger.built(main);
       fn();
     });
-  })
-})
+  });
+});
 
 // run duo all the entries
 batch.end(function(err) {
@@ -234,33 +236,6 @@ function log (event) {
 function error(err) {
   logger.error(err.stack);
   logger.end();
-}
-
-/**
- * Get the entries of a package
- *
- * @param {String} root
- * @return {Array}
- */
-
-function entries(root) {
-  var manifest = join(root, 'component.json');
-  var obj = json(manifest);
-  var main = obj.main;
-  var entries = [];
-
-  // mains
-  if (obj.main) return mains(main);
-  else throw error(new Error('no "main" in component.json'));
-
-  function mains(main) {
-    if (!main) return [];
-    return 'string' == typeof main
-      ? [main]
-      : isArray(main)
-      ? main
-      : values(main);
-  }
 }
 
 /**
