@@ -1,4 +1,19 @@
 
+0.5.0 / 2014-07-30
+==================
+
+ * Breaking: The entry is no longer optional, and you can no longer use a component.json as an entry
+ * Added a File abstraction to contain the file state.
+ * Added a transform singleton that uses https://github.com/matthewmueller/step.js
+ * Broke duo#dependencies() out. Now we do a lot of heavy lifting in duo#dependency() now.
+ * Added yieldable() helper to support yield duo.run() and duo.run(fn) without the extra duo#_run() fn.
+ * fix duo(1) for components with js and css main object
+ * duo-duplicates(1): remove / - replacement
+ * remove quiet option until we have a need for it
+ * add support for 'main' objects. fix logging
+ * added multiple builds with a main array and lots of usability improvements
+ * clean up auth
+
 0.4.1 / 2014-07-02
 ==================
 
