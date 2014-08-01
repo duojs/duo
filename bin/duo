@@ -1,7 +1,13 @@
 #!/usr/bin/env node
 
-if (require('generator-supported')) {
-    require('v8-argv')('--harmony-generators', __dirname + '/_duo');
-} else {
-    require('v8-argv')(__dirname + '/_duo');
-}
+var path = require("path");
+var spawn = require('child_process').spawn;
+
+var gnode = path.resolve(__dirname, "../node_modules/.bin/gnode");
+var duo = path.resolve(__dirname, "_duo");
+var args = [ duo ].concat(process.argv.slice(2));
+
+var proc = spawn(gnode, args);
+
+proc.stdout.pipe(process.stdout);
+proc.stderr.pipe(process.stderr);

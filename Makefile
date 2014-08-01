@@ -1,11 +1,10 @@
-
-REPORTER?= spec
+BIN := ./node_modules/.bin
+REPORTER ?= spec
 
 test:
-	@node_modules/.bin/mocha \
+	@$(BIN)/gnode $(BIN)/_mocha \
 		--reporter $(REPORTER) \
 		--require co-mocha \
-		--harmony-generators \
 		--timeout 5s
 
 .PHONY: test

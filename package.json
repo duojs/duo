@@ -26,7 +26,6 @@
     "duo-test": "0.x",
     "extend.js": "0.0.1",
     "file-deps": "0.0.5",
-    "generator-supported": "0.0.1",
     "gnode": "0.0.8",
     "json-mask": "^0.3.1",
     "max-component": "~1.0.0",
@@ -34,7 +33,6 @@
     "step.js": "^2.0.1",
     "stream-log": "0.1.0",
     "thunkify": "~2.1.1",
-    "v8-argv": "^0.2.0",
     "win-fork": "~1.1.1"
   },
   "devDependencies": {
