@@ -1,12 +1,8 @@
 #!/usr/bin/env node
 
-// node v0.10 support
-require("generator-supported") || require("gnode");
-
 /**
  * Module dependencies.
  */
-
 
 var write = require('fs').createWriteStream;
 var Command = require('commander').Command;
@@ -301,3 +297,4 @@ function base(path) {
     ? resolve(cwd, path)
     : cwd;
 }
+
