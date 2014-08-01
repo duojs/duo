@@ -1,4 +1,10 @@
 
+0.5.2 / 2014-08-01
+==================
+
+* Still broken, see: https://github.com/npm/npm/issues/5588
+  publish using node 0.10.x until 0.11.14 lands.
+
 0.5.1 / 2014-08-01
 ==================
 
