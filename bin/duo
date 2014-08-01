@@ -1,2 +1,7 @@
 #!/usr/bin/env node
-require('v8-argv')('--harmony-generators', __dirname + '/_duo');
+
+if (require('generator-supported')) {
+    require('v8-argv')('--harmony-generators', __dirname + '/_duo');
+} else {
+    require('v8-argv')(__dirname + '/_duo');
+}
