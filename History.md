@@ -1,4 +1,9 @@
 
+0.5.1 / 2014-08-01
+==================
+
+* Bumped because of NPM publish fail ("shasum check failed") (@eudinaesis)
+
 0.5.0 / 2014-07-30
 ==================
 
