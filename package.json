@@ -33,7 +33,8 @@
     "step.js": "^2.0.1",
     "stream-log": "0.1.0",
     "thunkify": "~2.1.1",
-    "win-fork": "~1.1.1"
+    "win-fork": "~1.1.1",
+    "unyield": "0.0.1"
   },
   "devDependencies": {
     "co-mocha": "0.0.4",
