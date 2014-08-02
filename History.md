@@ -1,4 +1,11 @@
 
+0.5.3 / 2014-08-02
+==================
+
+ * bump duo-package.
+ * Duo#auth(user, token) => Duo#token(token)
+ * using gnode to support node v0.10 w/o extra effort needed internally (@dominicbarnes)
+
 0.5.2 / 2014-08-01
 ==================
 
