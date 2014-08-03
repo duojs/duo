@@ -323,7 +323,12 @@ describe('Duo', function(){
       assert(css.trim() == out.trim());
     })
 
-
+    it('should work with empty deps', function *() {
+      var duo = build('empty-css-file', 'index.css');
+      var css = yield duo.run();
+      var out = read('empty-css-file/index.out.css');
+      assert(css == out);
+    })
   })
 
   describe('components', function() {
