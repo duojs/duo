@@ -331,6 +331,16 @@ describe('Duo', function(){
     })
   })
 
+  describe('json', function() {
+    it('should load json files', function*() {
+      var duo = build('json-dep');
+      var js = yield duo.run();
+      var ctx = evaluate(js).main;
+      assert(1 == ctx.a);
+      assert(2 == ctx.b);
+    })
+  })
+
   describe('components', function() {
     it('should build multi-asset components', function*() {
       this.timeout(15000);
