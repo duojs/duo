@@ -1,4 +1,11 @@
 
+0.5.4 / 2014-08-03
+==================
+
+ * bump string-to-js to fix json loading. closes: #121
+ * fix empty css @import issue. closes: #119.
+ * support concurrent writes to mapping.
+
 0.5.3 / 2014-08-02
 ==================
 
