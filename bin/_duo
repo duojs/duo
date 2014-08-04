@@ -126,7 +126,12 @@ if (command && !~command.indexOf('.')) {
 
   // spawn
   args.unshift(exec);
-  args.unshift('--harmony-generators');
+
+  // proxy subcommands through gnode(1)
+  var gnode = require.resolve('gnode');
+  var bin = path.join(path.dirname(gnode), 'bin', 'gnode');
+  args.unshift(bin);
+
   var proc = spawn('node', args, { stdio: 'inherit', customFds: [0, 1, 2] });
   proc.on('close', process.exit.bind(process));
 
