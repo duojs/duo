@@ -293,7 +293,7 @@ describe('Duo', function(){
       assert(css == out);
     })
 
-    it('should support entry transforms', function*() {
+    it('should support entry css transforms', function*() {
       var duo = build('css-styl', 'index.styl');
       duo.use(stylus);
       var css = yield duo.run();
@@ -301,7 +301,7 @@ describe('Duo', function(){
       assert(css.trim() == out.trim());
     })
 
-    it('should support entry transforms', function*() {
+    it('should support css transforms', function*() {
       var duo = build('css-styl-deps', 'index.css');
       duo.use(stylus);
       var css = yield duo.run();
@@ -330,6 +330,13 @@ describe('Duo', function(){
       var duo = build('empty-css-file', 'index.css');
       var css = yield duo.run();
       var out = read('empty-css-file/index.out.css');
+      assert(css == out);
+    })
+
+    it('should ignore http deps', function *() {
+      var duo = build('css-http-dep', 'index.css');
+      var css = yield duo.run();
+      var out = read('css-http-dep/index.out.css');
       assert(css == out);
     })
   })
