@@ -156,7 +156,8 @@ if (command) {
   duo.run(function(err, str) {
     if (err) throw error(err);
     out.write(str);
-  })
+    logger.end();
+  });
 
   return;
 }
