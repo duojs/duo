@@ -7,7 +7,9 @@ var readfile = require('fs').readFileSync;
 var dirname = require('path').dirname;
 var coffee = require('coffee-script');
 var mkdir = require('fs').mkdirSync;
+var lstat = require('fs').lstatSync;
 var rmrf = require('rimraf').sync;
+var stat = require('fs').statSync;
 var expect = require('expect.js');
 var join = require('path').join;
 var assert = require('assert');
@@ -16,6 +18,7 @@ var fs = require('co-fs');
 var Duo = require('..');
 var noop = function(){};
 var vm = require('vm');
+var slice = [].slice;
 
 /**
  * Tests
@@ -382,6 +385,21 @@ describe('Duo', function(){
       assert(keys[4] == 'index.js' );
     })
   })
+
+  describe('symlinks', function() {
+    it('should symlink images', function *() {
+      var duo = build('symlink-assets', 'index.css');
+      var css = yield duo.run();
+      var out = read('symlink-assets/index.out.css');
+      assert(css == out);
+
+      var imgpath = path('symlink-assets', 'build', 'badgermandu.jpg');
+      var symlink = read('symlink-assets/build/badgermandu.jpg');
+      var img = read('symlink-assets/badgermandu.jpg');
+      assert(isSymlink(imgpath));
+      assert(symlink == img);
+    })
+  })
 })
 
 /**
@@ -399,10 +417,15 @@ function build(fixture, file){
 
 /**
  * Path to `fixture`
+ *
+ * @param {String, ...} paths
+ * @return {String}
+ * @api private
  */
 
 function path(fixture){
-  return join(__dirname, 'fixtures', fixture);
+  var paths = slice.call(arguments);
+  return join.apply(null, [__dirname, 'fixtures'].concat(paths));
 }
 
 /**
@@ -426,8 +449,11 @@ function cleanup(){
   var dir = join(__dirname, 'fixtures');
   var dirs = readdir(dir);
   dirs.forEach(function(name){
-    var path = join(dir, name, 'components');
-    rmrf(path);
+    if ('.' == name[0]) return;
+    var components = join(dir, name, 'components');
+    var build = join(dir, name, 'build');
+    rmrf(components);
+    rmrf(build);
   });
 }
 
@@ -449,6 +475,19 @@ function *mapping(fixture) {
 function read(path) {
   path = join(__dirname, 'fixtures', path);
   return readfile(path, 'utf8');
+}
+
+/**
+ * is symbolic link?
+ *
+ * @param {String} path
+ * @return {Boolean}
+ * @api public
+ */
+
+function isSymlink(path) {
+  var stat = lstat(path);
+  return stat.isSymbolicLink();
 }
 
 /**
