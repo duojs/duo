@@ -207,11 +207,11 @@ function create(root, entry) {
   if (program.verbose) {
     duo.on('resolving', log('finding'));
     duo.on('resolve', log('found'));
-    duo.on('fetching', log('installing'));
+    duo.on('installing', log('installing'));
   }
 
   // installed
-  duo.on('fetch', log('installed'));
+  duo.on('install', log('installed'));
 
   return duo;
 }

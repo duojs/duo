@@ -22,7 +22,7 @@
     "delegates": "0.0.3",
     "duo-main": "^0.0.3",
     "duo-pack": "^1.0.2",
-    "duo-package": "^0.4.1",
+    "duo-package": "~0.4.2",
     "duo-string-to-js": "0.0.x",
     "duo-test": "0.x",
     "extend.js": "0.0.1",
