@@ -12,7 +12,7 @@ My goal for Duo was to blend the very best ideas of the Component and Browserify
 
 Duo aims to grow with your application, optimizing the workflow along these three steps: **creating proof of concepts**, **writing components**, and  **building web applications**.
 
-### Proof of concepts
+### i. Proof of concepts
 
 As developers, often times we need to test out an idea or isolate a bug. One of the big issues with existing package managers is that you cannot take your package manager with you without setting up whole lot of boilerplate. Duo removes this boilerplate and lets you include your packages right in the source code.
 
@@ -41,7 +41,7 @@ require('yields/shortcuts@0.x:/index.js');
 
 It also works with CSS:
 
-```js
+```css
 @import "necolas/normalize.css";
 @import "twbs/bootstrap"
 ```
@@ -53,11 +53,11 @@ $ duo in.js out.js
 $ duo in.css out.css
 ```
 
-### Components
+### ii. Components
 
-For any package manager to be successful, it needs to have a strong component ecosystem. Duo supports nearly all [Component packages](https://github.com/search?l=json&p=10&q=path%3A%2Fcomponent.json+component&ref=searchresults&type=Code) out of the box. Also, since Duo can pull from paths, it also supports nearly all [Bower packages](http://bower.io/search/) too. There are plans in the future to support Browserify packages as well with a plugin.
+For any package manager to be successful, it needs to have a strong component ecosystem. Duo supports nearly all [Component packages](https://github.com/search?l=json&p=10&q=path%3A%2Fcomponent.json+component&ref=searchresults&type=Code) out of the box. Also, since Duo can load from paths, it supports nearly all [Bower packages](http://bower.io/search/) too. There are plans in the future to support Browserify packages as well with a plugin.
 
-We're hoping to bridge the gap between all these different package managers and come up with a solution that works for everyone.
+We're hoping to bridge the gap between all the different package managers and come up with a solution that works for everyone.
 
 To create a Duo component, you'll need a `component.json`:
 
@@ -73,7 +73,7 @@ To create a Duo component, you'll need a `component.json`:
 }
 ```
 
-If you have a component with `js` and `css`:
+and if you have a component with `js` and `css`:
 
 ```json
 {
@@ -90,9 +90,9 @@ If you have a component with `js` and `css`:
 }
 ```
 
-If you're coming from the component community, you'll notice that we no longer need to add `scripts` or `styles` or `templates`. Duo handles all of this for you, walking the dependency trees and including what you need without all the manual work. This also has the added benefit of only including what you actually use so you can keep your build size to a minimum.
+If you're coming from the Component community, you'll notice that we no longer need to add `scripts` or `styles` or `templates`. Duo handles all of this for you, walking the dependency tree and including what you need without all the manual work. This also has the added benefit of only bundling what you actually use so you can keep your build size to a minimum.
 
-If you have an `html` template or JSON file that you'd like to include, simply require it. Duo automattically compiles and bundles the file as a JavaScript string using the [string-to-js](https://github.com/component/duo-string-to-js) plugin:
+If you have an `html` template or JSON file that you'd like to include, simply require it. Duo automatically compiles and bundles the file as a javascript string using the [string-to-js](https://github.com/component/duo-string-to-js) plugin:
 
 ```js
 var template = require('./tip.html');
@@ -112,7 +112,7 @@ $ duo
 
 By default, this will install all our dependencies to the `components/` directory and write our build files to the `build/` directory.
 
-### Web Applications
+### iii. Web Applications
 
 In order for a package manager to be truly useful, it needs to scale it's workflow to accommodate big web applications. Once again, Duo makes this process seamless.
 
@@ -149,17 +149,36 @@ You'll notice this component.json specifies multiple pages (`homepage` and `dash
 
 Initialize Duo with a `root`. All other path will be relative to the `root` including the build directory and the installation path.
 
+```js
+var duo = Duo(__dirname);
+```
+
 ### `duo.entry(entry)`
 
 Specify the entry file that Duo will traverse and transform.
+
+```js
+var duo = Duo(__dirname)
+  .entry('main.js');
+```
 
 ### `duo.global(name)`
 
 Attach the component to window object as name.
 
+```js
+var duo = Duo(__dirname)
+  .entry('tip.js')
+  .global('Tip');
+```
+
 ### `duo.include(name, src)`
 
 Include a file with name and its stc  without requiring it. This is particularly useful for including runtimes.
+
+```js
+duo.include('jade-runtime', ...);
+```
 
 ### `duo.development()`
 
@@ -167,13 +186,13 @@ Set duo to development mode. This includes "development" dependencies and adds s
 
 ### `duo.token(token)`
 
-Set the github authentication token so you can load private repos. If you do not set this token, Duo will automatically try to load from your ~/.netrc.
+Set the github authentication token so you can load private repos. If you do not set this token, Duo will automatically try to load the `token` from your ~/.netrc.
 
 Here's how to create a GitHub token: https://github.com/settings/tokens/new
 
 ### `duo.concurrency(n)`
 
-Set the maximum concurrency Duo uses to traverse. Defaults to:
+Set the maximum concurrency Duo uses to traverse. Defaults to: 10.
 
 ### `duo.install(path)`
 
@@ -225,7 +244,7 @@ Apply a plugin to duo. You can pass a function or a generator. The signature is 
 
 Duo development began back in April when the state of Component 1.x was uncertain.
 
-While the release of Component 1.x solved a lot of my initial gripes with earlier versions of Component, I wanted a more radical departure from some of the Component paradigms that borrowed some of the good ideas from Browserify.
+While the release of Component 1.x solved a lot of my initial gripes with earlier versions of Component, I wanted a more radical departure from Component that borrowed some of the good ideas from Browserify.
 
 ### What about Browserify?
 
@@ -243,8 +262,15 @@ By using Github as your package manager, all of these issues just disappear.
 
 ## Community
 
-- join us at #duojs on freenode
+- join us at `#duojs` on freenode
 - [Mailing List](https://groups.google.com/forum/#!forum/duojs)
+
+## Authors
+
+- [Matthew Mueller](https://github.com/MatthewMueller)
+- [Amir Shareb](https://github.com/yields)
+
+Plus many more wonderful contributors!
 
 ## Test
 
