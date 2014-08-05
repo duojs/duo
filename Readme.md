@@ -10,7 +10,7 @@ My main goal for Duo was to blend the very best ideas from the [Component](https
 
 ## Philosophy
 
-Duo aims to grow with your application, optimizing the workflow along these three steps:
+Duo aims to grow with your application, optimizing the workflow along these three pillars:
 
       i. creating proof of concepts
      ii. writing components
