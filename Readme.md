@@ -43,7 +43,11 @@ It also works with CSS:
 
 ```css
 @import "necolas/normalize.css";
-@import "twbs/bootstrap"
+@import "twbs/bootstrap";
+
+body {
+  background: salmon;
+}
 ```
 
 When you're ready to build your file, run:
