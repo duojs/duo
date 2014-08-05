@@ -147,7 +147,7 @@ You can build your app by running `duo`:
 $ duo
 ```
 
-You'll notice this component.json specifies multiple pages (`homepage` and `dashboard`). Duo allows us to build multiple pages, granting us the flexibility to move between web applications and web pages without having one massive asset bundle.
+You'll notice this `component.json` specifies multiple pages (`homepage` and `dashboard`). Duo allows us to build multiple pages, granting us the flexibility to move between web applications and web pages without having one massive asset bundle.
 
 ---
 
@@ -260,13 +260,21 @@ yield duo.write();
 
 ```js
 duo.write(function(err) {
-  ...
+  // ...
 });
 ```
 
 ### `duo.use(fn|gen)`
 
-Apply a plugin to duo. You can pass a function or a generator. The signature is the following `function (file, entry, [done]) { ... }`. If you don't supply `done`, the plugin will be synchronous.
+Apply a plugin to duo. You can pass a function or a generator. The signature is the following:
+
+```js
+function (file, entry, [done]) {
+  // ...
+}
+```
+
+If you don't supply `done`, the plugin will be synchronous.
 
 ## FAQ
 
@@ -300,7 +308,7 @@ By using Github as your package manager, all of these issues just disappear.
 - [Matthew Mueller](https://github.com/MatthewMueller)
 - [Amir Shareb](https://github.com/yields)
 
-Plus many more wonderful contributors!
+... plus many more wonderful contributors!
 
 ## Test
 
