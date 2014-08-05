@@ -4,7 +4,7 @@ Duo is the next [Component](https://github.com/component/component).
 
 Duo was built because the existing client-side packaging solutions are not sufficient for lean, consistent, client-side applications built and managed by a team.
 
-Duo makes the manifest optional, bundles only the JS and CSS that you need, has built-in github versioning and supports source transforms.
+Duo makes the manifest optional, bundles only the code that you need, has built-in github versioning and supports source transforms.
 
 My main goal for Duo was to blend the very best ideas from the [Component](https://github.com/component/component) and [Browserify](https://github.com/substack/node-browserify) package managers. I was also inspired by how [Go](http://go-lang.com/) imports dependencies.
 
@@ -18,7 +18,7 @@ Duo aims to grow with your application, optimizing the workflow along these thre
 
 ### i. Proof of concepts
 
-As developers, often times we need to test out an idea or isolate a bug. One of the big issues with existing package managers is that you cannot take your package manager with you without setting up whole lot of boilerplate. Duo removes this boilerplate and lets you include your packages right in the source code.
+As developers, we often we need to test out an idea or isolate a bug. One of the big issues with existing package managers is that you cannot take your package manager with you without setting up whole lot of boilerplate. Duo removes this boilerplate and lets you include your packages right in your source code.
 
 ```js
 var events = require('component/events');
