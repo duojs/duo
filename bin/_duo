@@ -24,27 +24,6 @@ var Duo = require('..');
 var join = path.join;
 
 /**
- * Logger
- */
-
-var logger = new Logger(process.stderr)
-  .type('building', '36m')
-  .type('built', '36m')
-  .type('installing', '36m')
-  .type('installed', '36m')
-  .type('finding', '36m')
-  .type('found', '36m');
-
-/**
- * Error
- */
-
-logger.type('error', '31m', function(){
-  logger.end();
-  process.exit(1);
-});
-
-/**
  * Program
  */
 
@@ -80,6 +59,16 @@ program.on('--help', function(){
   console.log();
   process.exit(0);
 });
+
+/**
+ * Error log
+ */
+
+var errlog = new Logger(process.stderr)
+errlog.type('error', '31m', function(){
+    errlog.end();
+    process.exit(1);
+  });
 
 /**
  * Arguments
@@ -120,7 +109,7 @@ if (command && !~command.indexOf('.')) {
 
   // does not exist
   if (!exists(exec)) {
-    logger.error(bin + '(1) does not exist');
+    error(new Error(bin + '(1) does not exist'));
     return;
   }
 
@@ -143,6 +132,7 @@ if (command && !~command.indexOf('.')) {
  */
 
 if (command) {
+  var logger = logging(process.stderr);
   var root = base(program.root);
   var duo = create(root, command);
   var out = process.stdout;
@@ -166,6 +156,7 @@ if (command) {
  * Build multiple files
  */
 
+var logger = logging(process.stdout);
 var root = findroot(cwd);
 var obj = json(join(root, 'component.json'));
 var name = obj.repo || obj.name;
@@ -192,6 +183,27 @@ batch.end(function(err) {
   if (err) throw error(err);
   logger.end();
 });
+
+/**
+ * Create a logger
+ *
+ * @param {Stream} stdio
+ * @return {Logger}
+ */
+
+function logging(stdio) {
+  var logger = new Logger(stdio);
+
+  logger
+    .type('building', '36m')
+    .type('built', '36m')
+    .type('installing', '36m')
+    .type('installed', '36m')
+    .type('finding', '36m')
+    .type('found', '36m');
+
+  return logger;
+}
 
 /**
  * Create a duo instance
@@ -240,8 +252,8 @@ function log (event) {
  */
 
 function error(err) {
-  logger.error(err.stack);
-  logger.end();
+  errlog.error(err.stack);
+  errlog.end();
 }
 
 /**
@@ -284,7 +296,7 @@ function findroot(root) {
   }
 
   if ('/' == root) {
-    logger.error('no manifest found');
+    error(new Error('no manifest found'));
     process.exit(1);
   }
 
