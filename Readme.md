@@ -12,9 +12,9 @@ My main goal for Duo was to blend the very best ideas from the [Component](https
 
 Duo aims to grow with your application, optimizing the workflow along these three steps:
 
-  i. creating proof of concepts
-  ii. writing components
-  iii. building web applications
+      i. creating proof of concepts
+     ii. writing components
+    iii. building web applications
 
 ### i. Proof of concepts
 
