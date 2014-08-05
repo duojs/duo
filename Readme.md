@@ -12,8 +12,8 @@ My main goal for Duo was to blend the very best ideas from the [Component](https
 
 Duo aims to grow with your application, optimizing the workflow along these three steps:
 
-    i. creating proof of concepts
-   ii. writing components
+  i. creating proof of concepts
+  ii. writing components
   iii. building web applications
 
 ### i. Proof of concepts
@@ -98,7 +98,7 @@ and if you have a component with `js` and `css`:
 }
 ```
 
-If you're coming from the Component community, you'll notice that we no longer need to add `scripts` or `styles` or `templates`. Duo handles all of this for you, walking the dependency tree and including what you need without all the manual work. This also has the added benefit of only bundling what you actually use so you can keep your build size to a minimum.
+If you're coming from the Component community, you'll notice that we no longer need to add `scripts`, `styles` or `templates`. Duo handles all of this for you, walking the dependency tree and including what you need without all the manual work. This also has the added benefit of only bundling what you actually use so you can keep your build size to a minimum.
 
 If you have an `html` template or JSON file that you'd like to include, simply require it. Duo automatically compiles and bundles the file as a javascript string using the [string-to-js](https://github.com/component/duo-string-to-js) plugin:
 
