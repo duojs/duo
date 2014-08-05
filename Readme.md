@@ -288,15 +288,15 @@ While the release of Component 1.x solved a lot of my initial gripes with earlie
 
 Browserify is a great project and if it's working well for you then you should keep using it.
 
-Duo's scope is much more ambitious. Duo aims to be your go-to asset pipeline for Node.js. Much like Sprockets for Ruby users.
+Duo's scope is much more ambitious. Duo aims to be your go-to asset pipeline for Node.js. Much in the same way that [Sprockets](https://github.com/sstephenson/sprockets) is for the Ruby community.
 
-Browserify's reliance on NPM leads to some big issues:
+Furthermore, Browserify's dependence on NPM to deliver it's packages leads to some big issues:
 
 - naming is a hassle (how many different kinds of tooltips are there?).
-- private modules require a privacy NPM server which is a nightmare to setup and host.
-- ensuring your team has push access to each component is always a pain. If someone leaves, this becomes even harder.
+- private modules require a privacy NPM server
+- ensuring your team has push access to each module is always a pain. If someone leaves, this becomes even harder.
 
-By using Github as your package manager, all of these issues just disappear.
+By using Github as your package manager all of these issues just disappear.
 
 ## Community
 
