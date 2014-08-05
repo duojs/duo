@@ -100,7 +100,7 @@ and if you have a component with `js` and `css`:
 
 If you're coming from the Component community, you'll notice that we no longer need to add `scripts`, `styles` or `templates`. Duo handles all of this for you, walking the dependency tree and including what you need without all the manual work. This also has the added benefit of only bundling what you actually use so you can keep your build size to a minimum.
 
-If you have an `html` template or JSON file that you'd like to include, simply require it. Duo automatically compiles and bundles the file as a javascript string using the [string-to-js](https://github.com/component/duo-string-to-js) plugin:
+If you have an `html` template or `JSON` file that you'd like to include, simply require it. Duo automatically compiles and bundles the file as a javascript string using the [string-to-js](https://github.com/component/duo-string-to-js) plugin:
 
 ```js
 var template = require('./tip.html');
@@ -126,8 +126,6 @@ In order for a package manager to be truly useful, it needs to scale it's workfl
 
 You can pass an array of files to `main` in the `component.json` file. This will tell Duo all the entry files it needs to traverse.
 
-If Duo discovers an asset like an image or font along the way, it will automatically symlink it to your `build/` directory.
-
 Here's an example root `component.json` that we could use to build our app:
 
 ```json
@@ -150,6 +148,30 @@ $ duo
 ```
 
 You'll notice this component.json specifies multiple pages (`homepage` and `dashboard`). Duo allows us to build multiple pages, granting us the flexibility to move between web applications and web pages without having one massive asset bundle.
+
+---
+
+If Duo discovers an asset like an image or font along the way, it will automatically symlink it to your `build/` directory. Say we have the following image in our CSS file
+
+```css
+@import "necolas/normalize";
+
+body {
+  background: url('./images/duo.png');
+}
+```
+
+Duo will transform this file to:
+
+```css
+@import "necolas/normalize";
+
+body {
+  background: url('/images/duo.png');
+}
+```
+
+And symlink that file to `build/images/duo.png`, then up to you to expose `build/` on your web server.
 
 ## API
 
