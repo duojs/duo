@@ -1,230 +1,257 @@
-# Duo
+![duo](https://i.cloudup.com/uRfFwp-i4T.png)
 
 Duo is the next [Component](https://github.com/component/component).
 
 Duo was built because the existing client-side packaging solutions are not sufficient for lean, consistent, client-side applications built and managed by a team.
 
-Component's lack of versioning made consistent deployments impossible and it's focus on modularity added too many manual steps. Browserify's reliance on NPM and the package.json leads to ownership issues and environment confusion.
+Duo makes the manifest optional, bundles only the JS and CSS that you need, has built-in github versioning and supports source transforms.
 
-Duo makes the manifest optional, bundles only the JS and CSS that you need, supports source transforms and has built-in github versioning support.
+My goal for Duo was to blend the very best ideas of the Component and Browserify package managers.
 
-Duo uses the file to determine the dependencies, not the manifest. Adding a dependency to your manifest will not do anything because you have not yet used it in your application. 
+## Philosophy
 
-## Features
+Duo aims to grow with your application, optimizing the workflow along these three steps: **creating proof of concepts**, **writing components**, and  **building web applications**.
 
-- github-style urls
-- flat dependency structure
-- semver and versioning support
-- dependency walking
-- simple synchronous and asynchronous transforms
-- aggressive caching
-- works with existing components
-- simpler streaming using generators
+### Proof of concepts
 
-## Inspiration
-
-Duo is the culmination of previous work from browserify and the component package manager. Duo borrows the good and avoids the bad from browserify and component. 
-
-## Differences from Component
-
-- Duo uses AST dependency walking instead of explicit dependency declaration
-- Duo has no concept of locals, but root is the project's base directory. `require('signup)` => `require('/lib/signup')`
-- Duo has semver support, resolving from released github tags
-- Duo has versioning support. Multiple versions of the same module will be installed and required correctly
-- Duo has a streaming installer and builder
-- Duo has no concept of aliases and uses browserify's pack algorithm to reduce the file size
-
-## Differences from Browserify
-
-- Duo uses Github as it's registry, avoiding authorship and private module issues that using NPM brings.
-- Duo looks for dependencies in the component.json and installs dependencies in /components
-- Duo has a flat dependency structure
-- Duo does not ship with any built-in modules
-- Duo builds are faster than browserify
-
-## Motivation
-
-Let's dive a little deeper into the current problems with Component and Browserify.
-
-### Component
-
-#### The Good
-
-##### Github-style urls
-
-Github urls give you a natural namespacing, so you can give your packages meaningful names and without consulting the thesaurus.
-
-Making modifications and changes to the package is as simple as forking.
-
-##### Flat directory structure
-
-A flat directory structure makes it way easy to make local modifications in your packages to test things out and gives you a much better overview of the packages you're including. 
-
-This is especially important on the frontend where your asset footprint matters.
-
-##### A separate manifest
-
-The component.json file eliminates any confusion about whether the package you're looking at is a client-side module, a server-side module, or both.
-
-#### The Bad
-
-##### Reckless versioning
-
-If you require the same module with different versions, the resolution will depend on which request comes back first. Correctness and consistency are more important than filesize when you're developing. 
-
-When your ready to deploy, Duo has tools for you to comb through your dependencies and reduce the filesize.
-
-##### No semantic versioning
-
-All tags in component must be explicit. While this greatly improves the speed because of the way github works, it made updating dependencies very tedious.
-
-##### Defining the dependency tree explicitly is cumbersome
-
-We should let the computers do the bookkeeping so we can focus on our app.
-
-##### Component's aliasing adds a significant footprint to filesize
-
-Component resolved it's dependency tree at runtime, adding significant aliasing logic as well as a performance overhead.
-
-### Browserify
-
-#### The Good
-
-##### Walking the AST for require statements
-
-Building the dependency tree by walking the AST is by far the easiest and most node-like way to consume dependencies. 
-
-This technique also as the added benefit of only requiring the scripts you actually need. 
-
-##### Transforms
-
-Transforms make it very easy to extend browserify's require syntax to bring in templating, CSS, JSON, and more.
-
-##### Multiple bundles
-
-Multiple bundles allow you to break our your JavaScript app into multiple pages. 
-
-This becomes especially significant when you're working in mobile environments. 
-
-#### The Bad
-
-##### NPM authorship hardships
-
-When a team works on a package you're constantly bugging your teammates to give you authorship over modules. If someone leaves your team it's an even bigger pain to manage rights.
-
-Browserify inherited this problem because it chose npm as it's package manager. 
-
-##### Private repositories
-
-This is another problem with NPM that Browserify inherited. Client-side packages and UI is often private and hosting a private NPM registry is overly complicated.
-
-##### Built-in core node modules
-
-The built-in shims are mostly partial implementations of the core node modules. When you have partial implementations, you have no guarentee that your node module will work in the browser. 
-
-Personally, I think these should be moved out completely, the browser and the server are different environments with different requirements. 
-
-## Duo CSS (separate module)
-
-duo-css comes with browserify style imports:
-
-```css
-@import 'normalize'
-@import '/base/'
-```
-
-- pulls in fonts and images as it finds them
-
----
-
-We'll structure pages like this:
-
-```
-/pages
-  admin/
-    admin.js (passed through gulp, triggering duo-js)
-    admin.styl (passed through gulp, triggering duo-css, symlink relative assets as we discover them)
-    admin.jade (rendered by express/koa, passed through gulp, triggering duo-html, symlinking relative assets)
-  dash/
-    dash.js
-    dash.styl
-    dash.jade
-    
-/build
-  admin/
-  dash/
-```
-
-## Bringing it all together
-
-Use gulp within a builder to compile jade, styl files, trigger duo, and watch for changes. Something along these lines:
+As developers, often times we need to test out an idea or isolate a bug. One of the big issues with existing package managers is that you cannot take your package manager with you without setting up whole lot of boilerplate. Duo removes this boilerplate and lets you include your packages right in the source code.
 
 ```js
-/**
- * Build
- *
- * @param {Function} fn
- * @api public
- */
+var events = require('component/events');
+var uid = require('matthewmueller/uid');
+```
 
-function build(fn) {
-  Batch()
-    .push(styles)
-    .push(javascript)
-    .end(fn);
-}
+You can also include versions:
 
-/**
- * Compile styles and pass
- * into duo-css
- *
- * @param {Function} fn
- * @return {Gulp} stream
- * @api private
- */
+```js
+require('component/reactive@0.14.x');
+```
 
-function styles(fn) {
-  var s = gulp.src('pages/**/*.{styl,css}')
-    .pipe(logger())
-    .pipe(styl())
-    .on('error', fn)
-    .pipe(duocss(opts))
+Or branches:
 
-  if (production) {
-    s.pipe(csso())
-     .on('error', fn);
+```js
+require('component/reactive@master');
+```
+
+Paths work too:
+
+```js
+require('yields/shortcuts@0.x:/index.js');
+```
+
+It also works with CSS:
+
+```js
+@import "necolas/normalize.css";
+@import "twbs/bootstrap"
+```
+
+When you're ready to build your file, run:
+
+```bash
+$ duo in.js out.js
+$ duo in.css out.css
+```
+
+### Components
+
+For any package manager to be successful, it needs to have a strong component ecosystem. Duo supports nearly all [Component packages](https://github.com/search?l=json&p=10&q=path%3A%2Fcomponent.json+component&ref=searchresults&type=Code) out of the box. Also, since Duo can pull from paths, it also supports nearly all [Bower packages](http://bower.io/search/) too. There are plans in the future to support Browserify packages as well with a plugin.
+
+We're hoping to bridge the gap between all these different package managers and come up with a solution that works for everyone.
+
+To create a Duo component, you'll need a `component.json`:
+
+```json
+{
+  "name": "duo-component",
+  "version": "0.0.1",
+  "main": "index.js",
+  "dependencies": {
+    "component/tip": "1.x",
+    "jkroso/computed-style": "0.1.0"
   }
-
-  s.pipe(gulp.dest(join(root, 'build')))
-   .on('error', fn)
-   .on('end', fn);
-
-  return s;
-}
-
-/**
- * Compile javascript and pass
- * into duo-js
- */
-
-function javascript(fn) {
-  var s = gulp.src('pages/**/*.js')
-    .pipe(logger())
-    .pipe(duojs(opts))
-    .on('error', fn);
-
-  if (production) {
-    s.pipe(uglify());
-  }
-
-  s.pipe(gulp.dest(join(root, 'build/bundles')))
-   .on('error', fn)
-   .on('end', fn);
-
-  return s;
 }
 ```
 
-# More questions?
+If you have a component with `js` and `css`:
 
-join the discussion on the `#duo.js` channel on freenode
+```json
+{
+  "name": "duo-component",
+  "version": "0.0.1",
+  "main": {
+    "js": "index.js",
+    "css": "index.css"
+  }
+  "dependencies": {
+    "component/tip": "1.x",
+    "jkroso/computed-style": "0.1.0"
+  }
+}
+```
+
+If you're coming from the component community, you'll notice that we no longer need to add `scripts` or `styles` or `templates`. Duo handles all of this for you, walking the dependency trees and including what you need without all the manual work. This also has the added benefit of only including what you actually use so you can keep your build size to a minimum.
+
+If you have an `html` template or JSON file that you'd like to include, simply require it. Duo automattically compiles and bundles the file as a JavaScript string using the [string-to-js](https://github.com/component/duo-string-to-js) plugin:
+
+```js
+var template = require('./tip.html');
+```
+
+Duo will take care of the rest, transforming the `html` into a javascript string. You can also include a `json` file:
+
+```js
+var json = require('./component.json');
+```
+
+To build our component, we just need to run `duo`:
+
+```bash
+$ duo
+```
+
+By default, this will install all our dependencies to the `components/` directory and write our build files to the `build/` directory.
+
+### Web Applications
+
+In order for a package manager to be truly useful, it needs to scale it's workflow to accommodate big web applications. Once again, Duo makes this process seamless.
+
+You can pass an array of files to `main` in the `component.json` file. This will tell Duo all the entry files it needs to traverse.
+
+If Duo discovers an asset like an image or font along the way, it will automatically symlink it to your `build/` directory.
+
+Here's an example root `component.json` that we could use to build our app:
+
+```json
+{
+  "name": "duo-app",
+  "version": "0.0.1",
+  "main": [
+     "app/homepage/index.js",
+     "app/homepage/index.css",
+     "app/dashboard/index.js",
+     "app/dashboard/index.css"
+   ]
+}
+```
+
+You can build your app by running `duo`:
+
+```bash
+$ duo
+```
+
+You'll notice this component.json specifies multiple pages (`homepage` and `dashboard`). Duo allows us to build multiple pages, granting us the flexibility to move between web applications and web pages without having one massive asset bundle.
+
+## API
+
+### `duo(root)`
+
+Initialize Duo with a `root`. All other path will be relative to the `root` including the build directory and the installation path.
+
+### `duo.entry(entry)`
+
+Specify the entry file that Duo will traverse and transform.
+
+### `duo.global(name)`
+
+Attach the component to window object as name.
+
+### `duo.include(name, src)`
+
+Include a file with name and its stc  without requiring it. This is particularly useful for including runtimes.
+
+### `duo.development()`
+
+Set duo to development mode. This includes "development" dependencies and adds source maps.
+
+### `duo.token(token)`
+
+Set the github authentication token so you can load private repos. If you do not set this token, Duo will automatically try to load from your ~/.netrc.
+
+Here's how to create a GitHub token: https://github.com/settings/tokens/new
+
+### `duo.concurrency(n)`
+
+Set the maximum concurrency Duo uses to traverse. Defaults to:
+
+### `duo.install(path)`
+
+Set the installation path of the dependencies. Defaults to `components/`.
+
+### `duo.assets(path)`
+
+Set the asset path of duo. Defaults to `build/`.
+
+### `duo.run([fn])`
+
+Run duo traversing and transforming from entry returning the bundle.
+
+If `fn` is specified `duo.run(fn)` will use fn as its callback but you can also run `duo.run()` as a generator.
+
+```js
+var src = yield duo.run();
+```
+
+```js
+duo.run(function(err, src) {
+  // ...
+});
+```
+
+### `duo.write([fn])`
+
+Run duo traversing and transforming from entry writing to "build/".
+
+If `fn` is specified `duo.write(fn)` will use fn as its callback but you can also run `duo.write()` as a generator.
+
+```js
+yield duo.write();
+```
+
+```js
+duo.write(function(err) {
+  ...
+});
+```
+
+### `duo.use(fn|gen)`
+
+Apply a plugin to duo. You can pass a function or a generator. The signature is the following `function (file, entry, [done]) { ... }`. If you don't supply `done`, the plugin will be synchronous.
+
+## FAQ
+
+### What about Component 1.x?
+
+Duo development began back in April when the state of Component 1.x was uncertain.
+
+While the release of Component 1.x solved a lot of my initial gripes with earlier versions of Component, I wanted a more radical departure from some of the Component paradigms that borrowed some of the good ideas from Browserify.
+
+### What about Browserify?
+
+Browserify is a great project and if it's working well for you then you should keep using it.
+
+Duo's scope is much more ambitious. Duo aims to be your go-to asset pipeline for Node.js. Much like Sprockets for Ruby users.
+
+Browserify's reliance on NPM leads to some big issues:
+
+- naming is a hassle (how many different kinds of tooltips are there?).
+- private modules require a privacy NPM server which is a nightmare to setup and host.
+- ensuring your team has push access to each component is always a pain. If someone leaves, this becomes even harder.
+
+By using Github as your package manager, all of these issues just disappear.
+
+## Community
+
+- join us at #duojs on freenode
+- [Mailing List](https://groups.google.com/forum/#!forum/duojs)
+
+## Test
+
+```
+make test
+```
+
+## License
+
+MIT
