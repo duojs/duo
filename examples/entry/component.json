@@ -1,6 +1,7 @@
 {
   "name": "entry",
   "version": "0.0.1",
+  "main": "main.js",
   "dependencies": {
     "component/events": "1.0.4",
     "segmentio/analytics.js": "duo"
