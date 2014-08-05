@@ -6,11 +6,15 @@ Duo was built because the existing client-side packaging solutions are not suffi
 
 Duo makes the manifest optional, bundles only the JS and CSS that you need, has built-in github versioning and supports source transforms.
 
-My main goal for Duo was to blend the very best ideas of the [Component](https://github.com/component/component) and [Browserify](https://github.com/substack/node-browserify) package managers. I also was inspired by how [Go](http://go-lang.com/) imports dependencies.
+My main goal for Duo was to blend the very best ideas from the [Component](https://github.com/component/component) and [Browserify](https://github.com/substack/node-browserify) package managers. I also was inspired by how [Go](http://go-lang.com/) imports dependencies.
 
 ## Philosophy
 
-Duo aims to grow with your application, optimizing the workflow along these three steps: **creating proof of concepts**, **writing components**, and  **building web applications**.
+Duo aims to grow with your application, optimizing the workflow along these three steps:
+
+    i. creating proof of concepts
+   ii. writing components
+  iii. building web applications
 
 ### i. Proof of concepts
 
