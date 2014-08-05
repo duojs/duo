@@ -34,7 +34,7 @@ require('component/reactive@0.14.x');
 Or branches:
 
 ```js
-require('component/reactive@master');
+require('component/tip@master');
 ```
 
 Paths work too:
