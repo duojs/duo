@@ -3,7 +3,7 @@
  * node v0.10 backwards compatibility
  */
 
-require("gnode");
+require('gnode');
 
 /**
  * Expose `Duo`
