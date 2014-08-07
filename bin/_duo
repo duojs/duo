@@ -222,8 +222,9 @@ function create(root, entry) {
   program.out && duo.assets(program.out);
 
   if (program.use) {
-    program.use.split(",").forEach(function (plugin) {
-      duo.use(require(plugin.trim())());
+    program.use.trim().split(",").forEach(function (plugin) {
+      var mod = path.resolve(root, "node_modules", plugin.trim());
+      duo.use(require(mod)());
     });
   }
 
