@@ -163,37 +163,6 @@ if (command) {
 }
 
 /**
- * Build multiple files
- */
-
-var root = findroot(cwd);
-var obj = json(join(root, 'component.json'));
-var name = obj.repo || obj.name;
-var mains = main(obj);
-var batch = Batch();
-var srcs = {};
-
-// add entries
-mains.forEach(function(main) {
-  var duo = create(root, main);
-  logger.building(name ? name + ' - ' + main : main);
-
-  batch.push(function(fn) {
-    duo.write(function(err) {
-      if (err) return fn(err);
-      logger.built(main);
-      fn();
-    });
-  });
-});
-
-// run duo all the entries
-batch.end(function(err) {
-  if (err) throw error(err);
-  logger.end();
-});
-
-/**
  * Create a duo instance
  *
  * @param {String} root
