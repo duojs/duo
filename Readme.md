@@ -306,7 +306,7 @@ By using Github as your package manager all of these issues just disappear.
 ## Authors
 
 - [Matthew Mueller](https://github.com/MatthewMueller)
-- [Amir Shareb](https://github.com/yields)
+- [Amir Abu Shareb](https://github.com/yields)
 
 ... plus many more wonderful contributors!
 
