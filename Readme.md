@@ -1,12 +1,12 @@
 ![duo](https://i.cloudup.com/uRfFwp-i4T.png)
 
-Duo is the next [Component](https://github.com/component/component).
+Duo is the next [Component](https://github.com/component/component). Built by active Component users and core Component contributors.
 
 Duo was built because the existing client-side packaging solutions are not sufficient for lean, consistent, client-side applications built and managed by a team.
 
 Duo makes the manifest optional, bundles only the code that you need, has built-in github versioning and supports source transforms.
 
-My main goal for Duo was to blend the very best ideas from the [Component](https://github.com/component/component) and [Browserify](https://github.com/substack/node-browserify) package managers. I was also inspired by how [Go](http://go-lang.com/) imports dependencies.
+Our main goal for Duo was to blend the very best ideas from the [Component](https://github.com/component/component) and [Browserify](https://github.com/substack/node-browserify) package managers. I was also inspired by how [Go](http://go-lang.com/) imports dependencies.
 
 ## Philosophy
 
@@ -282,7 +282,7 @@ If you don't supply `done`, the plugin will be synchronous.
 
 Duo development began back in April when the state of Component 1.x was uncertain.
 
-While the release of Component 1.x solved a lot of my initial gripes with earlier versions of Component, I wanted a more radical departure from Component that borrowed some of the good ideas from Browserify.
+While the release of Component 1.x solved a lot of the initial gripes with earlier versions of Component, I wanted a more radical departure from Component that borrowed some of the good ideas from Browserify.
 
 ### What about Browserify?
 
