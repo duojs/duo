@@ -58,6 +58,7 @@ var program = new Command('duo')
   .option('-c, --concurrency <n>', 'set concurrency, defaulted to 50', 50)
   .option('-o, --output <dir>', 'set the output directory, defaulted to build/', null)
   .option('-u, --use <plugin>', 'use build plugin', null)
+  .option('-q, --quiet', 'show as little output as possible', false)
   .parse(process.argv);
 
 /**
@@ -106,6 +107,12 @@ var paths = [__dirname].concat(process.env.PATH.split(':'));
  */
 
 var bin = ['duo', command].join('-');
+
+/**
+ * Quiet flag.
+ */
+
+var quiet = program.quiet;
 
 /**
  * Custom executable
@@ -158,7 +165,7 @@ if (command) {
   duo.run(function(err, str) {
     if (err) throw error(err);
     out.write(str);
-    logger.end();
+    if (!quiet) logger.end();
   });
 
   return;
@@ -178,12 +185,12 @@ var srcs = {};
 // add entries
 mains.forEach(function(main) {
   var duo = create(root, main);
-  logger.building(name ? name + ' - ' + main : main);
+  !quiet && logger.building(name ? name + ' - ' + main : main);
 
   batch.push(function(fn) {
     duo.write(function(err) {
       if (err) return fn(err);
-      logger.built(main);
+      !quiet && logger.built(main);
       fn();
     });
   });
@@ -192,7 +199,7 @@ mains.forEach(function(main) {
 // run duo all the entries
 batch.end(function(err) {
   if (err) throw error(err);
-  logger.end();
+  !quite && logger.end();
 });
 
 /**
@@ -228,7 +235,7 @@ function create(root, entry) {
   }
 
   // installed
-  duo.on('install', log('installed'));
+  if (!quiet) duo.on('install', log('installed'));
 
   return duo;
 }
