@@ -9,7 +9,8 @@ describe('parse()', function(){
         user: 'user',
         repo: 'repo',
         ref: '1.0.0',
-        path: '/index.js'
+        path: '/index.js',
+        provider: 'github.com',
       });
     })
 
@@ -18,7 +19,8 @@ describe('parse()', function(){
         user: 'user',
         repo: 'repo',
         ref: 'v1.0.0',
-        path: '/dist/css'
+        path: '/dist/css',
+        provider: 'github.com',
       });
     })
 
@@ -27,7 +29,8 @@ describe('parse()', function(){
         user: 'user',
         repo: 'repo',
         ref: 'add/feature',
-        path: '/dist/css'
+        path: '/dist/css',
+        provider: 'github.com',
       });
     })
 
@@ -36,7 +39,8 @@ describe('parse()', function(){
         user: 'user',
         repo: 'repo',
         ref: 'add/feature',
-        path: './dist/css'
+        path: './dist/css',
+        provider: 'github.com',
       });
     })
 
@@ -45,9 +49,22 @@ describe('parse()', function(){
         user: 'user',
         repo: 'repo',
         ref: 'add/feature',
-        path: 'dist/css'
+        path: 'dist/css',
+        provider: 'github.com',
       });
     })
+  })
+
+  describe('provider/repo@ref/path', function () {
+    it('should parse correctly', function () {
+      expect(parse('provider.com/user/repo@1.0.0:/index.js')).to.eql({
+        user: 'user',
+        repo: 'repo',
+        ref: '1.0.0',
+        path: '/index.js',
+        provider: 'provider.com',
+      });
+    });
   })
 
   describe('user/repo@ref', function(){
@@ -55,7 +72,19 @@ describe('parse()', function(){
       expect(parse('user/repo@1.0.0')).to.eql({
         user: 'user',
         repo: 'repo',
-        ref: '1.0.0'
+        ref: '1.0.0',
+        provider: 'github.com',
+      });
+    })
+  })
+
+  describe('provider/user/repo@ref', function(){
+    it('should parse correctly', function(){
+      expect(parse('provider.com/user/repo@1.0.0')).to.eql({
+        user: 'user',
+        repo: 'repo',
+        ref: '1.0.0',
+        provider: 'provider.com',
       });
     })
   })
@@ -65,7 +94,19 @@ describe('parse()', function(){
       expect(parse('user/repo:/index.js')).to.eql({
         user: 'user',
         repo: 'repo',
-        path: '/index.js'
+        path: '/index.js',
+        provider: 'github.com',
+      });
+    })
+  })
+
+  describe('provider/user/repo/path', function(){
+    it('should parse correctly', function(){
+      expect(parse('provider.com/user/repo:/index.js')).to.eql({
+        user: 'user',
+        repo: 'repo',
+        path: '/index.js',
+        provider: 'provider.com',
       });
     })
   })
@@ -74,7 +115,18 @@ describe('parse()', function(){
     it('should parse correctly', function(){
       expect(parse('user/repo')).to.eql({
         user: 'user',
-        repo: 'repo'
+        repo: 'repo',
+        provider: 'github.com',
+      });
+    })
+  })
+
+  describe('provider/user/repo', function(){
+    it('should parse correctly', function(){
+      expect(parse('provider.com/user/repo')).to.eql({
+        user: 'user',
+        repo: 'repo',
+        provider: 'provider.com',
       });
     })
   })
@@ -83,6 +135,7 @@ describe('parse()', function(){
     it('should parse correctly', function(){
       expect(parse('repo')).to.eql({
         repo: 'repo',
+        provider: 'github.com',
       });
     })
   })

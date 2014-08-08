@@ -1,4 +1,19 @@
 
+0.5.5 / 2014-08-08
+==================
+
+ * downgraded debug so it prints out using stderr
+ * fixing Duo#assets() to correctly reference project root
+ * adding output dir option to CLI
+ * parse.js: Add support for 'provider/user/repo'
+ * set the default concurrency to 10
+ * add npm install to make
+ * bin/_duo: Spawn subcommands through gnode
+ * bin/_duo: Fix trailing whitespace
+ * remove duplicate installs in duo(1). closes: #126
+ * test to make sure we're ignore http deps in css
+ * fix cache without deps. closes #120
+
 0.5.4 / 2014-08-03
 ==================
 
