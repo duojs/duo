@@ -254,6 +254,15 @@ describe('Duo', function(){
     })
   })
 
+  describe('duo#assets(dir)', function() {
+    it('should change the assets dir', function() {
+      var duo = build('simple');
+      assert(duo.assetPath == join(duo.root, 'build'))
+      duo.assets('public')
+      assert(duo.assetPath == join(duo.root, 'public'))
+    })
+  })
+
   describe('bundles', function() {
     it('should support multiple bundles', function*() {
       this.timeout(10000);
