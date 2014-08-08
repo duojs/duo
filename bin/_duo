@@ -56,6 +56,7 @@ var program = new Command('duo')
   .option('-g, --global <name>', 'expose entry as a global <name>', null)
   .option('-v, --verbose', 'show as much logs as possible', false)
   .option('-c, --concurrency <n>', 'set concurrency, defaulted to 50', 50)
+  .option('-o, --output <dir>', 'set the output directory, defaulted to build/', null)
   .parse(process.argv);
 
 /**
@@ -216,6 +217,9 @@ function create(root, entry) {
     duo.on('installing', log('installing'));
   }
 
+  // output dir
+  program.out && duo.assets(program.out);
+
   // installed
   duo.on('install', log('installed'));
 
@@ -303,4 +307,3 @@ function base(path) {
     ? resolve(cwd, path)
     : cwd;
 }
-
