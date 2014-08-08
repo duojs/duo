@@ -57,6 +57,7 @@ var program = new Command('duo')
   .option('-v, --verbose', 'show as much logs as possible', false)
   .option('-c, --concurrency <n>', 'set concurrency, defaulted to 50', 50)
   .option('-o, --output <dir>', 'set the output directory, defaulted to build/', null)
+  .option('-u, --use <plugin>', 'use build plugin', null)
   .parse(process.argv);
 
 /**
@@ -219,6 +220,12 @@ function create(root, entry) {
 
   // output dir
   program.out && duo.assets(program.out);
+
+  if (program.use) {
+    program.use.split(",").forEach(function (plugin) {
+      duo.use(require(plugin.trim())());
+    });
+  }
 
   // installed
   duo.on('install', log('installed'));
