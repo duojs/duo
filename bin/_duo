@@ -165,7 +165,7 @@ if (command) {
   duo.run(function(err, str) {
     if (err) throw error(err);
     out.write(str);
-    if (!quiet) logger.end();
+    !quiet && logger.end();
   });
 
   return;
@@ -235,7 +235,7 @@ function create(root, entry) {
   }
 
   // installed
-  if (!quiet) duo.on('install', log('installed'));
+  !quiet && duo.on('install', log('installed'));
 
   return duo;
 }
