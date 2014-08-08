@@ -181,7 +181,7 @@ stdin.on('data', function (chunk) { buf += chunk });
 stdin.on('end', function () {
   co(function *(){
     var root = base(program.root);
-    // TODO: refactor so entry many be included as str
+    // TODO: refactor so entry may be included as str
     var name = ['duo-entry', +new Date, type].join('.');
     var entry = path.join(root, name);
     yield fs.writeFile(entry, buf);
