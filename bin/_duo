@@ -58,7 +58,7 @@ var program = new Command('duo')
   .option('-c, --concurrency <n>', 'set concurrency, defaulted to 50', 50)
   .option('-o, --output <dir>', 'set the output directory, defaulted to build/', null)
   .option('-u, --use <plugin>', 'use build plugin', null)
-  .option('-q, --quiet', 'show as little output as possible', false)
+  .option('-q, --quiet', 'only print to stderr when there is an error', false)
   .parse(process.argv);
 
 /**
