@@ -57,7 +57,7 @@ var program = new Command('duo')
   .option('-o, --output <dir>', 'set the output directory, defaulted to build/', null)
   .option('-q, --quiet', 'only print to stderr when there is an error', false)
   .option('-r, --root <dir>', 'root directory to build from.', null)
-  .option('-u, --use <plugin>', 'use build plugin', null)
+  .option('-u, --use <plugin>', 'use source transform plugin', null)
   .option('-v, --verbose', 'show as much logs as possible', false)
   .parse(process.argv);
 
