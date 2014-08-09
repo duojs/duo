@@ -192,6 +192,23 @@ var duo = Duo(__dirname)
   .entry('main.js');
 ```
 
+### `duo.src(src, [type])`
+
+Instead of specifying an entry, you may specify a `src` and a `type` for duo to build from.
+
+If no `type` is found, duo will try to detect the language type using [language-classifier](https://github.com/visionmedia/node-language-classifier). You should only omit the type on javascript and css files and not on higher-level languages like stylus or coffeescript.
+
+```js
+// javascript
+var duo = Duo(__dirname)
+  .src(js)
+
+// coffeescript
+var duo = Duo(__dirname)
+  .use(coffeescript)
+  .src(cs, 'coffee')
+```
+
 ### `duo.global(name)`
 
 Attach the component to window object as name.

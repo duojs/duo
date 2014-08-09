@@ -29,6 +29,7 @@
     "file-deps": "0.0.5",
     "gnode": "0.0.8",
     "json-mask": "^0.3.1",
+    "language-classifier": "0.0.1",
     "max-component": "~1.0.0",
     "mkdirp": "^0.5.0",
     "step.js": "^2.0.1",
