@@ -219,22 +219,19 @@ describe('Duo', function(){
     it('should throw for wrongly classified', function *() {
       var src = read('coffee/index.coffee');
       var root = path('coffee');
-      var duo = Duo(root).src(src);
 
       try {
-        yield duo.run();
+        Duo(root).src(src);
       } catch(e) {
-        assert(~e.message.indexOf('".ruby" not supported'))
+        assert(~e.message.indexOf('could not detect a supported type on this source'))
       }
     });
 
     it('should throw for non-supported languages', function *() {
-      var duo = Duo(__dirname).src('!!;2elk;123v');
-
       try {
-        yield duo.run();
+        Duo(__dirname).src('!!;2elk;123v')
       } catch(e) {
-        assert(~e.message.indexOf('".shell" not supported'))
+        assert(~e.message.indexOf('could not detect a supported type on this source'))
       }
     });
   })
