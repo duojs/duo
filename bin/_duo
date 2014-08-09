@@ -18,6 +18,7 @@ var Batch = require('batch');
 var isArray = Array.isArray;
 var path = require('path');
 var dirname = path.dirname;
+var co = require('co');
 var fs = require('co-fs');
 var cwd = process.cwd();
 var Duo = require('..');
@@ -56,6 +57,7 @@ var program = new Command('duo')
   .option('-g, --global <name>', 'expose entry as a global <name>', null)
   .option('-v, --verbose', 'show as much logs as possible', false)
   .option('-c, --concurrency <n>', 'set concurrency, defaulted to 50', 50)
+  .option('-t, --type <type>', 'set build type', null)
   .option('-o, --output <dir>', 'set the output directory, defaulted to build/', null)
   .option('-u, --use <plugin>', 'use build plugin', null)
   .parse(process.argv);
@@ -165,34 +167,30 @@ if (command) {
 }
 
 /**
- * Build multiple files
+ * Build from stdin.
  */
 
-var root = findroot(cwd);
-var obj = json(join(root, 'component.json'));
-var name = obj.repo || obj.name;
-var mains = main(obj);
-var batch = Batch();
-var srcs = {};
+var type = program.type;
+// TODO: check type
+if (!type) return logger.error('type required');
 
-// add entries
-mains.forEach(function(main) {
-  var duo = create(root, main);
-  logger.building(name ? name + ' - ' + main : main);
-
-  batch.push(function(fn) {
-    duo.write(function(err) {
-      if (err) return fn(err);
-      logger.built(main);
-      fn();
-    });
-  });
-});
-
-// run duo all the entries
-batch.end(function(err) {
-  if (err) throw error(err);
-  logger.end();
+var buf = '';
+var stdin = process.openStdin();
+stdin.setEncoding('utf8');
+stdin.on('data', function (chunk) { buf += chunk });
+stdin.on('end', function () {
+  co(function *(){
+    var root = base(program.root);
+    // TODO: refactor so entry may be included as str
+    var name = ['duo-entry', +new Date, type].join('.');
+    var entry = path.join(root, name);
+    yield fs.writeFile(entry, buf);
+    var duo = create(root, entry);
+    var str = yield duo.run();
+    yield fs.unlink(entry);
+    process.stdout.write(str);
+    logger.end();
+  })();
 });
 
 /**
