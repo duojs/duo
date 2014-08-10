@@ -246,7 +246,7 @@ describe('Duo', function(){
     })
   })
 
-  describe('duo#use', function() {
+  describe('.use(fn|gen)', function() {
     it('should transform entry files', function*() {
       var duo = build('coffee', 'index.coffee');
       duo.use(cs);
@@ -332,6 +332,16 @@ describe('Duo', function(){
       duo.assets('public')
       assert(duo.assetPath == join(duo.root, 'public'))
     })
+  })
+
+  describe('.write([fn])', function() {
+    it('should write files to duo.assetPath', function *() {
+      var duo = build('simple');
+      yield duo.write();
+      var js = read('simple/build/index.js');
+      var ctx = evaluate(js);
+      assert.deepEqual(['one', 'two'], ctx.main);
+    });
   })
 
   describe('bundles', function() {
