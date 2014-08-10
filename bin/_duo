@@ -6,22 +6,18 @@
 
 var write = require('fs').createWriteStream;
 var Command = require('commander').Command;
-var resolve = require('path').resolve;
 var exists = require('fs').existsSync;
+var resolve = require('path').resolve;
+var dirname = require('path').dirname;
 var mkdirp = require('mkdirp').sync;
 var Logger = require('stream-log');
 var stat = require('fs').statSync;
+var stdin = require('get-stdin');
+var join = require('path').join;
 var spawn = require('win-fork');
 var pkg = require('../package');
-var main = require('duo-main');
-var Batch = require('batch');
-var isArray = Array.isArray;
-var path = require('path');
-var dirname = path.dirname;
-var fs = require('co-fs');
 var cwd = process.cwd();
 var Duo = require('..');
-var join = path.join;
 
 /**
  * Logger
@@ -57,6 +53,7 @@ var program = new Command('duo')
   .option('-o, --output <dir>', 'set the output directory, defaulted to build/', null)
   .option('-q, --quiet', 'only print to stderr when there is an error', false)
   .option('-r, --root <dir>', 'root directory to build from.', null)
+  .option('-t, --type <type>', 'set the entry type', null)
   .option('-u, --use <plugin>', 'use transform plugin', null)
   .option('-v, --verbose', 'show as much logs as possible', false)
   .parse(process.argv);
@@ -75,6 +72,9 @@ program.on('--help', function(){
   console.log('  # build in.css and output out.css');
   console.log('  $ duo in.css > out.css');
   console.log('  $ duo in.css out.css');
+  console.log();
+  console.log('  # build from stdin and output out.css');
+  console.log('  $ duo < in.css > out.css');
   console.log();
   console.log('  Commands:');
   console.log();
@@ -149,12 +149,16 @@ if (command && !~command.indexOf('.')) {
 
 /**
  * Build a single file
+ *
+ * TODO: Come up with a better way of
+ * switching between the various inputs.
+ * This is so ugly.
  */
 
 if (command) {
   var root = base(program.root);
-  var duo = create(root, command);
   var out = process.stdout;
+  var duo = create(root).entry(command);
 
   if (program.args[1]) {
     var file = path.join(root, program.args[1]);
@@ -162,45 +166,36 @@ if (command) {
     out = write(file);
   }
 
+  !quiet && logger.building('building %s', command);
   duo.run(function(err, str) {
     if (err) throw error(err);
     out.write(str);
     !quiet && logger.end();
   });
 
-  return;
-}
+} else if (!process.stdin.isTTY) {
+  stdin(function(src) {
+    var out = process.stdout;
+    var root = findroot(cwd);
+    var duo = create(root).src(src, program.type);
 
-/**
- * Build multiple files
- */
+    if (program.args[1]) {
+      var file = path.join(root, program.args[1]);
+      mkdirp(path.dirname(file));
+      out = write(file);
+    }
 
-var root = findroot(cwd);
-var obj = json(join(root, 'component.json'));
-var name = obj.repo || obj.name;
-var mains = main(obj);
-var batch = Batch();
-var srcs = {};
-
-// add entries
-mains.forEach(function(main) {
-  var duo = create(root, main);
-  !quiet && logger.building(name ? name + ' - ' + main : main);
-
-  batch.push(function(fn) {
-    duo.write(function(err) {
-      if (err) return fn(err);
-      !quiet && logger.built(main);
-      fn();
+    !quiet && logger.building('from stdin');
+    duo.run(function(err, str) {
+      if (err) throw error(err);
+      !quiet && logger.built('from stdin');
+      out.write(str);
+      !quiet && logger.end();
     });
   });
-});
-
-// run duo all the entries
-batch.end(function(err) {
-  if (err) throw error(err);
-  !quite && logger.end();
-});
+} else {
+  program.help();
+}
 
 /**
  * Create a duo instance
