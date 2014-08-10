@@ -8,17 +8,3 @@ var duo = path.resolve(__dirname, "_duo");
 var args = [ duo ].concat(process.argv.slice(2));
 
 spawn(gnode, args, { stdio: 'inherit' });
-
-// proc.on('end', function() {
-//   console.log('done...');
-// })
-// process.stdin.on('end', function() {
-//   console.log('alld ');
-// })
-
-// proc.on('error', function(err) {
-//   console.log(err);
-// })
-// proc.on('close', function(code) {
-//   console.log(code);
-// })
