@@ -4,22 +4,20 @@
  * Module dependencies.
  */
 
+var write = require('fs').createWriteStream;
 var Command = require('commander').Command;
+var exists = require('fs').existsSync;
+var resolve = require('path').resolve;
+var dirname = require('path').dirname;
 var mkdirp = require('mkdirp').sync;
 var Logger = require('stream-log');
 var stat = require('fs').statSync;
 var stdin = require('get-stdin');
+var join = require('path').join;
 var spawn = require('win-fork');
 var pkg = require('../package');
-var path = require('path');
-var resolve = path.resolve;
-var dirname = path.dirname;
 var cwd = process.cwd();
 var Duo = require('..');
-var fs = require('fs');
-var write = fs.createWriteStream;
-var exists = fs.existsSync;
-var join = path.join;
 
 /**
  * Logger
