@@ -1,4 +1,13 @@
 
+0.6.0 / 2014-08-09
+==================
+
+ * bin/_duo: added support for stdin
+ * lib/duo: added duo#src(src, [type])
+ * lib/duo: update concurrency to 50
+ * bin/_duo: Add --quiet flag
+ * bin/_duo: adding basic plugin support
+
 0.5.5 / 2014-08-08
 ==================
 
