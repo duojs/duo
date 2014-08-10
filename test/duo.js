@@ -29,6 +29,11 @@ describe('Duo', function(){
     cleanup();
   })
 
+  it('should ignore runs without an entry or source', function *() {
+    var js = yield Duo(__dirname).run();
+    assert('' == js);
+  })
+
   it('should build simple modules', function*(){
     var js = yield build('simple').run();
     var ctx = evaluate(js);
@@ -40,6 +45,16 @@ describe('Duo', function(){
     var js = yield build('simple', entry).run();
     var ctx = evaluate(js);
     assert.deepEqual(['one', 'two'], ctx.main);
+  })
+
+  it('.entry(file) should throw if file doesn\'t exist', function *() {
+    var duo = Duo(__dirname).entry('zomg.js');
+
+    try {
+      yield duo.run();
+    } catch (e) {
+      assert(~e.message.indexOf('cannot find entry: zomg.js'));
+    }
   })
 
   it('should build with no deps', function *() {
@@ -159,6 +174,68 @@ describe('Duo', function(){
     })
   })
 
+  describe('.src(src, type)', function() {
+
+    it('should support passing strings', function *() {
+      var src = read('simple/index.js');
+      var root = path('simple');
+      var duo = Duo(root).src(src, 'js');
+      var js = yield duo.run();
+      var ctx = evaluate(js);
+      assert.deepEqual(['one', 'two'], ctx.main);
+    })
+
+    it('should support transformed strings', function *() {
+      var src = read('coffee/index.coffee');
+      var root = path('coffee');
+      var duo = Duo(root).use(cs).src(src, 'coffee');
+      var js = yield duo.run();
+      var ctx = evaluate(js).main;
+      assert(ctx.a == 'a');
+      assert(ctx.b == 'b');
+      assert(ctx.c == 'c');
+    })
+  });
+
+  describe('.src(src)', function() {
+    it('should recognize js', function *() {
+      var src = read('simple/index.js');
+      var root = path('simple');
+      var duo = Duo(root).src(src);
+      var js = yield duo.run();
+      var ctx = evaluate(js);
+      assert.deepEqual(['one', 'two'], ctx.main);
+    })
+
+    it('should recognize css', function *() {
+      var src = read('css-simple-dep/index.css');
+      var root = path('css-simple-dep');
+      var duo = Duo(root).src(src);
+      var css = yield duo.run();
+      var out = read('css-simple-dep/index.out.css');
+      assert(css.trim() == out.trim());
+    })
+
+    it('should throw for wrongly classified', function *() {
+      var src = read('coffee/index.coffee');
+      var root = path('coffee');
+
+      try {
+        Duo(root).src(src);
+      } catch(e) {
+        assert(~e.message.indexOf('could not detect a supported type on this source'))
+      }
+    });
+
+    it('should throw for non-supported languages', function *() {
+      try {
+        Duo(__dirname).src('!!;2elk;123v')
+      } catch(e) {
+        assert(~e.message.indexOf('could not detect a supported type on this source'))
+      }
+    });
+  })
+
   describe('.global(name)', function(){
     it('should expose the entry as a global', function*(){
       var duo = build('global');
@@ -225,12 +302,6 @@ describe('Duo', function(){
       var js = yield duo.run();
       assert(called);
     })
-
-    function cs(file) {
-      if ('coffee' != file.type) return;
-      file.type = 'js';
-      file.src = coffee.compile(file.src);
-    }
   });
 
   describe('duo#include(name, source)', function() {
@@ -504,6 +575,18 @@ function read(path) {
 function isSymlink(path) {
   var stat = lstat(path);
   return stat.isSymbolicLink();
+}
+
+/**
+ * Compile coffeescript
+ *
+ * @param {File} file
+ */
+
+function cs(file) {
+  if ('coffee' != file.type) return;
+  file.type = 'js';
+  file.src = coffee.compile(file.src);
 }
 
 /**
