@@ -5,7 +5,7 @@ var assert = require('assert');
 var fs = require('co-fs');
 var vm = require('vm');
 
-describe('Duo CLI', function(){
+describe.only('Duo CLI', function(){
   var out = {};
   var ctx = {};
 
@@ -29,6 +29,22 @@ describe('Duo CLI', function(){
       assert(out.stdout);
       ctx = evaluate(out.stdout);
       assert.equal(true, ctx.duo);
+    });
+  });
+
+  describe('duo ls', function(){
+    it('should list all dependencies', function*(){
+      out = yield exec('duo ls', 'cli-duo-ls');
+      assert(out.stdout, 'expected stdout to be truthy');
+      assert.equal('', out.stderr.trim(), 'expected stderr to be empty');
+    });
+  });
+
+  describe('duo duplicates', function(){
+    it('should list all duplicates', function*(){
+      out = yield exec('duo duplicates', 'cli-duo-ls');
+      assert(out.stdout, 'expected stdout to be truthy');
+      assert.equal('', out.stderr.trim(), 'expected stderr to be empty');
     });
   });
 })
