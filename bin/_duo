@@ -166,7 +166,7 @@ if (command) {
     out = write(file);
   }
 
-  !quiet && logger.building('building %s', command);
+  !quiet && logger.building(command);
   duo.run(function(err, str) {
     if (err) throw error(err);
     out.write(str);
