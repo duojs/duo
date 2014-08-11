@@ -24,7 +24,7 @@ var slice = [].slice;
  * Tests
  */
 
-describe('Duo', function(){
+describe('Duo API', function(){
   beforeEach(function(){
     cleanup();
   })

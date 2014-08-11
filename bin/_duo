@@ -138,7 +138,7 @@ if (command && !~command.indexOf('.')) {
 
   // proxy subcommands through gnode(1)
   var gnode = require.resolve('gnode');
-  var bin = path.join(path.dirname(gnode), 'bin', 'gnode');
+  var bin = join(dirname(gnode), 'bin', 'gnode');
   args.unshift(bin);
 
   var proc = spawn('node', args, { stdio: 'inherit', customFds: [0, 1, 2] });
@@ -161,8 +161,8 @@ if (command) {
   var duo = create(root).entry(command);
 
   if (program.args[1]) {
-    var file = path.join(root, program.args[1]);
-    mkdirp(path.dirname(file));
+    var file = join(root, program.args[1]);
+    mkdirp(dirname(file));
     out = write(file);
   }
 
@@ -180,8 +180,8 @@ if (command) {
     var duo = create(root).src(src, program.type);
 
     if (program.args[1]) {
-      var file = path.join(root, program.args[1]);
-      mkdirp(path.dirname(file));
+      var file = join(root, program.args[1]);
+      mkdirp(dirname(file));
       out = write(file);
     }
 
@@ -225,7 +225,7 @@ function create(root, entry) {
 
   if (program.use) {
     program.use.trim().split(",").forEach(function (plugin) {
-      var mod = path.resolve(root, "node_modules", plugin.trim());
+      var mod = resolve(root, "node_modules", plugin.trim());
       duo.use(require(mod)());
     });
   }
