@@ -29,6 +29,16 @@ describe('Duo API', function(){
     cleanup();
   })
 
+  it('should throw without root', function () {
+    var err
+    try {
+      Duo();
+    } catch (e) {
+      err = e;
+    }
+    assert(err && /root directory/.test(err.message));
+  })
+
   it('should ignore runs without an entry or source', function *() {
     var js = yield Duo(__dirname).run();
     assert('' == js);
@@ -175,7 +185,6 @@ describe('Duo API', function(){
   })
 
   describe('.src(src, type)', function() {
-
     it('should support passing strings', function *() {
       var src = read('simple/index.js');
       var root = path('simple');
@@ -343,6 +352,22 @@ describe('Duo API', function(){
       assert.deepEqual(['one', 'two'], ctx.main);
     });
   })
+
+  describe('.token()', function () {
+    it('should set the token', function() {
+      var duo = Duo(__dirname);
+      duo.token('foo');
+      assert('foo' == duo.token());
+    })
+  })
+
+  describe('.concurrency()', function () {
+    it('should set concurrency', function () {
+      var duo = Duo(__dirname);
+      duo.concurrency(5);
+      assert(5 == duo._concurrency);
+    })
+  });
 
   describe('bundles', function() {
     it('should support multiple bundles', function*() {
