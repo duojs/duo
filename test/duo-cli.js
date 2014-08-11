@@ -5,7 +5,7 @@ var assert = require('assert');
 var fs = require('co-fs');
 var vm = require('vm');
 
-describe.only('Duo CLI', function(){
+describe('Duo CLI', function(){
   var out = {};
   var ctx = {};
 
@@ -33,6 +33,14 @@ describe.only('Duo CLI', function(){
   });
 
   describe('duo ls', function(){
+    before(function *(){
+      yield exec('duo index.js build.js', 'cli-duo-ls');
+    })
+
+    after(function *(){
+      yield remove('cli-duo-ls');
+    })
+
     it('should list all dependencies', function*(){
       out = yield exec('duo ls', 'cli-duo-ls');
       assert(out.stdout, 'expected stdout to be truthy');

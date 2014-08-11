@@ -1,3 +1,4 @@
 {
-  "name": "duo-ls"
+  "name": "duo-ls",
+  "main": "index.js"
 }
