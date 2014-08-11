@@ -10,4 +10,7 @@ test: node_modules
 node_modules: package.json
 	@npm install
 
-.PHONY: test
+clean:
+	rm -rf test/fixtures/*/{components,build.js}
+
+.PHONY: test clean
