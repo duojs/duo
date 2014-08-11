@@ -9,3 +9,4 @@ lib-cov
 cover_html
 .c9revisions
 examples/*/build.*
+coverage/
