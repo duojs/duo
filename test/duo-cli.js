@@ -33,6 +33,14 @@ describe('Duo CLI', function(){
   });
 
   describe('duo ls', function(){
+    before(function *(){
+      yield exec('duo index.js build.js', 'cli-duo-ls');
+    })
+
+    after(function *(){
+      yield remove('cli-duo-ls');
+    })
+
     it('should list all dependencies', function*(){
       out = yield exec('duo ls', 'cli-duo-ls');
       assert(out.stdout, 'expected stdout to be truthy');
