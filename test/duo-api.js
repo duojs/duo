@@ -344,6 +344,18 @@ describe('Duo API', function(){
     });
   })
 
+  describe('.install()', function () {
+    it('should set the installation path', function *(){
+      var duo = build('simple-deps');
+      duo.install('deps');
+      yield duo.write();
+      assert(stat(path('simple-deps', 'deps')));
+      var str = yield fs.readFile(path('simple-deps', 'deps', 'duo.json'));
+      assert(str && JSON.parse(str));
+      rmrf(path('simple-deps', 'deps'));
+    })
+  });
+
   describe('bundles', function() {
     it('should support multiple bundles', function*() {
       this.timeout(10000);
