@@ -1,4 +1,13 @@
 
+0.6.2 / 2014-08-11
+==================
+
+ * duo(1): fix undefined "path"
+ * tests: add cli tests
+ * test: duo -> duo-api
+ * fix duo#write([fn])
+ * remove commented code
+
 0.6.1 / 2014-08-09
 ==================
 
