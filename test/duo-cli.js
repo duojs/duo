@@ -5,7 +5,7 @@ var assert = require('assert');
 var fs = require('co-fs');
 var vm = require('vm');
 
-describe.only('Duo CLI', function(){
+describe('Duo CLI', function(){
   var out = {};
   var ctx = {};
 
