@@ -47,6 +47,7 @@
     "coffee-script": "~1.7.1",
     "duo-jade": "0.x",
     "expect.js": "^0.3.1",
+    "istanbul": "git://github.com/gotwarlost/istanbul#harmony",
     "mocha": "^1.20.1",
     "regenerator": "~0.4.9",
     "rimraf": "^2.2.8",
