@@ -55,6 +55,33 @@ describe('Duo CLI', function(){
       assert.equal('', out.stderr.trim(), 'expected stderr to be empty');
     });
   });
+
+  describe('duo <unsupported command>', function () {
+    var res = {};
+    beforeEach(function (done) {
+      var duo = join(__dirname, '..', 'bin', 'duo');
+      var child = proc.spawn(duo, ['foo']);
+      res.stdout = res.stderr = '';
+      child.stdout.on('data', function (chunk) { res.stdout += chunk; });
+      child.stderr.on('data', function (chunk) { res.stderr += chunk; });
+      child.on('exit', function (code) {
+        res.code = code;
+        done();
+      });
+    });
+
+    it('should exit with a non-zero code', function () {
+      assert(0 != res.code);
+    });
+
+    it('should write to stderr', function () {
+      assert('' != res.stderr);
+    })
+
+    it('should not write to stdout', function () {
+      assert('' == res.stdout);
+    })
+  });
 })
 
 /**
