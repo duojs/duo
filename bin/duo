@@ -3,7 +3,7 @@
 var path = require("path");
 var spawn = require('child_process').spawn;
 
-var gnode = path.resolve(__dirname, "../node_modules/.bin/gnode");
+var gnode = require.resolve("gnode/bin/gnode");
 var duo = path.resolve(__dirname, "_duo");
 var args = [ duo ].concat(process.argv.slice(2));
 
