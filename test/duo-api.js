@@ -353,6 +353,18 @@ describe('Duo API', function(){
     });
   })
 
+  describe('.install()', function () {
+    it('should set the installation path', function *(){
+      var duo = build('simple-deps');
+      duo.install('deps');
+      yield duo.write();
+      assert(stat(path('simple-deps', 'deps')));
+      var str = yield fs.readFile(path('simple-deps', 'deps', 'duo.json'));
+      assert(str && JSON.parse(str));
+      rmrf(path('simple-deps', 'deps'));
+    })
+  })
+
   describe('.token()', function () {
     it('should set the token', function() {
       var duo = Duo(__dirname);
@@ -393,7 +405,6 @@ describe('Duo API', function(){
   })
 
   describe('css', function() {
-
     it('should work with no deps', function*() {
       var duo = build('css-no-deps', 'index.css');
       var css = yield duo.run();
@@ -431,7 +442,6 @@ describe('Duo API', function(){
       var out = read('css-simple-dep/index.out.css');
       assert(css.trim() == out.trim());
     })
-
 
     it('should work with user/repo@ref:path', function*() {
       this.timeout(15000);
