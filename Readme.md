@@ -2,7 +2,7 @@
 
 Duo is the next [Component](https://github.com/component/component). Built by active Component users and core Component contributors.
 
-Duo was built because the existing client-side packaging solutions are not sufficient for lean, consistent, client-side applications built and managed by a team.
+Duo was created because the existing client-side packaging solutions are not sufficient for lean, consistent, client-side applications built and managed by a team.
 
 Duo makes the manifest optional, bundles only the code that you need, has built-in github versioning and supports source transforms.
 
