@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
-var path = require("path");
+var path = require('path');
 var spawn = require('child_process').spawn;
 
-var gnode = require.resolve("gnode/bin/gnode");
-var duo = path.resolve(__dirname, "_duo");
+var gnode = require.resolve('gnode/bin/gnode');
+var duo = path.resolve(__dirname, '_duo');
 var args = [ duo ].concat(process.argv.slice(2));
 
 spawn(gnode, args, { stdio: 'inherit' });
