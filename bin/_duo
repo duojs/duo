@@ -169,8 +169,9 @@ if (command) {
   !quiet && logger.building(command);
   duo.run(function(err, str) {
     if (err) throw error(err);
-    out.write(str);
+    !quiet && logger.built(command);
     !quiet && logger.end();
+    out.write(str);
   });
 
 } else if (!process.stdin.isTTY) {
@@ -189,8 +190,8 @@ if (command) {
     duo.run(function(err, str) {
       if (err) throw error(err);
       !quiet && logger.built('from stdin');
-      out.write(str);
       !quiet && logger.end();
+      out.write(str);
     });
   });
 } else {

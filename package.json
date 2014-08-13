@@ -28,6 +28,7 @@
     "duo-test": "0.x",
     "extend.js": "0.0.1",
     "file-deps": "0.0.5",
+    "get-stdin": "~1.0.0",
     "gnode": "0.0.8",
     "json-mask": "^0.3.1",
     "language-classifier": "0.0.1",
@@ -39,8 +40,7 @@
     "stream-to-array": "^2.0.0",
     "thunkify": "~2.1.1",
     "unyield": "0.0.1",
-    "win-fork": "~1.1.1",
-    "get-stdin": "~1.0.0"
+    "win-fork": "~1.1.1"
   },
   "devDependencies": {
     "co-mocha": "0.0.4",
