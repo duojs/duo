@@ -47,7 +47,7 @@ It also works with CSS:
 
 ```css
 @import "necolas/normalize.css";
-@import "twbs/bootstrap";
+@import "twbs/bootstrap@v3.2.0:dist/css/bootstrap.css";
 
 body {
   background: salmon;
