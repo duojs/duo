@@ -506,8 +506,7 @@ describe('Duo API', function(){
       var a = build('concurrent-mapping', 'index.css');
       var b = build('concurrent-mapping');
       yield [a.run(), b.run()];
-      var mapping = path('concurrent-mapping')
-      var json = require(join(mapping, 'components', 'duo.json'));
+      var json = yield mapping('concurrent-mapping');
       var keys = Object.keys(json).sort();
 
       assert(keys[0] == 'components/component-emitter@1.1.3/index.js');
@@ -515,6 +514,15 @@ describe('Duo API', function(){
       assert(keys[2] == 'components/necolas-normalize.css@3.0.1/normalize.css');
       assert(keys[3] == 'index.css');
       assert(keys[4] == 'index.js' );
+    })
+
+    it('should have entry keys for entry files', function *() {
+      var a = build('entries', 'index.js');
+      var b = build('entries', 'admin.js');
+      yield [a.run(), b.run()];
+      var json = yield mapping('entries');
+      assert(true == json['index.js'].entry);
+      assert(true == json['admin.js'].entry);
     })
   })
 
