@@ -50,21 +50,34 @@ describe('Duo API', function(){
     assert.deepEqual(['one', 'two'], ctx.main);
   });
 
-  it('.entry(file) should work with full paths', function*() {
-    var entry = join(path('simple'), 'index.js');
-    var js = yield build('simple', entry).run();
-    var ctx = evaluate(js);
-    assert.deepEqual(['one', 'two'], ctx.main);
-  })
+  describe('.entry(file)', function() {
+    it('should work with full paths', function*() {
+      var entry = join(path('simple'), 'index.js');
+      var js = yield build('simple', entry).run();
+      var ctx = evaluate(js);
+      assert.deepEqual(['one', 'two'], ctx.main);
+    })
 
-  it('.entry(file) should throw if file doesn\'t exist', function *() {
-    var duo = Duo(__dirname).entry('zomg.js');
+    it('should throw if file doesn\'t exist', function *() {
+      var duo = Duo(__dirname).entry('zomg.js');
 
-    try {
-      yield duo.run();
-    } catch (e) {
-      assert(~e.message.indexOf('cannot find entry: zomg.js'));
-    }
+      try {
+        yield duo.run();
+      } catch (e) {
+        assert(~e.message.indexOf('cannot find entry: zomg.js'));
+      }
+    })
+
+    it('should be idempotent', function *() {
+      var root = path('simple');
+      var duo = Duo(root).entry('hi.js');
+      duo.entry('index.js');
+      var js = yield duo.run();
+      var ctx = evaluate(js);
+      assert.deepEqual(['one', 'two'], ctx.main);
+      var json = yield mapping('simple');
+      assert(true == json['index.js'].entry);
+    })
   })
 
   it('should build with no deps', function *() {
