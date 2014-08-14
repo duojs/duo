@@ -477,6 +477,13 @@ describe('Duo API', function(){
       var out = read('css-http-dep/index.out.css');
       assert(css == out);
     })
+
+    it('should ignore image urls if asset is local', function *() {
+      var duo = build('css-url', 'lib/inline.css');
+      var css = yield duo.run();
+      var out = read('css-url/index.out.css');
+      assert.equal(css, out);
+    })
   })
 
   describe('json', function() {

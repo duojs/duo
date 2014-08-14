@@ -1,0 +1,7 @@
+.a {
+  background-image: url('assets/badgermandu.jpg');
+}
+
+.b {
+  background-image: url('./assets/badgermandu.jpg');
+}
