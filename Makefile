@@ -4,7 +4,7 @@ REPORTER ?= spec
 SRC = $(wildcard index.js lib/*.js)
 TESTS = $(wildcard test/*.js)
 
-test:
+test: node_modules
 	@$(BIN)/gnode $(BIN)/_mocha \
 		--reporter $(REPORTER) \
 		--require co-mocha \
