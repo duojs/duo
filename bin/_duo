@@ -86,18 +86,13 @@ program.on('--help', function(){
 });
 
 /**
- * Arguments
- */
-
-
-/**
  * Command
  */
 
 var command = program.args[0];
 
 /**
- * PATH
+ * $PATH
  */
 
 var paths = [__dirname].concat(process.env.PATH.split(':'));
@@ -150,70 +145,20 @@ if (command && !isFile(command)) {
 }
 
 /**
- * Build a single file
- *
- * TODO: Come up with a better way of
- * switching between the various inputs.
- * This is so ugly.
+ * Actions
  */
 
-if (command) {
-  var args = parse(program.args);
-  var entries = args.entries.filter(globs);
-  var batch = new Batch;
-  var push = batch.push.bind(batch);
-  var out = args.out;
+if (command) return build(program.args);
+if (!process.stdin.isTTY) return input();
 
-  switch (entries.length) {
-    case 0: return;
-    case 1:
-      if (out) entries.map(single).map(push)
-      else entries.map(output).map(push);
-      break;
-    default:
-      if (!out) throw error('multiple entries must have a build directory');
-      else if (isFile(out)) throw error('multiple entries cannot build to a file');
-      entries.map(multiple).map(push);
-      break;
-  }
+// invalid
+program.help();
 
-  batch.end(function(err) {
-    if (err) throw error(err);
-    logger.end();
-    process.exit(0);
-  });
+/**
+ * Accept standard input
+ */
 
-  // log to stdout
-  function output(entry) {
-    return function(done) {
-      var duo = create(entry);
-      duo.run(function(err, src) {
-        if (err) return done(err);
-        logger.end();
-        stdout.write(src);
-        done();
-      });
-    }
-  }
-
-  // write a single entry to the file `out`
-  function single(entry) {
-    return function(done) {
-      var duo = create(entry);
-      duo.write(out, done);
-    }
-  }
-
-  // write multiple entries to the directory `out`
-  function multiple(entry) {
-    return function(done) {
-      var duo = create(entry);
-      duo.assets(out);
-      duo.write(done);
-    }
-  }
-
-} else if (!process.stdin.isTTY) {
+function input() {
   stdin(function(src) {
     var root = findroot(program.root);
     var duo = create(root).src(src, program.type);
@@ -222,17 +167,70 @@ if (command) {
       if (err) throw error(err);
       logger.end();
       stdout.write(str);
+      process.exit(0);
     });
   });
-} else {
-  program.help();
+}
+
+/**
+ * Build file(s)
+ *
+ * @param {Array} entries
+ * @api private
+ */
+
+function build(entries) {
+  var batch = new Batch;
+  var len = entries.length;
+  var last = entries[len - 1];
+  var push = batch.push.bind(batch);
+  var out = !isFile(last) ? entries.pop() : false;
+
+  // no entries to build
+  !len && program.help();
+
+  // write to standard out
+  if (1 == len) {
+    var duo = create(entries[0]);
+    duo.run(function(err, src) {
+      if (err) return error(err);
+      logger.end();
+      stdout.write(src);
+      process.exit(0);
+    });
+  }
+
+  // write multiple files to
+  // `out` or `duo.assets()`
+  if (len > 1) {
+    var duos = entries
+      .map(multiple)
+      .map(push);
+
+    batch.end(function(err) {
+      if (err) return error(err);
+      logger.end();
+      process.exit(0);
+    });
+  }
+
+  // write multiple entries to
+  // the directory `out`
+  function multiple(entry) {
+    return function(done) {
+      var duo = create(entry);
+      out && duo.assets(out);
+      duo.write(done);
+    }
+  }
 }
 
 /**
  * Create a duo instance
  *
- * @param {String} root
  * @param {entry} entry
+ * @return {Duo}
+ * @api private
  */
 
 function create(entry) {
@@ -304,9 +302,9 @@ function error(err) {
  * @return {Array}
  */
 
-function values(obj) {
-  return Object.keys(obj).map(function(k) { return obj[k]; });
-}
+// function values(obj) {
+//   return Object.keys(obj).map(function(k) { return obj[k]; });
+// }
 
 /**
  * Read JSON
@@ -316,13 +314,13 @@ function values(obj) {
  * @api private
  */
 
-function json(path) {
-  try {
-    return require(path);
-  } catch(e) {
-    return {};
-  }
-};
+// function json(path) {
+//   try {
+//     return require(path);
+//   } catch(e) {
+//     return {};
+//   }
+// };
 
 /**
  * Find the root
@@ -352,24 +350,24 @@ function findroot(root) {
  * @api private
  */
 
-function parse(args) {
-  var obj = {};
-  obj.entries = [];
-  obj.out = null;
+// function parse(args) {
+//   var obj = {};
+//   obj.entries = [];
+//   obj.out = null;
 
-  switch(args.length) {
-    case 0:
-      return obj;
-    case 1:
-      obj.entries = args.slice(0);
-      return obj;
-    default:
-      obj.entries = args.slice(0, -1);
-      obj.out = args.slice(-1)[0];
-      obj.out = globs(obj.out) && obj.out;
-      return obj;
-  }
-}
+//   switch(args.length) {
+//     case 0:
+//       return obj;
+//     case 1:
+//       obj.entries = args.slice(0);
+//       return obj;
+//     default:
+//       obj.entries = args.slice(0, -1);
+//       obj.out = args.slice(-1)[0];
+//       obj.out = globs(obj.out) && obj.out;
+//       return obj;
+//   }
+// }
 
 /**
  * Resolve the root
@@ -378,19 +376,19 @@ function parse(args) {
  * @return {String}
  */
 
-function base(path) {
-  return path
-    ? resolve(cwd, path)
-    : cwd;
-}
+// function base(path) {
+//   return path
+//     ? resolve(cwd, path)
+//     : cwd;
+// }
 
 /**
  * Filter out any globs
  */
 
-function globs(file) {
-  return !/\*/.test(file);
-}
+// function globs(file) {
+//   return !/\*/.test(file);
+// }
 
 /**
  * Simple hueristic to check

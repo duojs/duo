@@ -18,27 +18,7 @@ describe('Duo CLI', function(){
     ctx = {};
   });
 
-  describe('duo entry.js build.js', function(){
-    it('should build to build.js', function *(){
-      out = yield exec('duo index.js build.js', 'cli-duo');
-      ctx = yield build('cli-duo');
-      assert('cli-duo' == ctx.main);
-      assert(out.stderr);
-      assert(!out.stdout);
-      rm('cli-duo/build.js');
-    });
-
-    it('should support opts', function *(){
-      out = yield exec('duo -c 20 -t js index.js build.js', 'cli-duo');
-      ctx = yield build('cli-duo');
-      assert('cli-duo' == ctx.main);
-      assert(out.stderr);
-      assert(!out.stdout);
-      rm('cli-duo/build.js');
-    });
-  });
-
-  describe('duo entry.js', function(){
+  describe('duo in.js', function(){
     it('should write to stdout', function *(){
       out = yield exec('duo index.js', 'cli-duo');
       assert(out.stdout);
@@ -62,9 +42,9 @@ describe('Duo CLI', function(){
     })
   });
 
-  describe('duo [file, ...] [out]', function() {
-    it('should build multiple entries to a directory', function *() {
-      var out = yield exec('duo *.js build', 'entries');
+  describe('duo [file, ...]', function() {
+    it('should build multiple entries to duo.assets()', function *() {
+      var out = yield exec('duo *.js', 'entries');
       var admin = yield build('entries/build/admin.js')
       var index = yield build('entries/build/index.js')
       assert('admin' == admin.main);
@@ -76,22 +56,47 @@ describe('Duo CLI', function(){
       assert(!out.stdout);
     });
 
-    it('should error out if all files', function *() {
-      var out = yield exec('duo admin.js index.js out.js', 'entries');
-      assert(contains(out.stderr, 'Error: multiple entries cannot build to a file'));
-      assert(out.error);
-    })
+    it('should work with options', function *() {
+      var out = yield exec('duo -c 20 *.js', 'entries');
+      var admin = yield build('entries/build/admin.js')
+      var index = yield build('entries/build/index.js')
+      assert('admin' == admin.main);
+      assert('index' == index.main);
+      assert(contains(out.stderr, 'building : admin.js'));
+      assert(contains(out.stderr, 'built : admin.js'));
+      assert(contains(out.stderr, 'building : index.js'));
+      assert(contains(out.stderr, 'built : index.js'));
+      assert(!out.stdout);
+    });
+  })
 
-    it('should error out if all files using glob', function *() {
-      var out = yield exec('duo *.js out.js', 'entries');
-      assert(contains(out.stderr, 'Error: multiple entries cannot build to a file'));
-      assert(out.error);
-    })
+  describe('duo [file, ...] out', function() {
+    it('should build multiple entries to a directory', function *() {
+      var out = yield exec('duo *.js out', 'entries');
+      var admin = yield build('entries/out/admin.js')
+      var index = yield build('entries/out/index.js')
+      assert('admin' == admin.main);
+      assert('index' == index.main);
+      assert(contains(out.stderr, 'building : admin.js'));
+      assert(contains(out.stderr, 'built : admin.js'));
+      assert(contains(out.stderr, 'building : index.js'));
+      assert(contains(out.stderr, 'built : index.js'));
+      assert(!out.stdout);
+      rm('entries/out');
+    });
 
-    it('should error out if glob doesnt resolve', function *() {
-      var out = yield exec('duo admin.js index.js *.css', 'entries');
-      assert(contains(out.stderr, 'Error: multiple entries must have a build directory'));
-      assert(out.error);
+    it('should work with options', function *() {
+      var out = yield exec('duo -c 20 *.js out', 'entries');
+      var admin = yield build('entries/out/admin.js')
+      var index = yield build('entries/out/index.js')
+      assert('admin' == admin.main);
+      assert('index' == index.main);
+      assert(contains(out.stderr, 'building : admin.js'));
+      assert(contains(out.stderr, 'built : admin.js'));
+      assert(contains(out.stderr, 'building : index.js'));
+      assert(contains(out.stderr, 'built : index.js'));
+      assert(!out.stdout);
+      rm('entries/out');
     });
   })
 
@@ -107,7 +112,7 @@ describe('Duo CLI', function(){
 
   describe('--quiet', function() {
     it('should not log info to stderr', function *() {
-      out = yield exec('duo -q index.js build.js', 'cli-duo');
+      out = yield exec('duo -q index.js > build.js', 'cli-duo');
       ctx = yield build('cli-duo');
       assert('cli-duo' == ctx.main);
       assert(!out.stderr.trim());
@@ -124,7 +129,7 @@ describe('Duo CLI', function(){
 
   describe('duo ls', function(){
     before(function *(){
-      yield exec('duo index.js build.js', 'cli-duo-ls');
+      yield exec('duo index.js > build.js', 'cli-duo-ls');
     })
 
     after(function *(){
@@ -132,7 +137,7 @@ describe('Duo CLI', function(){
     })
 
     it('should list all dependencies', function*(){
-      out = yield exec('duo -q index.js build.js && duo ls', 'cli-duo-ls');
+      out = yield exec('duo -q index.js > build.js && duo ls', 'cli-duo-ls');
       assert(contains(out.stdout, 'duo-ls'), 'duo-ls');
       assert(contains(out.stdout, '├── a.js'), '├── a.js');
       assert(contains(out.stdout, '└── b.js'), '└── b.js');
@@ -143,7 +148,7 @@ describe('Duo CLI', function(){
 
   describe('duo duplicates', function(){
     it('should list all duplicates', function*(){
-      out = yield exec('duo -q index.js build.js && duo duplicates', 'cli-duo-ls');
+      out = yield exec('duo -q index.js > build.js && duo duplicates', 'cli-duo-ls');
       assert(contains(out.stdout, 'total duplicates : 0b'));
       assert(!out.stderr.trim());
       rm('cli-duo-ls/build.js');
