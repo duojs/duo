@@ -4,7 +4,6 @@
  * Module dependencies.
  */
 
-var write = require('fs').createWriteStream;
 var Command = require('commander').Command;
 var exists = require('fs').existsSync;
 var resolve = require('path').resolve;
@@ -16,6 +15,8 @@ var stdin = require('get-stdin');
 var join = require('path').join;
 var spawn = require('win-fork');
 var pkg = require('../package');
+var Batch = require('batch');
+var stdout = process.stdout;
 var cwd = process.cwd();
 var Duo = require('..');
 
@@ -88,7 +89,6 @@ program.on('--help', function(){
  * Arguments
  */
 
-var args = process.argv.slice(3);
 
 /**
  * Command
@@ -118,7 +118,9 @@ var quiet = program.quiet;
  * Custom executable
  */
 
-if (command && !~command.indexOf('.')) {
+if (command && !isFile(command)) {
+  var args = process.argv.slice(3);
+
   // find executable
   var exec = paths.reduce(function(binary, path){
     path = resolve(path, bin);
@@ -156,42 +158,70 @@ if (command && !~command.indexOf('.')) {
  */
 
 if (command) {
-  var root = base(program.root);
-  var out = process.stdout;
-  var duo = create(root).entry(command);
+  var args = parse(program.args);
+  var entries = args.entries.filter(globs);
+  var batch = new Batch;
+  var push = batch.push.bind(batch);
+  var out = args.out;
 
-  if (program.args[1]) {
-    var file = join(root, program.args[1]);
-    mkdirp(dirname(file));
-    out = write(file);
+  switch (entries.length) {
+    case 0: return;
+    case 1:
+      if (out) entries.map(single).map(push)
+      else entries.map(output).map(push);
+      break;
+    default:
+      if (!out) throw error('multiple entries must have a build directory');
+      else if (isFile(out)) throw error('multiple entries cannot build to a file');
+      entries.map(multiple).map(push);
+      break;
   }
 
-  !quiet && logger.building(command);
-  duo.run(function(err, str) {
+  batch.end(function(err) {
     if (err) throw error(err);
-    !quiet && logger.built(command);
-    !quiet && logger.end();
-    out.write(str);
+    logger.end();
+    process.exit(0);
   });
+
+  // log to stdout
+  function output(entry) {
+    return function(done) {
+      var duo = create(entry);
+      duo.run(function(err, src) {
+        if (err) return done(err);
+        logger.end();
+        stdout.write(src);
+        done();
+      });
+    }
+  }
+
+  // write a single entry to the file `out`
+  function single(entry) {
+    return function(done) {
+      var duo = create(entry);
+      duo.write(out, done);
+    }
+  }
+
+  // write multiple entries to the directory `out`
+  function multiple(entry) {
+    return function(done) {
+      var duo = create(entry);
+      duo.assets(out);
+      duo.write(done);
+    }
+  }
 
 } else if (!process.stdin.isTTY) {
   stdin(function(src) {
-    var out = process.stdout;
-    var root = findroot(cwd);
+    var root = findroot(program.root);
     var duo = create(root).src(src, program.type);
 
-    if (program.args[1]) {
-      var file = join(root, program.args[1]);
-      mkdirp(dirname(file));
-      out = write(file);
-    }
-
-    !quiet && logger.building('from stdin');
     duo.run(function(err, str) {
       if (err) throw error(err);
-      !quiet && logger.built('from stdin');
-      !quiet && logger.end();
-      out.write(str);
+      logger.end();
+      stdout.write(str);
     });
   });
 } else {
@@ -205,11 +235,12 @@ if (command) {
  * @param {entry} entry
  */
 
-function create(root, entry) {
+function create(entry) {
+  var root = findroot(program.root);
   var duo = Duo(root)
     .development(!! program.development)
     .concurrency(program.concurrency)
-    .entry(entry);
+    .entry(resolve(entry));
 
   // global
   program.global && duo.global(program.global);
@@ -231,8 +262,12 @@ function create(root, entry) {
     });
   }
 
-  // installed
-  !quiet && duo.on('install', log('installed'));
+  // events
+  if (!quiet) {
+    duo.on('install', log('installed'));
+    duo.on('running', log('building'));
+    duo.on('run', log('built'));
+  }
 
   return duo;
 }
@@ -246,7 +281,9 @@ function create(root, entry) {
 
 function log (event) {
   return function(pkg) {
-    logger[event](pkg.slug());
+    pkg = pkg.slug ? pkg.slug() : pkg;
+    pkg = 'source.js' == pkg ? 'from stdin' : pkg;
+    logger[event](pkg);
   }
 }
 
@@ -255,6 +292,7 @@ function log (event) {
  */
 
 function error(err) {
+  err = 'string' == typeof err ? new Error(err) : err;
   logger.error(err.stack);
   logger.end();
 }
@@ -294,16 +332,43 @@ function json(path) {
  */
 
 function findroot(root) {
-  while (!exists(join(root, 'component.json')) && '/' != root) {
-    root = dirname(root);
+  if (root) return resolve(cwd, root);
+  var path = cwd;
+
+  while (!exists(join(path, 'component.json')) && '/' != path) {
+    path = dirname(path);
   }
 
-  if ('/' == root) {
-    logger.error('no manifest found');
-    process.exit(1);
-  }
+  return '/' == path
+    ? cwd
+    : path;
+}
 
-  return root;
+/**
+ * Parse args
+ *
+ * @param {Array} args
+ * @return {Object}
+ * @api private
+ */
+
+function parse(args) {
+  var obj = {};
+  obj.entries = [];
+  obj.out = null;
+
+  switch(args.length) {
+    case 0:
+      return obj;
+    case 1:
+      obj.entries = args.slice(0);
+      return obj;
+    default:
+      obj.entries = args.slice(0, -1);
+      obj.out = args.slice(-1)[0];
+      obj.out = globs(obj.out) && obj.out;
+      return obj;
+  }
 }
 
 /**
@@ -317,4 +382,25 @@ function base(path) {
   return path
     ? resolve(cwd, path)
     : cwd;
+}
+
+/**
+ * Filter out any globs
+ */
+
+function globs(file) {
+  return !/\*/.test(file);
+}
+
+/**
+ * Simple hueristic to check
+ * if `path` is a file
+ *
+ * @param {String} path
+ * @return {Boolean}
+ * @api private
+ */
+
+function isFile(path) {
+  return path && !! ~path.indexOf('.');
 }
