@@ -12,6 +12,7 @@ test: node_modules
 
 node_modules: package.json
 	@npm install
+	@touch node_modules
 
 coverage: $(SRC) $(TESTS)
 	@$(BIN)/gnode $(BIN)/istanbul cover \
