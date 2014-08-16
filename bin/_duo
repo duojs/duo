@@ -47,7 +47,7 @@ logger.type('error', '31m', function(){
 
 var program = new Command('duo')
   .version(pkg.version)
-  .usage('<command> [options]')
+  .usage('[options] command|[file, ...] [out]')
   .option('-c, --concurrency <n>', 'set concurrency, defaulted to 50', 50)
   .option('-d, --development', 'include development dependencies.', false)
   .option('-g, --global <name>', 'expose entry as a global <name>', null)
@@ -66,13 +66,17 @@ var program = new Command('duo')
 program.on('--help', function(){
   console.log('  Usage:');
   console.log();
-  console.log('  # build in.js and output out.js');
+  console.log('  # build in.js to out.js');
   console.log('  $ duo in.js > out.js');
-  console.log('  $ duo in.js out.js');
   console.log();
-  console.log('  # build in.css and output out.css');
+  console.log('  # build in.css to out.css');
   console.log('  $ duo in.css > out.css');
-  console.log('  $ duo in.css out.css');
+  console.log();
+  console.log('  # build all files to duo.assets() (default: build/)');
+  console.log('  $ duo *.{js,css}');
+  console.log();
+  console.log('  # build all files to the out/ folder');
+  console.log('  $ duo *.{js,css} out');
   console.log();
   console.log('  # build from stdin and output out.css');
   console.log('  $ duo < in.css > out.css');
