@@ -327,7 +327,6 @@ By using Github as your package manager all of these issues just disappear.
 ## Test
 
 ```bash
-$ npm install
 $ make test
 ```
 
