@@ -324,6 +324,18 @@ describe('Duo API', function(){
       var js = yield duo.run();
       assert(called);
     })
+
+    it('should be idempotent across duos', function() {
+      var a = build('simple');
+      var b = build('no-deps');
+
+      // plugins
+      a.use(function ap() {});
+      b.use(function bp() {});
+
+      assert(1 == a.plugins.length);
+      assert(1 == b.plugins.length);
+    })
   });
 
   describe('duo#include(name, source)', function() {

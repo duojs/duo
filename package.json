@@ -36,7 +36,7 @@
     "max-component": "~1.0.0",
     "mkdirp": "^0.5.0",
     "read-file-stdin": "0.0.4",
-    "step.js": "^2.0.1",
+    "step.js": "~2.0.2",
     "stream-log": "0.1.0",
     "stream-to-array": "^2.0.0",
     "thunkify": "~2.1.1",
