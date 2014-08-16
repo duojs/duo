@@ -12,6 +12,7 @@ var mkdirp = require('mkdirp').sync;
 var Logger = require('stream-log');
 var stat = require('fs').statSync;
 var stdin = require('get-stdin');
+var Watch = require('duo-watch');
 var join = require('path').join;
 var spawn = require('win-fork');
 var pkg = require('../package');
@@ -57,6 +58,7 @@ var program = new Command('duo')
   .option('-t, --type <type>', 'set the entry type', null)
   .option('-u, --use <plugin>', 'use transform plugin', null)
   .option('-v, --verbose', 'show as much logs as possible', false)
+  .option('-w, --watch', 'watch for changes and rebuild', false)
   .parse(process.argv);
 
 /**
@@ -114,6 +116,18 @@ var bin = ['duo', command].join('-');
 var quiet = program.quiet;
 
 /**
+ * Watch flag
+ */
+
+var watch = program.watch;
+
+/**
+ * Root
+ */
+
+var root = findroot(program.root);
+
+/**
  * Custom executable
  */
 
@@ -152,11 +166,15 @@ if (command && !isFile(command)) {
  * Actions
  */
 
-if (command) return build(program.args.filter(globs));
-if (!process.stdin.isTTY) return input();
+if (command) build(program.args.filter(globs));
+else if (!process.stdin.isTTY) input();
+else program.help();
 
-// invalid
-program.help();
+/**
+ * Watch for any other changes
+ */
+
+watch && Watch(root).watch(build);
 
 /**
  * Accept standard input
@@ -164,7 +182,6 @@ program.help();
 
 function input() {
   stdin(function(src) {
-    var root = findroot(program.root);
     var duo = create(root).src(src, program.type);
 
     duo.run(function(err, str) {
@@ -179,11 +196,13 @@ function input() {
 /**
  * Build file(s)
  *
- * @param {Array} entries
+ * @param {Array|String} entries
  * @api private
  */
 
 function build(entries) {
+  entries = 'string' == typeof entries ? [entries] : entries;
+
   var batch = new Batch;
   var len = entries.length;
   var last = entries[len - 1];
@@ -200,7 +219,7 @@ function build(entries) {
       if (err) return error(err);
       logger.end();
       stdout.write(src);
-      process.exit(0);
+      !watch && process.exit(0);
     });
   }
 
@@ -214,7 +233,7 @@ function build(entries) {
     batch.end(function(err) {
       if (err) return error(err);
       logger.end();
-      process.exit(0);
+      !watch && process.exit(0);
     });
   }
 
@@ -238,7 +257,6 @@ function build(entries) {
  */
 
 function create(entry) {
-  var root = findroot(program.root);
   var duo = Duo(root)
     .development(!! program.development)
     .concurrency(program.concurrency)
