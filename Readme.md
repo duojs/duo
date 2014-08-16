@@ -122,34 +122,31 @@ By default, this will install all our dependencies to the `components/` director
 
 ### iii. Web Applications
 
+#### Multiple bundles
+
 In order for a package manager to be truly useful, it needs to scale it's workflow to accommodate big web applications. Once again, Duo makes this process seamless.
 
-You can pass an array of files to `main` in the `component.json` file. This will tell Duo all the entry files it needs to traverse.
+Duo allows us to build multiple pages, granting us the flexibility to move between web applications and web pages without having one massive asset bundle.
 
-Here's an example root `component.json` that we could use to build our app:
-
-```json
-{
-  "name": "duo-app",
-  "version": "0.0.1",
-  "main": [
-     "app/homepage/index.js",
-     "app/homepage/index.css",
-     "app/dashboard/index.js",
-     "app/dashboard/index.css"
-   ]
-}
-```
-
-You can build your app by running `duo`:
+You can build multiple entries from the command line simply by passing more entries into `duo`:
 
 ```bash
-$ duo
+$ duo app/admin/admin.js app/admin/admin.css
 ```
 
-You'll notice this `component.json` specifies multiple pages (`homepage` and `dashboard`). Duo allows us to build multiple pages, granting us the flexibility to move between web applications and web pages without having one massive asset bundle.
+You can even use brace expansion:
 
----
+```bash
+$ duo app/{homepage,admin}/index.{js,css}
+```
+
+You can also specify a custom `build` directory:
+
+```bash
+$ duo app/{homepage,admin}/index.{js,css} out/
+```
+
+#### Assets
 
 If Duo discovers an asset like an image or font along the way, it will automatically symlink it to your `build/` directory. Say we have the following image in our CSS file
 
