@@ -1,4 +1,18 @@
 
+0.7.0 / 2014-08-15
+==================
+
+ * duo(1): update CLI to support multiple entries
+ * refactor entrypoint so duo.entry() is idempotent
+ * test: added tests for cli
+ * duo(1): fix printing
+ * pass entry key to mapping
+ * duo.js: Fix jsdoc
+ * Added coverage
+ * duo.js: Remove #readjson()
+ * test: Verify #install() works
+ * duo.js: Fix #install(path)
+
 0.6.2 / 2014-08-11
 ==================
 
