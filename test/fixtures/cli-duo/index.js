@@ -1,2 +1,2 @@
 
-duo = true;
+module.exports = 'cli-duo';

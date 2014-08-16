@@ -364,6 +364,45 @@ describe('Duo API', function(){
       var ctx = evaluate(js);
       assert.deepEqual(['one', 'two'], ctx.main);
     });
+
+    it('should support .write(fn)', function(done) {
+      var duo = build('simple-deps');
+      duo.write(function(err) {
+        if (err) return done(err);
+        var js = read('simple-deps/build/index.js')
+        var ctx = evaluate(js);
+        var type = ctx.main;
+        assert(ctx.mods);
+        assert(2 == ctx.mods.length);
+        assert('string' == ctx.mods[0](''));
+        assert('function' == typeof ctx.mods[1]);
+        done();
+      });
+    })
+
+    it('should support a path', function *() {
+      var duo = build('simple');
+      var out = join(path('simple'), 'build.js');
+      yield duo.write(out);
+      var js = read('simple/build.js');
+      var ctx = evaluate(js);
+      assert.deepEqual(['one', 'two'], ctx.main);
+      rmrf(out);
+    })
+
+    it('should support .write(path, fn)', function(done) {
+      var duo = build('simple');
+      var out = join(path('simple'), 'build.js');
+
+      duo.write(out, function(err) {
+        if (err) return done(err);
+        var js = read('simple/build.js');
+        var ctx = evaluate(js);
+        assert.deepEqual(['one', 'two'], ctx.main);
+        rmrf(out);
+        done();
+      });
+    })
   })
 
   describe('.install()', function () {
