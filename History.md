@@ -1,4 +1,13 @@
 
+0.7.1 / 2014-08-16
+==================
+
+ * .use(fn|gen) idempotent across duo instances
+ * added -w, --watch to CLI
+ * fix module/ example
+ * support running tests with `$ mocha` on node 0.10.x
+ * add node_modules to default makefile task so it installs node_modules if not installed
+
 0.7.0 / 2014-08-15
 ==================
 
