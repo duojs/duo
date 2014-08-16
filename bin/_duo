@@ -148,7 +148,7 @@ if (command && !isFile(command)) {
  * Actions
  */
 
-if (command) return build(program.args);
+if (command) return build(program.args.filter(globs));
 if (!process.stdin.isTTY) return input();
 
 // invalid
@@ -296,33 +296,6 @@ function error(err) {
 }
 
 /**
- * Object values
- *
- * @param {Object} obj
- * @return {Array}
- */
-
-// function values(obj) {
-//   return Object.keys(obj).map(function(k) { return obj[k]; });
-// }
-
-/**
- * Read JSON
- *
- * @param {String} path
- * @return {Object}
- * @api private
- */
-
-// function json(path) {
-//   try {
-//     return require(path);
-//   } catch(e) {
-//     return {};
-//   }
-// };
-
-/**
  * Find the root
  *
  * @param {String} root
@@ -343,52 +316,16 @@ function findroot(root) {
 }
 
 /**
- * Parse args
+ * Filter out unexpanded globs
  *
- * @param {Array} args
- * @return {Object}
+ * @param {String} entry
+ * @return {Boolean}
  * @api private
  */
 
-// function parse(args) {
-//   var obj = {};
-//   obj.entries = [];
-//   obj.out = null;
-
-//   switch(args.length) {
-//     case 0:
-//       return obj;
-//     case 1:
-//       obj.entries = args.slice(0);
-//       return obj;
-//     default:
-//       obj.entries = args.slice(0, -1);
-//       obj.out = args.slice(-1)[0];
-//       obj.out = globs(obj.out) && obj.out;
-//       return obj;
-//   }
-// }
-
-/**
- * Resolve the root
- *
- * @param {String} path
- * @return {String}
- */
-
-// function base(path) {
-//   return path
-//     ? resolve(cwd, path)
-//     : cwd;
-// }
-
-/**
- * Filter out any globs
- */
-
-// function globs(file) {
-//   return !/\*/.test(file);
-// }
+function globs(path) {
+  return !/\*/.test(path);
+}
 
 /**
  * Simple hueristic to check

@@ -1,6 +1,7 @@
 
 var readdir = require('fs').readdirSync;
 var extname = require('path').extname;
+var exist = require('fs').existsSync;
 var proc = require('child_process');
 var rmrf = require('rimraf').sync;
 var join = require('path').join;
@@ -40,6 +41,12 @@ describe('Duo CLI', function(){
       assert(~out.stderr.indexOf('Error: cannot find entry: zomg.js'));
       assert(out.error);
     })
+
+    it('should ignore unexpanded globs', function *() {
+      var out = yield exec('duo *.css', 'entries');
+      assert(!out.stderr);
+      assert(!out.error);
+    })
   });
 
   describe('duo [file, ...]', function() {
@@ -66,6 +73,20 @@ describe('Duo CLI', function(){
       assert(contains(out.stderr, 'built : admin.js'));
       assert(contains(out.stderr, 'building : index.js'));
       assert(contains(out.stderr, 'built : index.js'));
+      assert(!out.stdout);
+    });
+
+    it('should ignore unexpanded globs', function *() {
+      var out = yield exec('duo *.js *.css', 'entries');
+      var admin = yield build('entries/build/admin.js')
+      var index = yield build('entries/build/index.js')
+      assert('admin' == admin.main);
+      assert('index' == index.main);
+      assert(contains(out.stderr, 'building : admin.js'));
+      assert(contains(out.stderr, 'built : admin.js'));
+      assert(contains(out.stderr, 'building : index.js'));
+      assert(contains(out.stderr, 'built : index.js'));
+      assert(!exists('entries/out/*.css'));
       assert(!out.stdout);
     });
   })
@@ -98,6 +119,21 @@ describe('Duo CLI', function(){
       assert(!out.stdout);
       rm('entries/out');
     });
+
+    it('should ignore unexpanded globs', function *() {
+      var out = yield exec('duo *.js *.css out', 'entries');
+      var admin = yield build('entries/out/admin.js')
+      var index = yield build('entries/out/index.js')
+      assert('admin' == admin.main);
+      assert('index' == index.main);
+      assert(contains(out.stderr, 'building : admin.js'));
+      assert(contains(out.stderr, 'built : admin.js'));
+      assert(contains(out.stderr, 'building : index.js'));
+      assert(contains(out.stderr, 'built : index.js'));
+      assert(!exists('entries/out/*.css'));
+      assert(!out.stdout);
+      rm('entries/out');
+    })
   })
 
   describe('duo < in.js', function() {
@@ -224,6 +260,8 @@ function *build(fixture){
 
 /**
  * Cleanup
+ *
+ * @api private
  */
 
 function cleanup(){
@@ -239,9 +277,22 @@ function cleanup(){
 }
 
 /**
+ * Check if a file exists
+ *
+ * @param {String} file
+ * @return {Boolean}
+ * @api private
+ */
+
+function exists(file) {
+  return exist(path(file));
+}
+
+/**
  * Evaluate `js`.
  *
  * @return {Object}
+ * @api private
  */
 
 function evaluate(js, ctx){
@@ -253,6 +304,11 @@ function evaluate(js, ctx){
 
 /**
  * Execute `cmd` with `cwd`
+ *
+ * @param {String} cmd
+ * @param {String} cwd
+ * @return {Object}
+ * @api private
  */
 
 function *exec(cmd, cwd){
@@ -263,11 +319,15 @@ function *exec(cmd, cwd){
 
 /**
  * Execute `cmd` with `opts`
+ *
+ * @param {String} cmd
+ * @param {Object} opts
+ * @api private
  */
 
-function execute(command, opts){
+function execute(cmd, opts){
   return function(done){
-    proc.exec(command, opts, function(err, stdout, stderr){
+    proc.exec(cmd, opts, function(err, stdout, stderr){
       done(null, {
         error: err,
         stdout: stdout,
@@ -283,6 +343,7 @@ function execute(command, opts){
  * @param {String} needle
  * @param {String} haystack
  * @return {Boolean}
+ * @api private
  */
 
 function contains(haystack, needle) {
