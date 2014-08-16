@@ -57,8 +57,8 @@ body {
 When you're ready to build your file, run:
 
 ```bash
-$ duo in.js out.js
-$ duo in.css out.css
+$ duo in.js > out.js
+$ duo in.css > out.css
 ```
 
 ### ii. Components
@@ -115,7 +115,7 @@ var json = require('./component.json');
 To build our component, we just need to run `duo`:
 
 ```bash
-$ duo
+$ duo index.{js,css}
 ```
 
 By default, this will install all our dependencies to the `components/` directory and write our build files to the `build/` directory.
