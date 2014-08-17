@@ -1,7 +1,10 @@
 {
   "name": "example-app",
   "version": "0.0.1",
-  "main": "main.js",
+  "main": {
+    "js": "main.js",
+    "css": "main.css"
+  },
   "dependencies": {
     "matthewmueller/uid": "0.0.x",
     "component/infinity": "0.0.5",
