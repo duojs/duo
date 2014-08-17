@@ -164,7 +164,7 @@ body {
 }
 ```
 
-And symlink that file to `build/images/duo.png`, then up to you to expose `build/` on your web server.
+And symlink that file to `build/images/duo.png`, its up to you to expose `build/` on your web server.
 
 ## Authors
 
