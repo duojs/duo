@@ -24,7 +24,7 @@
     "duo-main": "^0.0.3",
     "duo-pack": "~1.0.3",
     "duo-package": "~0.4.2",
-    "duo-string-to-js": "0.0.x",
+    "duo-string-to-js": "0.0.5",
     "duo-test": "0.x",
     "duo-watch": "^0.1.0",
     "extend.js": "0.0.1",
