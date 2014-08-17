@@ -67,7 +67,7 @@ Duo also supports `stdin`:
 $ duo -t js < in.js > out.js
 ```
 
-Just be aware that Duo no longer knows where the file is coming from so it's best for simple scripts that don't use relative `require(...)`'s
+> When you use `stdin` please be aware that Duo no longer knows where the file is coming from so it's best for simple scripts that don't use relative `require(...)`'s
 
 ### ii. Components
 
