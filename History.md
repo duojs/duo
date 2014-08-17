@@ -1,4 +1,10 @@
 
+0.7.2 / 2014-08-16
+==================
+
+ * bump string-to-js to support arbitrary files
+ * bump duo-pack to not duplicate CSS imports
+
 0.7.1 / 2014-08-16
 ==================
 
