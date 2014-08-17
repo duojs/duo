@@ -61,6 +61,14 @@ $ duo in.js > out.js
 $ duo in.css > out.css
 ```
 
+Duo also supports `stdin`:
+
+```bash
+$ duo -t js < in.js > out.js
+```
+
+Just be aware that Duo no longer knows where the file is coming from so it's best for simple scripts that don't use relative `require(...)`'s
+
 ### ii. Components
 
 For any package manager to be successful, it needs to have a strong component ecosystem. Duo supports nearly all [Component packages](https://github.com/search?l=json&p=10&q=path%3A%2Fcomponent.json+component&ref=searchresults&type=Code) out of the box. Also, since Duo can load from paths, it supports nearly all [Bower packages](http://bower.io/search/) too. There are plans in the future to support Browserify packages as well with a plugin.
@@ -283,12 +291,61 @@ duo.write(function(err) {
 Apply a plugin to duo. You can pass a function or a generator. The signature is the following:
 
 ```js
-function (file, entry, [done]) {
+function plugin(file, entry, [done]) {
   // ...
 }
 ```
 
-If you don't supply `done`, the plugin will be synchronous.
+If you don't supply `done`, the plugin will be synchronous. The function can also be a generator:
+
+```js
+function *plugin(file, entry) {
+
+}
+```
+
+The `file` and `entry` are instances of [File](https://github.com/component/duo/blob/master/lib/file.js). If the file is an entry, then `file == entry`.
+
+The `file` & `entry` have the following properties:
+
+```js
+file.id    // relative path
+file.src   // file source
+file.type  // file extension
+file.root  // root path
+file.path  // full path
+file.entry // is this file an entry file?
+file.mtime // last modified timestamp
+```
+
+It's really easy to make Duo plugins. Here's a coffeescript plugin:
+
+```js
+var coffeescript = require('coffeescript');
+
+Duo(root)
+  .entry('index.coffee');
+  .use(coffee)
+  .run(fn)
+
+function coffee(file, entry) {
+  // ensure the file is a coffeescript file
+  if ('coffee' != file.type) return;
+
+  // ensure we're building a javascript file
+  if ('js' != entry.type) return;
+
+  // compile the coffeescript
+  file.src = coffee.compile(file.src);
+
+  // update the file type
+  file.type = 'js';
+}
+```
+
+Fortunately, Duo isn't going to force you to make a bunch of new plugins for all your favorite languages. Duo has support for [gulp plugins](http://gulpjs.com/plugins/)!
+
+Head over to [duo-gulp](https://github.com/duojs/duo-gulp) to see some examples.
 
 ## FAQ
 
