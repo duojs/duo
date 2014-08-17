@@ -25,7 +25,7 @@ Duo aims to grow with your application, optimizing your three main workflows:
 
 ### i. Proof of concepts
 
-As developers, we often need to test out an idea or isolate a bug. One of the big issues with existing package managers is that you cannot use your package manager without lots of boilerplate. Duo removes all boilerplate, letting you include packages right from your source code:
+As developers, we often need to test out an idea or isolate a bug. One of the big issues with existing package managers is that you cannot use your package manager without a lot of boilerplate. Duo removes this boilerplate, letting you include packages right from your source code:
 
 ```js
 var events = require('component/events');
