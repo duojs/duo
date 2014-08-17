@@ -1,4 +1,5 @@
 
+var readfile = require('fs').readFileSync;
 var readdir = require('fs').readdirSync;
 var extname = require('path').extname;
 var exist = require('fs').existsSync;
@@ -46,6 +47,17 @@ describe('Duo CLI', function(){
       var out = yield exec('duo *.css', 'entries');
       assert(!out.stderr);
       assert(!out.error);
+    })
+
+    it('should work with component.json', function *() {
+      out = yield exec('duo component.json', 'component');
+      assert(!out.stdout);
+      assert(out.stderr);
+
+      ctx = yield build('component/build/index.js')
+      assert('index' == ctx.main);
+      var css = read('component/build/index.css');
+      assert('body { background: blue; }\n' == css)
     })
   });
 
@@ -229,6 +241,19 @@ describe('Duo CLI', function(){
 
 function path(fixture){
   return join.apply(null, [__dirname, 'fixtures'].concat(fixture.split('/')));
+}
+
+/**
+ * Read a file
+ *
+ * @param {String} file
+ * @return {String}
+ * @api private
+ */
+
+function read(file) {
+  file = path(file);
+  return readfile(file, 'utf8');
 }
 
 /**
