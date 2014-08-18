@@ -1,0 +1,8 @@
+{
+  "name": "component",
+  "version": "0.0.1",
+  "main": {
+    "js": "index.js",
+    "css": "index.css"
+  }
+}

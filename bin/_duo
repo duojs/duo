@@ -16,10 +16,17 @@ var Watch = require('duo-watch');
 var join = require('path').join;
 var spawn = require('win-fork');
 var pkg = require('../package');
+var main = require('duo-main');
 var Batch = require('batch');
 var stdout = process.stdout;
 var cwd = process.cwd();
 var Duo = require('..');
+
+/**
+ * Regexps
+ */
+
+var rmanifest = /component\.json$/;
 
 /**
  * Logger
@@ -209,11 +216,16 @@ function build(entries) {
   var push = batch.push.bind(batch);
   var out = !isFile(last) ? entries.pop() : false;
 
+  // add the manifest mains
+  entries = entries
+    .concat(mains(entries))
+    .filter(manifests);
+
   // no entries to build
-  !len && program.help();
+  !entries.length && program.help();
 
   // write to standard out
-  if (1 == len) {
+  if (1 == entries.length) {
     var duo = create(entries[0]);
     duo.run(function(err, src) {
       if (err) return error(err);
@@ -223,10 +235,13 @@ function build(entries) {
     });
   }
 
+  // console.log(entries, mains(entries));
+
   // write multiple files to
   // `out` or `duo.assets()`
-  if (len > 1) {
+  if (entries.length > 1) {
     var duos = entries
+      // .concat(mains(entries))
       .map(multiple)
       .map(push);
 
@@ -235,6 +250,11 @@ function build(entries) {
       logger.end();
       !watch && process.exit(0);
     });
+  }
+
+  // filter out manifests
+  function manifests(entry) {
+    return !rmanifest.test(entry);
   }
 
   // write multiple entries to
@@ -308,6 +328,28 @@ function log (event) {
 }
 
 /**
+ * Get the mains from the manifest
+ *
+ * @param {Array} entries
+ * @return {Array}
+ * @api private
+ */
+
+function mains(entries) {
+  var out = [];
+  var obj;
+
+  for (var i = 0, entry; entry = entries[i++];) {
+    if (rmanifest.test(entry)) {
+      obj = json(resolve(root, entry));
+      out = out.concat(main(obj));
+    }
+  }
+
+  return out;
+}
+
+/**
  * Error
  */
 
@@ -315,6 +357,22 @@ function error(err) {
   err = 'string' == typeof err ? new Error(err) : err;
   logger.error(err.stack);
   logger.end();
+}
+
+/**
+ * Get the JSON
+ *
+ * @param {String} path
+ * @return {Object}
+ * @api private
+ */
+
+function json(path) {
+  try {
+    return require(path);
+  } catch (e) {
+    return {};
+  }
 }
 
 /**
