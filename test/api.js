@@ -415,6 +415,15 @@ describe('Duo API', function(){
         done();
       });
     })
+
+    it('should change type if duo.entryFile\'s type changes', function *() {
+      var expected = read('css-styl/index.out.css');
+      var duo = build('css-styl', 'index.styl');
+      duo.use(stylus);
+      yield duo.write();
+      var css = read('css-styl/build/index.css');
+      assert(expected.trim() == css.trim());
+    })
   })
 
   describe('.install()', function () {
