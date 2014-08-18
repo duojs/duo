@@ -22,6 +22,7 @@ describe('Duo CLI', function(){
   describe('duo in.js', function(){
     it('should write to stdout', function *(){
       out = yield exec('duo index.js', 'cli-duo');
+      if (out.error) throw out.error;
       assert(out.stdout);
       assert(out.stderr);
       ctx = evaluate(out.stdout);
@@ -30,6 +31,7 @@ describe('Duo CLI', function(){
 
     it('should support opts', function *() {
       out = yield exec('duo -c 20 -t js index.js', 'cli-duo');
+      if (out.error) throw out.error;
       assert(out.stdout);
       assert(out.stderr);
       ctx = evaluate(out.stdout);
@@ -44,14 +46,15 @@ describe('Duo CLI', function(){
 
     it('should ignore unexpanded globs', function *() {
       var out = yield exec('duo *.css', 'entries');
+      if (out.error) throw out.error;
       assert(!out.stderr);
-      assert(!out.error);
     })
   });
 
   describe('duo [file, ...]', function() {
     it('should build multiple entries to duo.assets()', function *() {
       var out = yield exec('duo *.js', 'entries');
+      if (out.error) throw out.error;
       var admin = yield build('entries/build/admin.js')
       var index = yield build('entries/build/index.js')
       assert('admin' == admin.main);
@@ -67,6 +70,7 @@ describe('Duo CLI', function(){
       var out = yield exec('duo -c 20 *.js', 'entries');
       var admin = yield build('entries/build/admin.js')
       var index = yield build('entries/build/index.js')
+      if (out.error) throw out.error;
       assert('admin' == admin.main);
       assert('index' == index.main);
       assert(contains(out.stderr, 'building : admin.js'));
@@ -80,6 +84,7 @@ describe('Duo CLI', function(){
       var out = yield exec('duo *.js *.css', 'entries');
       var admin = yield build('entries/build/admin.js')
       var index = yield build('entries/build/index.js')
+      if (out.error) throw out.error;
       assert('admin' == admin.main);
       assert('index' == index.main);
       assert(contains(out.stderr, 'building : admin.js'));
@@ -96,6 +101,7 @@ describe('Duo CLI', function(){
       var out = yield exec('duo *.js out', 'entries');
       var admin = yield build('entries/out/admin.js')
       var index = yield build('entries/out/index.js')
+      if (out.error) throw out.error;
       assert('admin' == admin.main);
       assert('index' == index.main);
       assert(contains(out.stderr, 'building : admin.js'));
@@ -110,6 +116,7 @@ describe('Duo CLI', function(){
       var out = yield exec('duo -c 20 *.js out', 'entries');
       var admin = yield build('entries/out/admin.js')
       var index = yield build('entries/out/index.js')
+      if (out.error) throw out.error;
       assert('admin' == admin.main);
       assert('index' == index.main);
       assert(contains(out.stderr, 'building : admin.js'));
@@ -122,6 +129,7 @@ describe('Duo CLI', function(){
 
     it('should ignore unexpanded globs', function *() {
       var out = yield exec('duo *.js *.css out', 'entries');
+      if (out.error) throw out.error;
       var admin = yield build('entries/out/admin.js')
       var index = yield build('entries/out/index.js')
       assert('admin' == admin.main);
@@ -139,6 +147,7 @@ describe('Duo CLI', function(){
   describe('duo < in.js', function() {
     it('should write to stdout', function *() {
       out = yield exec('duo < index.js', 'cli-duo');
+      if (out.error) throw out.error;
       assert(out.stdout);
       assert(out.stderr);
       ctx = evaluate(out.stdout);
@@ -149,6 +158,7 @@ describe('Duo CLI', function(){
   describe('--quiet', function() {
     it('should not log info to stderr', function *() {
       out = yield exec('duo -q index.js > build.js', 'cli-duo');
+      if (out.error) throw out.error;
       ctx = yield build('cli-duo');
       assert('cli-duo' == ctx.main);
       assert(!out.stderr.trim());
@@ -174,6 +184,7 @@ describe('Duo CLI', function(){
 
     it('should list all dependencies', function*(){
       out = yield exec('duo -q index.js > build.js && duo ls', 'cli-duo-ls');
+      if (out.error) throw out.error;
       assert(contains(out.stdout, 'duo-ls'), 'duo-ls');
       assert(contains(out.stdout, '├── a.js'), '├── a.js');
       assert(contains(out.stdout, '└── b.js'), '└── b.js');
@@ -185,6 +196,7 @@ describe('Duo CLI', function(){
   describe('duo duplicates', function(){
     it('should list all duplicates', function*(){
       out = yield exec('duo -q index.js > build.js && duo duplicates', 'cli-duo-ls');
+      if (out.error) throw out.error;
       assert(contains(out.stdout, 'total duplicates : 0b'));
       assert(!out.stderr.trim());
       rm('cli-duo-ls/build.js');

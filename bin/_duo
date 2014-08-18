@@ -116,16 +116,22 @@ var bin = ['duo', command].join('-');
 var quiet = program.quiet;
 
 /**
- * Watch flag
- */
-
-var watch = program.watch;
-
-/**
  * Root
  */
 
 var root = findroot(program.root);
+
+/**
+ * Asset path
+ */
+
+var outdir = assets(program.args);
+
+/**
+ * Watching
+ */
+
+var watching = false;
 
 /**
  * Custom executable
@@ -171,13 +177,9 @@ else if (!process.stdin.isTTY) input();
 else program.help();
 
 /**
- * Watch for any other changes
- */
-
-watch && Watch(root).watch(build);
-
-/**
  * Accept standard input
+ *
+ * @api private
  */
 
 function input() {
@@ -194,56 +196,73 @@ function input() {
 }
 
 /**
- * Build file(s)
+ * Build the entries
  *
- * @param {Array|String} entries
+ * @param {Array} entries
  * @api private
  */
 
 function build(entries) {
+  outdir && entries.pop();
+  switch (entries.length) {
+    case 0: return program.help();
+    case 1: return print(entries[0]);
+    default: return write(entries);
+  }
+}
+
+/**
+ * Print to stdout
+ *
+ * @param {String} entry
+ * @api private
+ */
+
+function print(entry) {
+  create(entry).run(function(err, src) {
+    if (err) return error(err);
+    logger.end();
+    stdout.write(src);
+
+    // watch or exit
+    program.watch
+      ? watch(print)
+      : process.exit(0);
+  });
+}
+
+/**
+ * Write the entries
+ *
+ * @param {Array} entries
+ * @api private
+ */
+
+function write(entries) {
   entries = 'string' == typeof entries ? [entries] : entries;
 
   var batch = new Batch;
-  var len = entries.length;
-  var last = entries[len - 1];
   var push = batch.push.bind(batch);
-  var out = !isFile(last) ? entries.pop() : false;
 
-  // no entries to build
-  !len && program.help();
+  var duos = entries
+    .map(multiple)
+    .map(push);
 
-  // write to standard out
-  if (1 == len) {
-    var duo = create(entries[0]);
-    duo.run(function(err, src) {
-      if (err) return error(err);
-      logger.end();
-      stdout.write(src);
-      !watch && process.exit(0);
-    });
-  }
+  batch.end(function(err) {
+    if (err) return error(err);
+    logger.end();
 
-  // write multiple files to
-  // `out` or `duo.assets()`
-  if (len > 1) {
-    var duos = entries
-      .map(multiple)
-      .map(push);
-
-    batch.end(function(err) {
-      if (err) return error(err);
-      logger.end();
-      !watch && process.exit(0);
-    });
-  }
+    // watch or exit
+    program.watch
+      ? Watch(root).watch(write)
+      : process.exit(0);
+  });
 
   // write multiple entries to
   // the directory `out`
   function multiple(entry) {
     return function(done) {
-      var duo = create(entry);
-      out && duo.assets(out);
-      duo.write(done);
+      create(entry).write(done);
     }
   }
 }
@@ -273,6 +292,7 @@ function create(entry) {
   }
 
   // output dir
+  outdir && duo.assets(outdir);
   program.out && duo.assets(program.out);
 
   if (program.use) {
@@ -290,6 +310,19 @@ function create(entry) {
   }
 
   return duo;
+}
+
+/**
+ * Watch
+ *
+ * @param {Function} action
+ * @api private
+ */
+
+function watch(action) {
+  if (watching) return;
+  watching = true;
+  Watch(root).watch(action);
 }
 
 /**
@@ -335,6 +368,22 @@ function findroot(root) {
   return '/' == path
     ? cwd
     : path;
+}
+
+/**
+ * Check if `entries` contains
+ * an asset path
+ *
+ * @param {Array} entries
+ * @return {String|Boolean}
+ * @api private
+ */
+
+function assets(entries) {
+  if (!entries.length) return false;
+  var len = entries.length;
+  var last = entries[len - 1];
+  return !isFile(last) && last;
 }
 
 /**
