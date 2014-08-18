@@ -258,7 +258,7 @@ function write(entries) {
 
     // watch or exit
     program.watch
-      ? Watch(root).watch(write)
+      ? watch(write)
       : process.exit(0);
   });
 
