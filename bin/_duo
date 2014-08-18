@@ -83,6 +83,10 @@ program.on('--help', function(){
   console.log('  # build from stdin and output out.css');
   console.log('  $ duo < in.css > out.css');
   console.log();
+  console.log('  # build using a plugin');
+  console.log('  $ npm install duo-whitespace');
+  console.log('  $ duo --use duo-whitespace in.styl > out.css');
+  console.log();
   console.log('  Commands:');
   console.log();
   console.log('    ls           list all dependencies.');

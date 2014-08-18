@@ -8,16 +8,21 @@ Duo makes the manifest optional, bundles only the code that you need, has built-
 
 Our main goal for Duo was to blend the very best ideas from the [Component](https://github.com/component/component) and [Browserify](https://github.com/substack/node-browserify) package managers. We were also inspired by how [Go](http://go-lang.com/) imports dependencies.
 
-- [Documentation](/docs)
-- [Installation](/installation)
-- [Getting Started](/docs/getting-started.md)
+- [Command Line Usage](/docs/cli.md)
+- [Javascript API](/docs/api.md)
 - [FAQ](/docs/faq.md)
 - [Mailing List](https://groups.google.com/forum/#!forum/duojs)
 - `#duojs` on freenode
 
-## Philosophy
+## Installation
 
-Duo aims to grow with your application, optimizing your three main workflows:
+```bash
+$ npm install -g duo
+```
+
+## Getting started
+
+Duo grows as your application grows, optimizing your three main workflows:
 
       i. creating proof of concepts
      ii. writing components
@@ -25,7 +30,7 @@ Duo aims to grow with your application, optimizing your three main workflows:
 
 ### i. Proof of concepts
 
-As developers, we often need to test out an idea or isolate a bug. One of the big issues with existing package managers is that you cannot use your package manager without a lot of boilerplate. Duo removes this boilerplate, letting you include packages right from your source code:
+As developers, we often need to test out an idea or isolate a bug. One of the big issues with existing package managers is that you cannot use your package manager without adding a lot of extra boilerplate. Duo removes this boilerplate, letting you include packages right from your source code:
 
 ```js
 var events = require('component/events');
@@ -70,9 +75,9 @@ $ duo in.css > out.css
 
 ### ii. Components
 
-For any package manager to be successful, it needs to have a strong component ecosystem. Duo supports nearly all of the existing [Component packages](https://github.com/search?l=json&p=10&q=path%3A%2Fcomponent.json+component&ref=searchresults&type=Code) out of the box. And, since Duo can load from paths, it supports nearly all of the [Bower packages](http://bower.io/search/) too. There are plans in the future to support Browserify packages as well with a plugin.
+For any package manager to be successful, it needs to have a strong component ecosystem. Duo supports nearly all of the existing [Component packages](https://github.com/component/component/wiki/Components) out of the box. And, since Duo can load from paths, it supports nearly all of the [Bower packages](http://bower.io/search/) too. There are plans in the future to support Browserify packages as well with a plugin.
 
-We're hoping to bridge the gap between all the different package managers and come up with a solution that works for everyone.
+We're hoping to bridge the gap between all these different package managers and come up with a solution that works for everyone.
 
 To create a Duo component, you'll need a `component.json`:
 
@@ -115,6 +120,12 @@ var schema = require('./schema.json');
 ```
 
 Duo will take care of the rest, transforming the `.html` into a Javascript string, and `.json` into a Javascript object.
+
+Then when you're ready to build your component simply run:
+
+```bash
+duo index.js index.css
+```
 
 ### iii. Web Applications
 
