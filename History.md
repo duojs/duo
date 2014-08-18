@@ -1,4 +1,10 @@
 
+0.7.4 / 2014-08-17
+==================
+
+ * fix watch to repeat the original command
+ * edited readme, pulled docs into /docs folder
+
 0.7.3 / 2014-08-16
 ==================
 
