@@ -1,4 +1,10 @@
 
+0.7.5 / 2014-08-18
+==================
+
+ * fix duo#write() when entry file's type changes
+ * add cli documentation and remove dead links
+
 0.7.4 / 2014-08-17
 ==================
 
