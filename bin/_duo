@@ -283,7 +283,7 @@ function create(entry) {
   var duo = Duo(root)
     .development(!! program.development)
     .concurrency(program.concurrency)
-    .entry(resolve(entry));
+    .entry(resolve(program.root || cwd, entry));
 
   // global
   program.global && duo.global(program.global);
