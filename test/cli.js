@@ -51,6 +51,30 @@ describe('Duo CLI', function(){
     })
   });
 
+  describe('duo in.js out', function() {
+    it('should write to out/', function *(){
+      var out = yield exec('duo index.js out', 'cli-duo');
+      if (out.error) throw out.error;
+      ctx = yield build('cli-duo/out/index.js');
+      assert('cli-duo' == ctx.main);
+      assert(contains(out.stderr, 'building : index.js'));
+      assert(contains(out.stderr, 'built : index.js'));
+      assert(!out.stdout);
+      rm('cli-duo/out');
+    });
+
+    it('should support options', function *(){
+      var out = yield exec('duo -v -t js index.js out', 'cli-duo');
+      if (out.error) throw out.error;
+      ctx = yield build('cli-duo/out/index.js');
+      assert('cli-duo' == ctx.main);
+      assert(contains(out.stderr, 'building : index.js'));
+      assert(contains(out.stderr, 'built : index.js'));
+      assert(!out.stdout);
+      rm('cli-duo/out');
+    });
+  })
+
   describe('duo [file, ...]', function() {
     it('should build multiple entries to duo.assets()', function *() {
       var out = yield exec('duo *.js', 'entries');
