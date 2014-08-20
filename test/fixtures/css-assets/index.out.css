@@ -37,16 +37,16 @@
 }
 
 .logo[data-logo="Duo"] > * {
-  background-image: url(/components/duojs-logo@0.0.2/images/logo.svg);
+  background-image: url(components/duojs-logo@0.0.2/images/logo.svg);
   margin: 0 0 0 0;
 }
 
 .logo[data-logo="Duo"][data-color="black"] > * {
-  background-image: url(/components/duojs-logo@0.0.2/images/logo-black.svg);
+  background-image: url(components/duojs-logo@0.0.2/images/logo-black.svg);
 }
 
 .logo[data-logo="Duo"][data-color="white"] > * {
-  background-image: url(/components/duojs-logo@0.0.2/images/logo-white.svg);
+  background-image: url(components/duojs-logo@0.0.2/images/logo-white.svg);
 }
 
 .title {
