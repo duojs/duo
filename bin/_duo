@@ -49,7 +49,7 @@ logger.type('error', '31m', function(){
 var program = new Command('duo')
   .version(pkg.version)
   .usage('[options] command|[file, ...] [out]')
-  .option('-c, --concurrency <n>', 'set concurrency, defaulted to 50', 50)
+  .option('-c, --copy', 'opt to copy files instead of symlink', false)
   .option('-d, --development', 'include development dependencies.', false)
   .option('-g, --global <name>', 'expose entry as a global <name>', null)
   .option('-o, --output <dir>', 'set the output directory, defaulted to build/', null)
@@ -284,6 +284,7 @@ function create(entry) {
     .development(!! program.development)
     .concurrency(program.concurrency)
     .entry(resolve(program.root || cwd, entry));
+    .copy(program.copy)
 
   // global
   program.global && duo.global(program.global);
