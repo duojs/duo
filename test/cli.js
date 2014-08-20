@@ -173,6 +173,40 @@ describe('Duo CLI', function(){
     })
   });
 
+  describe('duo --use <plugin>', function() {
+    var src = join(__dirname, '..', 'node_modules');
+    var dst = join(__dirname, 'fixtures', 'plugins', 'node_modules');
+
+    before(function *() {
+      yield fs.symlink(src, dst);
+    });
+
+    after(function *() {
+      yield fs.unlink(dst);
+    });
+
+    it('should allow npm modules', function *() {
+      var out = yield exec('duo --use duo-jade index.js', 'plugins');
+      assert(contains(out.stderr, 'using : duo-jade'));
+    });
+
+    it('should allow regular js files', function *() {
+      var out = yield exec('duo --use plugin.js index.js', 'plugins');
+      assert(contains(out.stderr, 'using : plugin.js'));
+    });
+
+    it('should allow multiple plugins', function *() {
+      var out = yield exec('duo --use duo-jade,plugin.js index.js', 'plugins');
+      assert(contains(out.stderr, 'using : duo-jade'));
+      assert(contains(out.stderr, 'using : plugin.js'));
+    });
+
+    it('should bomb if the plugin does not exist', function *() {
+      var out = yield exec('duo --use zomg.js index.js', 'plugins');
+      assert(contains(out.stderr, 'error : Error: Cannot find module'));
+    });
+  });
+
   describe('duo ls', function(){
     before(function *(){
       yield exec('duo index.js > build.js', 'cli-duo-ls');
