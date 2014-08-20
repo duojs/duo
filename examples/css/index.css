@@ -1,0 +1,32 @@
+/**
+ * Modules
+ */
+
+@import "normalize.css";
+@import "bootstrap:dist/css/bootstrap.css";
+@import './lib/base';
+@import "duojs/logo";
+@import "typefaces/clear-sans-light";
+
+/**
+ * Header
+ */
+
+.Header {
+  background: #00A1DF;
+  text-align: center;
+  padding: 2em;
+  border-bottom: 3px solid #00638F;
+}
+
+.Header-title {
+  font-size: 5em;
+}
+
+.Header-tagline {
+  font-family: 'Clear Sans';
+  font-weight: 300;
+  font-size: 2em;
+  padding-top: 2em;
+  color: #00648d;
+}

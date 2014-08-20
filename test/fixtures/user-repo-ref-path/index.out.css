@@ -263,8 +263,8 @@ th {
 @font-face {
   font-family: 'Glyphicons Halflings';
 
-  src: url('/components/twbs-bootstrap@v3.2.0/dist/fonts/glyphicons-halflings-regular.eot');
-  src: url('/components/twbs-bootstrap@v3.2.0/dist/fonts/glyphicons-halflings-regular.eot') format('embedded-opentype'), url('/components/twbs-bootstrap@v3.2.0/dist/fonts/glyphicons-halflings-regular.woff') format('woff'), url('/components/twbs-bootstrap@v3.2.0/dist/fonts/glyphicons-halflings-regular.ttf') format('truetype'), url('/components/twbs-bootstrap@v3.2.0/dist/fonts/glyphicons-halflings-regular.svg') format('svg');
+  src: url('components/twbs-bootstrap@v3.2.0/dist/fonts/glyphicons-halflings-regular.eot');
+  src: url('components/twbs-bootstrap@v3.2.0/dist/fonts/glyphicons-halflings-regular.eot') format('embedded-opentype'), url('components/twbs-bootstrap@v3.2.0/dist/fonts/glyphicons-halflings-regular.woff') format('woff'), url('components/twbs-bootstrap@v3.2.0/dist/fonts/glyphicons-halflings-regular.ttf') format('truetype'), url('components/twbs-bootstrap@v3.2.0/dist/fonts/glyphicons-halflings-regular.svg') format('svg');
 }
 .glyphicon {
   position: relative;

@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "dependencies": {
     "necolas/normalize.css": "3.0.0",
-    "component/tip": "*"
+    "component/tip": "*",
+    "twbs/bootstrap": "v3.2.0"
   }
 }
