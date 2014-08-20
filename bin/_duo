@@ -289,7 +289,7 @@ function create(entry) {
   var duo = Duo(root)
     .development(!! program.development)
     .concurrency(program.concurrency)
-    .entry(resolve(program.root || cwd, entry));
+    .entry(resolve(program.root || cwd, entry))
     .copy(program.copy)
 
   // global
