@@ -1,4 +1,14 @@
 
+0.8.0 / 2014-08-20
+==================
+
+ * update css example
+ * use relative CSS urls instead of absolute
+ * assets should be written/symlinked to duo.assets() even if the assets were cached
+ * add tests for $ duo in.js out
+ * $ duo in.js out should write to out/ and not print to stdout
+ * _duo: Fix logging from streaming from stdin
+
 0.7.7 / 2014-08-20
 ==================
 
