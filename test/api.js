@@ -6,6 +6,7 @@ var readdir = require('fs').readdirSync;
 var readfile = require('fs').readFileSync;
 var dirname = require('path').dirname;
 var coffee = require('coffee-script');
+var exist = require('fs').existsSync;
 var mkdir = require('fs').mkdirSync;
 var lstat = require('fs').lstatSync;
 var rmrf = require('rimraf').sync;
@@ -448,6 +449,27 @@ describe('Duo API', function(){
       var css = read('css-styl/build/index.css');
       assert(expected.trim() == css.trim());
     })
+
+    it('should bundle assets', function *() {
+      var expected = read('css-assets/index.out.css');
+      var duo = build('css-assets', 'index.css');
+      yield duo.write();
+      var css = read('css-assets/build/index.css');
+      assert(expected.trim() == css.trim());
+      assert(exists('css-assets/build/components/duojs-logo@0.0.2/images/logo.svg'));
+    })
+
+    it('should bundle assets even if in the cache', function *() {
+      var expected = read('css-assets/index.out.css');
+      var duo = build('css-assets', 'index.css')
+      yield duo.write();
+      duo.assets('out');
+      yield duo.write('index.css');
+      var css = read('css-assets/out/index.css');
+      assert(expected.trim() == css.trim());
+      assert(exists('css-assets/out/components/duojs-logo@0.0.2/images/logo.svg'));
+      rmrf(path('css-assets/out'));
+    })
   })
 
   describe('.install()', function () {
@@ -670,6 +692,18 @@ function build(fixture, file){
 function path(fixture){
   var paths = slice.call(arguments);
   return join.apply(null, [__dirname, 'fixtures'].concat(paths));
+}
+
+/**
+ * Check if a file exists
+ *
+ * @param {String} file
+ * @return {Boolean}
+ * @api private
+ */
+
+function exists(file) {
+  return exist(path(file));
 }
 
 /**
