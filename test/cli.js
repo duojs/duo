@@ -30,7 +30,7 @@ describe('Duo CLI', function(){
     });
 
     it('should support opts', function *() {
-      out = yield exec('duo -c 20 -t js index.js', 'cli-duo');
+      out = yield exec('duo -v -t js index.js', 'cli-duo');
       if (out.error) throw out.error;
       assert(out.stdout);
       assert(out.stderr);
@@ -67,7 +67,7 @@ describe('Duo CLI', function(){
     });
 
     it('should work with options', function *() {
-      var out = yield exec('duo -c 20 *.js', 'entries');
+      var out = yield exec('duo -t js *.js', 'entries');
       var admin = yield build('entries/build/admin.js')
       var index = yield build('entries/build/index.js')
       if (out.error) throw out.error;
@@ -113,7 +113,7 @@ describe('Duo CLI', function(){
     });
 
     it('should work with options', function *() {
-      var out = yield exec('duo -c 20 *.js out', 'entries');
+      var out = yield exec('duo -t js *.js out', 'entries');
       var admin = yield build('entries/out/admin.js')
       var index = yield build('entries/out/index.js')
       if (out.error) throw out.error;
