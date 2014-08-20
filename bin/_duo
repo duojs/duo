@@ -214,11 +214,13 @@ function input() {
 
 function build(entries) {
   outdir && entries.pop();
-  switch (entries.length) {
-    case 0: return program.help();
-    case 1: return print(entries[0]);
-    default: return write(entries);
-  }
+  var len = entries.length;
+
+  return !len
+    ? program.help()
+    : 1 == len && !outdir
+    ? print(entries[0])
+    : write(entries);
 }
 
 /**
