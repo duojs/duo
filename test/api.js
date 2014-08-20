@@ -258,6 +258,30 @@ describe('Duo API', function(){
     });
   })
 
+  describe('.copy', function() {
+    it('should copy files instead of symlink', function *() {
+      var duo = build('copy', 'index.css').copy();
+      var file = path('copy/build/duo.png');
+      var out = read('copy/index.out.css');
+      var css = yield duo.run();
+      assert(css == out);
+      var stat = yield fs.lstat(file);
+      assert(!stat.isSymbolicLink());
+    })
+  })
+
+  describe('.symlink', function() {
+    it('should symlink files by default', function *() {
+      var duo = build('symlink', 'index.css');
+      var file = path('symlink/build/duo.png');
+      var out = read('symlink/index.out.css');
+      var css = yield duo.run();
+      assert(css == out);
+      var stat = yield fs.lstat(file);
+      assert(stat.isSymbolicLink());
+    })
+  })
+
   describe('.global(name)', function(){
     it('should expose the entry as a global', function*(){
       var duo = build('global');

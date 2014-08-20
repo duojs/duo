@@ -31,7 +31,8 @@ var logger = new Logger(process.stderr)
   .type('installing', '36m')
   .type('installed', '36m')
   .type('finding', '36m')
-  .type('found', '36m');
+  .type('found', '36m')
+  .type('using', '36m');
 
 /**
  * Error
@@ -49,7 +50,7 @@ logger.type('error', '31m', function(){
 var program = new Command('duo')
   .version(pkg.version)
   .usage('[options] command|[file, ...] [out]')
-  .option('-c, --concurrency <n>', 'set concurrency, defaulted to 50', 50)
+  .option('-c, --copy', 'opt to copy files instead of symlink', false)
   .option('-d, --development', 'include development dependencies.', false)
   .option('-g, --global <name>', 'expose entry as a global <name>', null)
   .option('-o, --output <dir>', 'set the output directory, defaulted to build/', null)
@@ -136,6 +137,11 @@ var outdir = assets(program.args);
  */
 
 var watching = false;
+
+/**
+ * Plugins
+ */
+var plugins = usePlugins(program.use);
 
 /**
  * Custom executable
@@ -283,7 +289,8 @@ function create(entry) {
   var duo = Duo(root)
     .development(!! program.development)
     .concurrency(program.concurrency)
-    .entry(resolve(entry));
+    .entry(resolve(program.root || cwd, entry));
+    .copy(program.copy)
 
   // global
   program.global && duo.global(program.global);
@@ -299,12 +306,10 @@ function create(entry) {
   outdir && duo.assets(outdir);
   program.out && duo.assets(program.out);
 
-  if (program.use) {
-    program.use.trim().split(",").forEach(function (plugin) {
-      var mod = resolve(root, "node_modules", plugin.trim());
-      duo.use(require(mod)());
-    });
-  }
+  // use plugins
+  plugins.forEach(function (plugin) {
+    duo.use(plugin);
+  });
 
   // events
   if (!quiet) {
@@ -413,4 +418,29 @@ function globs(path) {
 
 function isFile(path) {
   return path && !! ~path.indexOf('.');
+}
+
+/**
+ * Retrieve an array of plugins from --use
+ *
+ * @param {String} plugins
+ * @return {Array}
+ * @api private
+ */
+
+function usePlugins(use) {
+  if (!use) return [];
+
+  return use.split(",").map(function (plugin) {
+    try {
+      var local = resolve(root, plugin);
+      var npm = resolve(root, "node_modules", plugin);
+
+      var mod = require(exists(local) ? local : npm);
+      logger.using(plugin);
+      return mod();
+    } catch (e) {
+      error(e);
+    }
+  });
 }

@@ -13,7 +13,7 @@ describe('Duo CLI', function(){
   var out = {};
   var ctx = {};
 
-  beforeEach(function(){
+  afterEach(function(){
     cleanup();
     out = {};
     ctx = {};
@@ -30,7 +30,7 @@ describe('Duo CLI', function(){
     });
 
     it('should support opts', function *() {
-      out = yield exec('duo -c 20 -t js index.js', 'cli-duo');
+      out = yield exec('duo -v -t js index.js', 'cli-duo');
       if (out.error) throw out.error;
       assert(out.stdout);
       assert(out.stderr);
@@ -67,7 +67,7 @@ describe('Duo CLI', function(){
     });
 
     it('should work with options', function *() {
-      var out = yield exec('duo -c 20 *.js', 'entries');
+      var out = yield exec('duo -t js *.js', 'entries');
       var admin = yield build('entries/build/admin.js')
       var index = yield build('entries/build/index.js')
       if (out.error) throw out.error;
@@ -113,7 +113,7 @@ describe('Duo CLI', function(){
     });
 
     it('should work with options', function *() {
-      var out = yield exec('duo -c 20 *.js out', 'entries');
+      var out = yield exec('duo -t js *.js out', 'entries');
       var admin = yield build('entries/out/admin.js')
       var index = yield build('entries/out/index.js')
       if (out.error) throw out.error;
@@ -173,33 +173,73 @@ describe('Duo CLI', function(){
     })
   });
 
-  describe('duo ls', function(){
-    before(function *(){
-      yield exec('duo index.js > build.js', 'cli-duo-ls');
-    })
+  describe('duo --use <plugin>', function() {
+    var src = join(__dirname, '..', 'node_modules');
+    var dst = join(__dirname, 'fixtures', 'plugins', 'node_modules');
 
-    after(function *(){
+    before(function *() {
+      yield fs.symlink(src, dst);
+    });
+
+    after(function *() {
+      yield fs.unlink(dst);
+    });
+
+    it('should allow npm modules', function *() {
+      var out = yield exec('duo --use duo-jade index.js', 'plugins');
+      assert(contains(out.stderr, 'using : duo-jade'));
+    });
+
+    it('should allow regular js files', function *() {
+      var out = yield exec('duo --use plugin.js index.js', 'plugins');
+      assert(contains(out.stderr, 'using : plugin.js'));
+    });
+
+    it('should allow multiple plugins', function *() {
+      var out = yield exec('duo --use duo-jade,plugin.js index.js', 'plugins');
+      assert(contains(out.stderr, 'using : duo-jade'));
+      assert(contains(out.stderr, 'using : plugin.js'));
+    });
+
+    it('should bomb if the plugin does not exist', function *() {
+      var out = yield exec('duo --use zomg.js index.js', 'plugins');
+      assert(contains(out.stderr, 'error : Error: Cannot find module'));
+    });
+  });
+
+  describe('duo ls', function(){
+    beforeEach(function *(){
+      yield exec('duo -q index.js > build.js', 'cli-duo-ls');
+    });
+
+    afterEach(function *(){
       rm('cli-duo-ls/build.js');
-    })
+    });
 
     it('should list all dependencies', function*(){
-      out = yield exec('duo -q index.js > build.js && duo ls', 'cli-duo-ls');
+      var out = yield exec('duo ls', 'cli-duo-ls');
       if (out.error) throw out.error;
       assert(contains(out.stdout, 'duo-ls'), 'duo-ls');
       assert(contains(out.stdout, '├── a.js'), '├── a.js');
       assert(contains(out.stdout, '└── b.js'), '└── b.js');
       assert(!out.stderr.trim(), 'stderr');
-      rm('cli-duo-ls/build.js');
     });
   });
 
   describe('duo duplicates', function(){
+    beforeEach(function *(){
+      yield exec('duo index.js > build.js', 'cli-duo-ls');
+    })
+
+    afterEach(function *(){
+      rm('cli-duo-ls/build.js');
+    })
+
     it('should list all duplicates', function*(){
-      out = yield exec('duo -q index.js > build.js && duo duplicates', 'cli-duo-ls');
+      var out = yield exec('duo duplicates', 'cli-duo-ls');
       if (out.error) throw out.error;
       assert(contains(out.stdout, 'total duplicates : 0b'));
       assert(!out.stderr.trim());
-      rm('cli-duo-ls/build.js');
     });
   });
 

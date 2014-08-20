@@ -1,4 +1,4 @@
-![duo](https://i.cloudup.com/uRfFwp-i4T.png)
+![duo](https://i.cloudup.com/zxYO3-GNkP.png)
 
 Duo is the next [Component](https://github.com/component/component). Built by active Component users and core Component contributors.
 
