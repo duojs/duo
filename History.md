@@ -1,4 +1,15 @@
 
+0.7.6 / 2014-08-20
+==================
+
+ * added duo.copy() to copy assets instead of symlink. closes: #208
+ * bump duo-watch
+ * update logo :-D
+ * cleaning up breaking ls/duplicates tests
+ * adding tests for CLI --use
+ * Improving --use in CLI
+ * fix cli root resolving, closes #202
+
 0.7.5 / 2014-08-18
 ==================
 
