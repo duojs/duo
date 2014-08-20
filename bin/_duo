@@ -345,7 +345,7 @@ function watch(action) {
 function log (event) {
   return function(pkg) {
     pkg = pkg.slug ? pkg.slug() : pkg;
-    pkg = 'source.js' == pkg ? 'from stdin' : pkg;
+    pkg = 'source.' + (program.type || 'js') == pkg ? 'from stdin' : pkg;
     logger[event](pkg);
   }
 }
