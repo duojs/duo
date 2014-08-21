@@ -8,7 +8,7 @@
 
       -h, --help             output usage information
       -V, --version          output the version number
-      -c, --concurrency <n>  set concurrency, defaulted to 50
+      -c, --copy             opt to copy files instead of symlink
       -d, --development      include development dependencies.
       -g, --global <name>    expose entry as a global <name>
       -o, --output <dir>     set the output directory, defaulted to build/
