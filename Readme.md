@@ -1,5 +1,8 @@
 ![duo](https://i.cloudup.com/zxYO3-GNkP.png)
 
+[![NPM version][npm-image]][npm-url]
+[![build status][travis-image]][travis-url]
+
 Duo is a next-generation package manager that blends the best ideas from [Component](https://github.com/component/component), [Browserify](https://github.com/substack/node-browserify) and [Go](http://go-lang.com/) to make organizing and writing front-end code quick and painless.
 
 - [Features](#features)
@@ -104,3 +107,8 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+[npm-image]: https://img.shields.io/npm/v/duo.svg?style=flat
+[npm-url]: https://npmjs.org/package/duo
+[travis-image]: https://img.shields.io/travis/duojs/duo.svg?style=flat
+[travis-url]: https://travis-ci.org/duojs/duo
