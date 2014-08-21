@@ -590,6 +590,13 @@ describe('Duo API', function(){
       var out = read('css-url/index.out.css');
       assert(css == out.trim());
     })
+
+    it('should keep duplicate references to assets', function *() {
+      var duo = build('css-dup-asset', 'index.css');
+      var css = yield duo.run();
+      var out = read('css-dup-asset/index.out.css');
+      assert(css.trim() == out.trim());
+    })
   })
 
   describe('json', function() {
