@@ -177,6 +177,18 @@ body {
 
 And symlink that file to `build/images/duo.png`, its up to you to expose `build/` on your web server.
 
+## Authentication
+
+Duo requires you to authenticate with Github to allow you to pull from private repositories and increase your rate limit.
+
+To authenticate with Github, you will need to add the following entry to your `~/.netrc`:
+
+    machine api.github.com
+      login <username>
+      password <token>
+
+You can create a new `token` here: https://github.com/settings/tokens/new
+
 ## Authors
 
 - [Matthew Mueller](https://github.com/MatthewMueller)
