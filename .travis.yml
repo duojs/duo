@@ -1,0 +1,8 @@
+language: node_js
+node_js:
+  - "0.10"
+  - "0.11"
+script: "make test"
+env:
+  global:
+    - secure: WdPVuaRFwTYKNFx7goA36QGwCPDATLT1PUL3XLilZX/AlfjgRICZn7/55WnSk7IJtkexYA4uuXlqIqefWMEACHW0gzwYrQES90wRonLUPYEbUUlfhXJFKWE1XCQRXDUDk1vX+XaIjsH52HcYGDbfauU8sRvrzOq1kPd5R2jWkRE=
