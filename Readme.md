@@ -179,7 +179,7 @@ And symlink that file to `build/images/duo.png`, its up to you to expose `build/
 
 ## Authenticating with Github
 
-Duo requires you to authenticate with Github to allow you to pull from private repositories and increase your rate limit.
+Duo requires you to authenticate with Github to increase your rate limit and allow you to pull from private repositories.
 
 To authenticate with Github, you will need to add the following entry to your `~/.netrc`:
 
