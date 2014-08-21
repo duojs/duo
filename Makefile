@@ -4,7 +4,7 @@ REPORTER ?= spec
 SRC = $(wildcard index.js lib/*.js)
 TESTS = $(wildcard test/*.js)
 
-test: node_modules
+test: clean node_modules
 	@$(BIN)/gnode $(BIN)/_mocha \
 		--reporter $(REPORTER) \
 		--require co-mocha \
@@ -22,6 +22,6 @@ coverage: $(SRC) $(TESTS)
 	    --timeout 5s
 
 clean:
-	rm -rf coverage
+	rm -rf coverage test/fixtures/*/{components,deps,out,build.js}
 
 .PHONY: test clean
