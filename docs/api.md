@@ -139,6 +139,8 @@ file.entry // is this file an entry file?
 file.mtime // last modified timestamp
 ```
 
+### Plugins
+
 It's really easy to make Duo plugins. Here's a coffeescript plugin:
 
 ```js
