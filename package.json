@@ -1,6 +1,6 @@
 {
   "name": "duo",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "bin": {
     "duo": "bin/duo",
     "_duo": "bin/_duo",
