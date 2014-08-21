@@ -1,0 +1,6 @@
+@import 'necolas/normalize.css';
+
+body {
+  color: teal;
+  background: url('./background-image.jpg');
+}
