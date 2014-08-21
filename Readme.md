@@ -177,7 +177,7 @@ body {
 
 And symlink that file to `build/images/duo.png`, its up to you to expose `build/` on your web server.
 
-## Authentication
+## Authenticating with Github
 
 Duo requires you to authenticate with Github to allow you to pull from private repositories and increase your rate limit.
 
