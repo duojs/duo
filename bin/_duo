@@ -369,13 +369,16 @@ function error(err) {
 
 function findroot(root) {
   if (root) return resolve(cwd, root);
+  var sep = require('path').sep;
+  var parts = cwd.split(sep);
   var path = cwd;
 
-  while (!exists(join(path, 'component.json')) && '/' != path) {
-    path = dirname(path);
+  while (!exists(join(path, 'component.json')) && parts.length > 1) {
+    parts.pop();
+    path = parts.join(sep);
   }
 
-  return '/' == path
+  return parts.length <= 1
     ? cwd
     : path;
 }
