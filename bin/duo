@@ -5,7 +5,7 @@
  */
 
 var path = require('path');
-var spawn = require('win-fork');
+var spawn = require('cross-spawn');
 
 /**
  * Resolve
