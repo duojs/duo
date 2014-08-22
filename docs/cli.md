@@ -31,8 +31,14 @@ $ duo in.css > out.css
 # build all files to duo.assets() (default: build/)
 $ duo *.{js,css}
 
+# watch all files and build to duo.assets()
+$ duo watch *.{js,css}
+
 # build all files to the out/ folder
 $ duo *.{js,css} out
+
+# watch all files and build to the out/ folder
+$ duo watch *.{js,css} out
 
 # build from stdin and output out.css
 $ duo < in.css > out.css
