@@ -22,6 +22,6 @@ coverage: $(SRC) $(TESTS)
 	    --timeout 5s
 
 clean:
-	rm -rf coverage test/fixtures/*/{components,deps,out,build.js}
+	@rm -rf coverage test/fixtures/*/{components,deps,out,build.js}
 
 .PHONY: test clean
