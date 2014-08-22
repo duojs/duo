@@ -99,6 +99,12 @@ describe('Duo API', function(){
     assert('resolved' == ctx.main);
   })
 
+  it('should resolve dependencies like require("..")', function *() {
+    var js = yield build('relative-path', 'test/test.js').run();
+    var ctx = evaluate(js);
+    assert('index' == ctx.main);
+  })
+
   it('should fetch and build direct dependencies', function*(){
     this.timeout(15000);
     var js = yield build('simple-deps').run();
