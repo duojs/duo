@@ -418,7 +418,13 @@ function globs(path) {
  */
 
 function isFile(path) {
-  return path && !! ~path.indexOf('.');
+  if (/^[^\s]+\.\w*$/g.test(path)) return true;
+
+  try {
+    return stat(path).isFile();
+  } catch (e) {
+    return false;
+  }
 }
 
 /**

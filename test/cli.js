@@ -136,6 +136,21 @@ describe('Duo CLI', function(){
       rm('entries/out');
     });
 
+    it('should support all directories', function *() {
+      var out = yield exec('duo *.js .out', 'entries');
+      var admin = yield build('entries/.out/admin.js')
+      var index = yield build('entries/.out/index.js')
+      if (out.error) throw out.error;
+      assert('admin' == admin.main);
+      assert('index' == index.main);
+      assert(contains(out.stderr, 'building : admin.js'));
+      assert(contains(out.stderr, 'built : admin.js'));
+      assert(contains(out.stderr, 'building : index.js'));
+      assert(contains(out.stderr, 'built : index.js'));
+      assert(!out.stdout);
+      rm('entries/.out');
+    });
+
     it('should work with options', function *() {
       var out = yield exec('duo -t js *.js out', 'entries');
       var admin = yield build('entries/out/admin.js')
