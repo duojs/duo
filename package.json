@@ -1,6 +1,13 @@
 {
   "name": "duo",
   "version": "0.8.1",
+  "description": "A next-generation package manager for the front-end",
+  "homepage": "http://duojs.org/",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/duojs/duo.git"
+  },
   "bin": {
     "duo": "bin/duo",
     "_duo": "bin/_duo",
@@ -56,9 +63,5 @@
     "styl": "^0.2.7",
     "map-stream": "~0.1.0",
     "gulp": "~3.8.7"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/duojs/duo.git"
   }
 }
