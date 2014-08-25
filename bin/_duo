@@ -305,7 +305,7 @@ function create(entry) {
 
   // output dir
   outdir && duo.assets(outdir);
-  program.out && duo.assets(program.out);
+  program.output && duo.assets(program.output);
 
   // use plugins
   plugins.forEach(function (plugin) {
