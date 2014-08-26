@@ -19,7 +19,7 @@ var out = join(__dirname, 'build.js');
  * Initialize `duo`
  */
 
-var duo = Duo(__dirname);
+var duo = Duo(__dirname).entry('main.js');
 
 /**
  * Run `duo`
