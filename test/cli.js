@@ -211,7 +211,7 @@ describe('Duo CLI', function(){
       assert(out.error);
     })
 
-    describe.only('with --use', function () {
+    describe('with --use', function () {
       it('should not log "using : <plugin>"', function *() {
         var out = yield exec(
             'duo --quiet --use plugin.js index.js > build.js'
