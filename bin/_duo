@@ -447,7 +447,7 @@ function usePlugins(use) {
       var npm = resolve(root, "node_modules", plugin);
 
       var mod = require(exists(local) ? local : npm);
-      logger.using(plugin);
+      !quiet && logger.using(plugin);
       return mod();
     } catch (e) {
       error(e);
