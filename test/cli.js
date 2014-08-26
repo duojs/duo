@@ -210,6 +210,17 @@ describe('Duo CLI', function(){
       assert(~out.stderr.indexOf('Error: cannot find entry: zomg.js'));
       assert(out.error);
     })
+
+    describe.only('with --use', function () {
+      it('should not log "using : <plugin>"', function *() {
+        var out = yield exec(
+            'duo --quiet --use plugin.js index.js > build.js'
+          , 'cli-duo'
+        );
+        assert('' == out.stdout);
+        assert('' == out.stderr.trim());
+      })
+    });
   });
 
   describe('duo --use <plugin>', function() {
