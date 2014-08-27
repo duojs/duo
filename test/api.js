@@ -603,6 +603,13 @@ describe('Duo API', function(){
       var out = read('css-dup-asset/index.out.css');
       assert(css.trim() == out.trim());
     })
+
+    it('should ignore unresolved remote paths', function *() {
+      var duo = build('css-ignore-unresolved', 'index.css');
+      var css = yield duo.run();
+      var out = read('css-ignore-unresolved/index.out.css');
+      assert(css == out);
+    })
   })
 
   describe('json', function() {
