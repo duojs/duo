@@ -27,7 +27,6 @@
     "component-clone": "^0.2.2",
     "concat-stream": "^1.4.6",
     "cp": "^0.1.1",
-    "cross-spawn": "^0.1.7",
     "debug": "^0.7.4",
     "delegates": "0.0.3",
     "duo-main": "^0.0.3",
@@ -50,7 +49,8 @@
     "stream-log": "0.1.0",
     "stream-to-array": "^2.0.0",
     "thunkify": "~2.1.1",
-    "unyield": "0.0.1"
+    "unyield": "0.0.1",
+    "win-fork": "^1.1.1"
   },
   "devDependencies": {
     "co-mocha": "0.0.4",
