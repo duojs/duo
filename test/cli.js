@@ -219,6 +219,7 @@ describe('Duo CLI', function(){
         );
         assert('' == out.stdout);
         assert('' == out.stderr.trim());
+        rm('cli-duo/build.js');
       })
     });
   });
