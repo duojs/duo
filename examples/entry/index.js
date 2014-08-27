@@ -13,7 +13,7 @@ var join = path.join;
  * Paths
  */
 
-out = join(__dirname, 'build.js');
+var out = join(__dirname, 'build.js');
 
 /**
  * Initialize `duo`
