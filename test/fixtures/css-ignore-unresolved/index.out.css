@@ -1,0 +1,13 @@
+/**
+ * Module dependencies
+ */
+
+@import "necolas/normalize.css:zomg.css";
+
+/**
+ * Styles
+ */
+
+body {
+  background: teal;
+}
