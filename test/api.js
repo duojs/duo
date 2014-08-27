@@ -639,6 +639,7 @@ describe('Duo API', function(){
       var duo = build('js-css-dep', 'index.css');
       var out = read('js-css-dep/index.out.css');
       var css = yield duo.run();
+      console.log(css, out);
       assert(css.trim() == out.trim());
     })
 
