@@ -6,6 +6,7 @@
 
 var Command = require('commander').Command;
 var exists = require('fs').existsSync;
+var stats = require('fs').statSync;
 var resolve = require('path').resolve;
 var dirname = require('path').dirname;
 var mkdirp = require('mkdirp').sync;
@@ -14,7 +15,7 @@ var stat = require('fs').statSync;
 var stdin = require('get-stdin');
 var Watch = require('duo-watch');
 var join = require('path').join;
-var spawn = require('cross-spawn');
+var spawn = require('win-fork');
 var pkg = require('../package');
 var Batch = require('batch');
 var stdout = process.stdout;
@@ -150,6 +151,9 @@ var plugins = usePlugins(program.use);
 if (command && !isFile(command)) {
   var args = process.argv.slice(3);
 
+  // Need to fetch this list.
+  var commands = ['ls', 'duplicates'];
+
   // find executable
   var exec = paths.reduce(function(binary, path){
     path = resolve(path, bin);
@@ -157,11 +161,16 @@ if (command && !isFile(command)) {
       ? path
       : binary;
   }, bin);
-
+	
   // does not exist
   if (!exists(exec)) {
-    logger.error(bin + '(1) does not exist');
-    return;
+    if(!!~commands.indexOf(command)){
+      logger.error(bin + '(1) does not exist');
+      return;
+    } else {
+      logger.error('No such file : ', command);
+      return;
+    }
   }
 
   // spawn
@@ -369,16 +378,13 @@ function error(err) {
 
 function findroot(root) {
   if (root) return resolve(cwd, root);
-  var sep = require('path').sep;
-  var parts = cwd.split(sep);
   var path = cwd;
 
-  while (!exists(join(path, 'component.json')) && parts.length > 1) {
-    parts.pop();
-    path = parts.join(sep);
+  while (!exists(join(path, 'component.json')) && '/' != path) {
+    path = dirname(path);
   }
 
-  return parts.length <= 1
+  return '/' == path
     ? cwd
     : path;
 }
@@ -421,13 +427,7 @@ function globs(path) {
  */
 
 function isFile(path) {
-  if (/^[^\s]+\.\w*$/g.test(path)) return true;
-
-  try {
-    return stat(path).isFile();
-  } catch (e) {
-    return false;
-  }
+  return path && exists(path) && stats(path).isFile();
 }
 
 /**
