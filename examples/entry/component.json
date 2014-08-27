@@ -4,7 +4,7 @@
   "main": "main.js",
   "dependencies": {
     "component/events": "1.0.4",
-    "segmentio/analytics.js": "duo"
+    "segmentio/ware": "1.0.1"
   },
   "development": {
     "component/assert": "test"

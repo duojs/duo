@@ -3,6 +3,6 @@
  */
 
 var shortcuts = require('yields/shortcuts/index');
-var analytics = require('analytics.js');
+var ware = require('ware');
 
-module.exports = analytics;
+module.exports = ware;
