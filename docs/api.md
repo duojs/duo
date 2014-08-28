@@ -166,4 +166,4 @@ function coffee(file, entry) {
 }
 ```
 
-Fortunately, Duo isn't going to force you to make a bunch of new plugins for all your favorite languages. Duo has support for [gulp plugins](http://gulpjs.com/plugins/)! Head over to [duo-gulp](https://github.com/duojs/duo-gulp) to see some examples.
+Fortunately, Duo isn't going to force you to make a bunch of new plugins for all your favorite languages. Duo has support for [gulp plugins](http://gulpjs.com/plugins/)! Head over to [duojs/gulp](https://github.com/duojs/gulp) to see some examples.
