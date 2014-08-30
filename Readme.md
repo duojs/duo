@@ -98,7 +98,7 @@ And add your bundled-up stylesheet to your page!
 - [duo-stylus](https://github.com/stephenmathieson/duo-stylus): Compile stylus files in Duo
 - [duo-regenerator](https://github.com/stephenmathieson/duo-regenerator): Use generators in Duo.
 - [duo-autoprefixer](https://github.com/shinnn/duo-autoprefixer): [Autoprefixer](https://github.com/ai/autoprefixer) for Duo.
-- [duo-hogan](https://github.com/tetsuo/duo-hogan): require [hogan](http://twitter.github.io/hogan.js/) templates in Duo.
+- [duo-hogan](https://github.com/tetsuo/duo-hogan): Require [hogan](http://twitter.github.io/hogan.js/) templates in Duo.
 
 When you make a duo plugin, open a pull request and add it to the list!
 
