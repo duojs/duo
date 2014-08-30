@@ -544,6 +544,13 @@ describe('Duo API', function(){
       assert(css == out);
     })
 
+    it('should resolve files with hashes and querystrings', function*() {
+      var duo = build('css-hash-query-files', 'index.css');
+      var css = yield duo.run();
+      var out = read('css-hash-query-files/index.out.css');
+      assert(css.trim() == out.trim());
+    })
+
     it('should support entry css transforms', function*() {
       var duo = build('css-styl', 'index.styl');
       duo.use(stylus);
