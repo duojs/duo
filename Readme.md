@@ -88,6 +88,19 @@ And add your bundled-up stylesheet to your page!
 <link rel="stylesheet" href="build.css">
 ```
 
+## Third Party Libraries
+
+- [duo-test](https://github.com/duojs/test): Easily test components locally, through phantomjs, or saucelabs.
+- [duo-gulp](https://github.com/duojs/gulp): Wrap gulp transforms into Duo-compatible transforms.
+- [duo-jade](https://github.com/duojs/jade): Require `jade` files in Duo.
+- [duo-whitespace](https://github.com/duojs/whitespace): Transform CSS using the [whitespace](github.com/reworkcss/css-whitespace) plugin.
+- [duo-myth](https://github.com/duojs/myth): Transform css using [myth](https://github.com/segmentio/myth)
+- [duo-stylus](https://github.com/stephenmathieson/duo-stylus): Compile stylus files in Duo
+- [duo-regenerator](https://github.com/stephenmathieson/duo-regenerator): Use generators in Duo.
+- [duo-autoprefixer](https://github.com/shinnn/duo-autoprefixer): [Autoprefixer](https://github.com/ai/autoprefixer) for Duo.
+- [duo-hogan](https://github.com/tetsuo/duo-hogan): require [hogan](http://twitter.github.io/hogan.js/) templates in Duo.
+
+When you make a duo plugin, open a pull request and add it to the list!
 
 ## Authors
 
