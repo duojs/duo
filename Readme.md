@@ -10,7 +10,7 @@ Duo is a next-generation package manager that blends the best ideas from [Compon
 - [Getting Started](#getting-started)
 - [Command Line Usage](/docs/cli.md)
 - [Javascript API](/docs/api.md)
-- [Third Party Libraries](https://github.com/duojs/duo/wiki/Third-Party-Libraries)
+- [Duo.js Plugins](https://github.com/duojs/duo/wiki/Third-Party-Libraries)
 - [FAQ](/docs/faq.md)
 - [Mailing List](https://groups.google.com/forum/#!forum/duojs)
 - `#duojs` on freenode
