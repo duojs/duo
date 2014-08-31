@@ -95,6 +95,7 @@ And add your bundled-up stylesheet to your page!
 - [duo-jade](https://github.com/duojs/jade): Require `jade` files in Duo.
 - [duo-whitespace](https://github.com/duojs/whitespace): Transform CSS using the [whitespace](github.com/reworkcss/css-whitespace) plugin.
 - [duo-myth](https://github.com/duojs/myth): Transform css using [myth](https://github.com/segmentio/myth)
+- [duosass](https://github.com/stephenway/duo-sass): Transpile [Sass](http://sass-lang.com) to CSS with Duo.
 - [duo-stylus](https://github.com/stephenmathieson/duo-stylus): Compile stylus files in Duo
 - [duo-regenerator](https://github.com/stephenmathieson/duo-regenerator): Use generators in Duo.
 - [duo-autoprefixer](https://github.com/shinnn/duo-autoprefixer): [Autoprefixer](https://github.com/ai/autoprefixer) for Duo.
