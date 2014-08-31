@@ -102,6 +102,10 @@ And add your bundled-up stylesheet to your page!
 
 When you make a duo plugin, open a pull request and add it to the list!
 
+### Adding a plugin to the Duo organization
+
+If you have a plugin you'd like to add to the [duojs](http://github.com/duojs) organization, open an issue and I'll take a look and create a repository for you!
+
 ## Authors
 
 - [Matthew Mueller](https://github.com/MatthewMueller)
