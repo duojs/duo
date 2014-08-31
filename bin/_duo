@@ -487,20 +487,3 @@ function usePlugins(use) {
   }
   return ret;
 }
-
-function xusePlugins(use) {
-  if (!use) return [];
-
-  return use.split(",").map(function (plugin) {
-    try {
-      var local = resolve(root, plugin);
-      var npm = resolve(root, "node_modules", plugin);
-
-      var mod = require(exists(local) ? local : npm);
-      !quiet && logger.using(plugin);
-      return mod();
-    } catch (e) {
-      error(e);
-    }
-  });
-}
