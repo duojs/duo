@@ -1,4 +1,20 @@
 
+0.8.2 / 2014-08-31
+==================
+
+ * Fixed: CSS assets should be relative to entryfile, not root
+ * Windows: do not parse dep as an url
+ * Windows: replace cross-spawn with win-fork
+ * Tests: test examples
+ * Refactored: duo#dependency to have the signature dependency(dep, file, entry)
+ * Refactored: duo#resolve to have signature resolve(dep, file, entry)
+ * Refactored: move duo#parse into separate repo
+ * Fixed: for remote packages with absolute paths
+ * Fixed: --quiet flag when --use'ing plugins
+ * Windows: fixed path root checking in findroot()
+ * CLI: Use safer way to check if a path is a file in duo
+ * Added: support require('..'). closes: #231
+
 0.8.1 / 2014-08-21
 ==================
 
