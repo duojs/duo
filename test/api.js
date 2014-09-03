@@ -237,6 +237,7 @@ describe('Duo API', function(){
     })
 
     it('should recognize css', function *() {
+      this.timeout(10000);
       var src = read('css-simple-dep/index.css');
       var root = path('css-simple-dep');
       var duo = Duo(root).src(src);
@@ -457,6 +458,7 @@ describe('Duo API', function(){
     })
 
     it('should bundle assets', function *() {
+      this.timeout(10000);
       var expected = read('css-assets/index.out.css');
       var duo = build('css-assets', 'index.css');
       yield duo.write();
@@ -639,7 +641,6 @@ describe('Duo API', function(){
       var duo = build('js-css-dep', 'index.css');
       var out = read('js-css-dep/index.out.css');
       var css = yield duo.run();
-      console.log(css, out);
       assert(css.trim() == out.trim());
     })
 
@@ -652,6 +653,27 @@ describe('Duo API', function(){
       var out = read('main-obj/index.out.css');
       var css = yield duo.run();
       assert(css.trim() == out.trim());
+    })
+
+    it('should work on a full hybrid that triggers css-compat', function *() {
+      this.timeout(20000);
+      var duo = build('hybrid-full');
+
+      // TODO: figure out how to simulate a browser-like
+      // environment to run this code. For now we're just
+      // ensuring nothing throws.
+      var js = yield duo.run();
+
+      var duo = build('hybrid-full', 'index.css');
+      var css = yield duo.run();
+
+      // this is more resistent to version changes
+      var menu = css.indexOf('.menu {');
+      var dropdown = css.indexOf('.dropdown-link {');
+      var body = css.indexOf('.hybrid-full {');
+
+      // test order
+      assert(-1 < menu < dropdown < body);
     })
   })
 
