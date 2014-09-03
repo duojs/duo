@@ -1,0 +1,13 @@
+/**
+ * Module dependencies
+ */
+
+@import 'component/dropdown';
+
+/**
+ * Styles
+ */
+
+.hybrid-full {
+  background: teal;
+}
