@@ -33,7 +33,7 @@
     "duo-main": "^0.0.3",
     "duo-pack": "~1.0.7",
     "duo-package": "~0.4.2",
-    "duo-parse": "^0.1.0",
+    "duo-parse": "^0.1.1",
     "duo-string-to-js": "~0.1.0",
     "duo-test": "0.x",
     "duo-watch": "^0.1.1",
