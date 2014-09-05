@@ -1,4 +1,10 @@
 
+0.8.3 / 2014-09-04
+==================
+
+ * Bump: duo-parse to fix * issue (component/emitter@*)
+ * Added: CSS Compatibility for CSS-based Components
+
 0.8.2 / 2014-08-31
 ==================
 
