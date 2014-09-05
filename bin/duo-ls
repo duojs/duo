@@ -12,22 +12,22 @@ var cwd = process.cwd();
 var fs = require('fs');
 
 /**
- * Paths
+ * Paths.
  */
 
-var mapping = join(process.cwd())
+var mapping = join(process.cwd());
 
 /**
  * Logger.
  */
 
-logger.type('error', '31m', function(){
+logger.type('error', '31m', function () {
   logger.end();
   process.exit(1);
 });
 
 /**
- * Program
+ * Program.
  */
 
 program
@@ -36,10 +36,10 @@ program
   .parse(process.argv);
 
 /**
- * Examples
+ * Examples.
  */
 
-program.on('--help', function(){
+program.on('--help', function () {
   console.log('  Examples:');
   console.log();
   console.log('    # list all dependencies');
@@ -52,7 +52,7 @@ program.on('--help', function(){
 });
 
 /**
- * Map
+ * Map.
  */
 
 try {
@@ -62,7 +62,7 @@ try {
 }
 
 /**
- * Component
+ * Component.
  */
 
 try {
@@ -72,13 +72,13 @@ try {
 }
 
 /**
- * Max depth
+ * Max depth.
  */
 
 var max = program.depth || Infinity;
 
 /**
- * List
+ * List.
  */
 
 var ls = list(map, 0, {
@@ -88,7 +88,7 @@ var ls = list(map, 0, {
 });
 
 /**
- * Print
+ * Print.
  */
 
 console.log();
@@ -96,19 +96,18 @@ console.log(archy(ls, '  '));
 console.log();
 
 /**
- * List using `map` and `depth`
+ * List using `map` and `depth`.
  *
  * @param {Object} map
  * @param {Number} depth
  * @param {Object} node
  * @return {Array}
- * @api private
  */
 
 function list(map, depth, node){
   var deps = values(map[node.name].deps);
 
-  deps.forEach(function(dep){
+  deps.forEach(function (dep) {
     if (depth == max) return;
     var label = pretty(dep);
     var child = { nodes: [], label: label, name: dep };
@@ -136,19 +135,23 @@ function list(map, depth, node){
 }
 
 /**
- * Object values.
+ * Get the values of an `obj`.
+ *
+ * @param {Object} obj
+ * @return {Array}
  */
 
-function values(obj){
+function values(obj) {
   var ret = [];
   for (var k in obj) ret.push(obj[k]);
   return ret;
 }
 
 /**
- * Read
+ * Read a `path` from disk.
  *
  * @param {String} path
+ * @return {String}
  */
 
 function read(path) {
@@ -157,9 +160,12 @@ function read(path) {
 
 /**
  * Color the given `dep`
+ *
+ * @param {String} dep
+ * @return {String}
  */
 
-function pretty(dep){
+function pretty(dep) {
   var name = dep.split('@')[0];
   var version = dep.split('@')[1];
 
@@ -179,10 +185,12 @@ function pretty(dep){
  *
  * @param {Array} nodes
  * @param {Object} node
+ * @return {Boolean}
  */
 
-function has(nodes, node){
+function has(nodes, node) {
   for (var i = 0; i < nodes.length; ++i) {
     if (nodes[i].name == node.name) return true;
   }
+  return false;
 }

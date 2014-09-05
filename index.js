@@ -1,12 +1,12 @@
 
 /**
- * node v0.10 backwards compatibility
+ * Add backwards compatibility for Node 0.10.
  */
 
 require('gnode');
 
 /**
- * Expose `Duo`
+ * Export `Duo`.
  */
 
 module.exports = require('./lib/duo');

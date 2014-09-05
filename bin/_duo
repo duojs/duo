@@ -22,7 +22,7 @@ var cwd = process.cwd();
 var Duo = require('..');
 
 /**
- * Logger
+ * Logger.
  */
 
 var logger = new Logger(process.stderr)
@@ -35,16 +35,16 @@ var logger = new Logger(process.stderr)
   .type('using', '36m');
 
 /**
- * Error
+ * Error.
  */
 
-logger.type('error', '31m', function(){
+logger.type('error', '31m', function () {
   logger.end();
   process.exit(1);
 });
 
 /**
- * Program
+ * Program.
  */
 
 var program = new Command('duo')
@@ -63,10 +63,10 @@ var program = new Command('duo')
   .parse(process.argv);
 
 /**
- * Help
+ * Help.
  */
 
-program.on('--help', function(){
+program.on('--help', function () {
   console.log('  Usage:');
   console.log();
   console.log('  # build in.js to out.js');
@@ -97,19 +97,19 @@ program.on('--help', function(){
 });
 
 /**
- * Command
+ * Command.
  */
 
 var command = program.args[0];
 
 /**
- * $PATH
+ * $PATH.
  */
 
 var paths = [__dirname].concat(process.env.PATH.split(':'));
 
 /**
- * Bin
+ * Bin.
  */
 
 var bin = ['duo', command].join('-');
@@ -121,37 +121,38 @@ var bin = ['duo', command].join('-');
 var quiet = program.quiet;
 
 /**
- * Root
+ * Root.
  */
 
 var root = findroot(program.root);
 
 /**
- * Asset path
+ * Asset path.
  */
 
 var outdir = assets(program.args);
 
 /**
- * Watching
+ * Watching.
  */
 
 var watching = false;
 
 /**
- * Plugins
+ * Plugins.
  */
+
 var plugins = usePlugins(program.use);
 
 /**
- * Custom executable
+ * Custom executable.
  */
 
 if (command && !isFile(command)) {
   var args = process.argv.slice(3);
 
   // find executable
-  var exec = paths.reduce(function(binary, path){
+  var exec = paths.reduce(function (binary, path) {
     path = resolve(path, bin);
     return exists(path) && stat(path)
       ? path
@@ -179,7 +180,7 @@ if (command && !isFile(command)) {
 }
 
 /**
- * Actions
+ * Actions.
  */
 
 if (command) build(program.args.filter(globs));
@@ -187,16 +188,14 @@ else if (!process.stdin.isTTY) input();
 else program.help();
 
 /**
- * Accept standard input
- *
- * @api private
+ * Accept standard input.
  */
 
 function input() {
-  stdin(function(src) {
+  stdin(function (src) {
     var duo = create(root).src(src, program.type);
 
-    duo.run(function(err, str) {
+    duo.run(function (err, str) {
       if (err) throw error(err);
       logger.end();
       stdout.write(str);
@@ -206,10 +205,9 @@ function input() {
 }
 
 /**
- * Build the entries
+ * Build the entries.
  *
  * @param {Array} entries
- * @api private
  */
 
 function build(entries) {
@@ -224,14 +222,13 @@ function build(entries) {
 }
 
 /**
- * Print to stdout
+ * Print to stdout.
  *
  * @param {String} entry
- * @api private
  */
 
 function print(entry) {
-  create(entry).run(function(err, src) {
+  create(entry).run(function (err, src) {
     if (err) return error(err);
     logger.end();
     stdout.write(src);
@@ -244,10 +241,9 @@ function print(entry) {
 }
 
 /**
- * Write the entries
+ * Write the entries.
  *
  * @param {Array} entries
- * @api private
  */
 
 function write(entries) {
@@ -260,7 +256,7 @@ function write(entries) {
     .map(multiple)
     .map(push);
 
-  batch.end(function(err) {
+  batch.end(function (err) {
     if (err) return error(err);
     logger.end();
 
@@ -273,18 +269,17 @@ function write(entries) {
   // write multiple entries to
   // the directory `out`
   function multiple(entry) {
-    return function(done) {
+    return function (done) {
       create(entry).write(done);
     }
   }
 }
 
 /**
- * Create a duo instance
+ * Create a duo instance.
  *
  * @param {entry} entry
  * @return {Duo}
- * @api private
  */
 
 function create(entry) {
@@ -323,10 +318,9 @@ function create(entry) {
 }
 
 /**
- * Watch
+ * Watch.
  *
  * @param {Function} action
- * @api private
  */
 
 function watch(action) {
@@ -336,14 +330,14 @@ function watch(action) {
 }
 
 /**
- * Log an event
+ * Log an event.
  *
  * @param {String} event
  * @return {Function}
  */
 
 function log (event) {
-  return function(pkg) {
+  return function (pkg) {
     pkg = pkg.slug ? pkg.slug() : pkg;
     pkg = 'source.' + (program.type || 'js') == pkg ? 'from stdin' : pkg;
     logger[event](pkg);
@@ -351,7 +345,7 @@ function log (event) {
 }
 
 /**
- * Error
+ * Error.
  */
 
 function error(err) {
@@ -361,7 +355,7 @@ function error(err) {
 }
 
 /**
- * Find the root
+ * Find the root.
  *
  * @param {String} root
  * @param {String}
@@ -384,12 +378,10 @@ function findroot(root) {
 }
 
 /**
- * Check if `entries` contains
- * an asset path
+ * Check if `entries` contains an asset path.
  *
  * @param {Array} entries
  * @return {String|Boolean}
- * @api private
  */
 
 function assets(entries) {
@@ -400,11 +392,10 @@ function assets(entries) {
 }
 
 /**
- * Filter out unexpanded globs
+ * Filter out unexpanded globs.
  *
  * @param {String} entry
  * @return {Boolean}
- * @api private
  */
 
 function globs(path) {
@@ -412,12 +403,10 @@ function globs(path) {
 }
 
 /**
- * Simple hueristic to check
- * if `path` is a file
+ * Simple hueristic to check if `path` is a file.
  *
  * @param {String} path
  * @return {Boolean}
- * @api private
  */
 
 function isFile(path) {
@@ -431,11 +420,10 @@ function isFile(path) {
 }
 
 /**
- * Retrieve an array of plugins from --use
+ * Retrieve an array of plugins from `--use`.
  *
  * @param {String} plugins
  * @return {Array}
- * @api private
  */
 
 function usePlugins(use) {

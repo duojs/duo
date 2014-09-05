@@ -8,7 +8,7 @@ var path = require('path');
 var spawn = require('win-fork');
 
 /**
- * Resolve
+ * Resolve.
  */
 
 var gnode = require.resolve('gnode/bin/gnode');
@@ -16,15 +16,15 @@ var duo = path.resolve(__dirname, '_duo');
 var args = [duo].concat(process.argv.slice(2));
 
 /**
- * Spawn
+ * Spawn.
  */
 
 var proc = spawn(gnode, args, { stdio: 'inherit' });
 
 /**
- * Exit
+ * Exit.
  */
 
-proc.on('exit', function(code){
+proc.on('exit', function (code) {
   process.exit(code);
 });

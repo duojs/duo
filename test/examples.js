@@ -1,4 +1,8 @@
 
+/**
+ * Module dependencies.
+ */
+
 var path = require('path');
 var join = path.join;
 var fs = require('fs');
@@ -7,7 +11,6 @@ var exists = fs.existsSync;
 var fmt = require('util').format;
 var spawn = require('child_process').spawn;
 var assert = require('assert');
-
 var gnode = require.resolve('gnode/bin/gnode');
 var dir = join(__dirname, '..', 'examples');
 
@@ -19,6 +22,10 @@ var map = {
   css: 'build/build.css',
   default: 'build.js',
 };
+
+/**
+ * Generate tests for each of the examples.
+ */
 
 ls(dir).forEach(function (example) {
   var root = join(dir, example);
