@@ -17,6 +17,7 @@ var join = require('path').join;
 var spawn = require('win-fork');
 var pkg = require('../package');
 var Batch = require('batch');
+var yargs = require('yargs');
 var stdout = process.stdout;
 var cwd = process.cwd();
 var Duo = require('..');
@@ -57,7 +58,8 @@ var program = new Command('duo')
   .option('-q, --quiet', 'only print to stderr when there is an error', false)
   .option('-r, --root <dir>', 'root directory to build from.', null)
   .option('-t, --type <type>', 'set the entry type', null)
-  .option('-u, --use <plugin>', 'use transform plugin', null)
+  .option('-u, --use <plugin>', 'use transform plugin',
+    function (val, list) { list.push(val); return list; }, [])
   .option('-v, --verbose', 'show as much logs as possible', false)
   .option('-w, --watch', 'watch for changes and rebuild', false)
   .parse(process.argv);
@@ -431,6 +433,24 @@ function isFile(path) {
 }
 
 /**
+ * Resolve plugin either from root or node_modules
+ *
+ * @param {String} plugin
+ * @param {Object} options
+ * @return {Function}
+ * @api private
+ */
+
+function resolvePlugin(plugin, options) {
+  var local = resolve(root, plugin);
+  var npm = resolve(root, "node_modules", plugin);
+
+  var mod = require(exists(local) ? local : npm);
+  !quiet && logger.using(plugin);
+  return mod(options);
+}
+
+/**
  * Retrieve an array of plugins from --use
  *
  * @param {String} plugins
@@ -439,18 +459,31 @@ function isFile(path) {
  */
 
 function usePlugins(use) {
-  if (!use) return [];
+  if (!use.length) return use;
 
-  return use.split(",").map(function (plugin) {
+  var ret = [], plugin, opts;
+  while ((plugin = use.shift()) != null) {
+    plugin = plugin.split(',');
+    while (plugin.length > 1) use.push(plugin.pop());
+
+    plugin = plugin[0].trim().split(' ');
+    if (plugin.length == 1) {
+      try {
+        ret.push(resolvePlugin(plugin[0].trim()));
+      } catch (e) {
+        error(e);
+      }
+      continue;
+    }
+
+    plugin = program.parseOptions(plugin);
+    if (!plugin.args.length) continue;
+    opts = yargs(plugin.unknown);
     try {
-      var local = resolve(root, plugin);
-      var npm = resolve(root, "node_modules", plugin);
-
-      var mod = require(exists(local) ? local : npm);
-      !quiet && logger.using(plugin);
-      return mod();
-    } catch (e) {
+      ret.push(resolvePlugin(plugin.args[0], opts.argv));
+    } catch(e) {
       error(e);
     }
-  });
+  }
+  return ret;
 }
