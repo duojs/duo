@@ -192,13 +192,26 @@ describe('Duo CLI', function () {
   });
 
   describe('duo < in.js', function () {
-    it('should write to stdout', function *() {
+    it('should write to stdout with js', function *() {
       out = yield exec('duo < index.js', 'cli-duo');
       if (out.error) throw out.error;
       assert(out.stdout);
       assert(out.stderr);
       ctx = evaluate(out.stdout);
       assert('cli-duo' == ctx.main);
+    });
+
+    it('should write to stdout with css', function *() {
+      out = yield exec('duo < index.css', 'cli-duo');
+      if (out.error) throw out.error;
+      assert(out.stdout);
+      assert(out.stderr);
+      assert(~out.stdout.indexOf('body {'));
+    });
+
+    it('should error for unknown languages', function *() {
+      out = yield exec('duo < index.coffee', 'cli-duo');
+      assert(contains(out.stderr, 'error : could not detect the file type'));
     });
   });
 
