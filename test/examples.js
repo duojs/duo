@@ -27,14 +27,15 @@ var map = {
  * Generate tests for each of the examples.
  */
 
-ls(dir).forEach(function (example) {
-  var root = join(dir, example);
-  var index = join(root, 'index.js');
-  if (!exists(index)) return;
+describe('Duo Examples', function () {
+  this.timeout('10s');
 
-  describe(fmt('node examples/%s/index.js', example), function () {
-    this.timeout('10s');
-    it('should build', function (done) {
+  ls(dir).forEach(function (example) {
+    var root = join(dir, example);
+    var index = join(root, 'index.js');
+    if (!exists(index)) return;
+
+    it(fmt('should build examples/%s/index.js', example), function (done) {
       var args = [gnode, index];
       var proc = spawn('node', args);
       var build = join(root, map[example] || map.default);
