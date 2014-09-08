@@ -1,4 +1,8 @@
 
+/**
+ * Module dependencies.
+ */
+
 var readdir = require('fs').readdirSync;
 var extname = require('path').extname;
 var exist = require('fs').existsSync;
@@ -9,18 +13,22 @@ var assert = require('assert');
 var fs = require('co-fs');
 var vm = require('vm');
 
-describe('Duo CLI', function(){
+/**
+ * Tests.
+ */
+
+describe('Duo CLI', function () {
   var out = {};
   var ctx = {};
 
-  afterEach(function(){
+  afterEach(function () {
     cleanup();
     out = {};
     ctx = {};
   });
 
-  describe('duo in.js', function(){
-    it('should write to stdout', function *(){
+  describe('duo in.js', function () {
+    it('should write to stdout', function *() {
       out = yield exec('duo index.js', 'cli-duo');
       if (out.error) throw out.error;
       assert(out.stdout);
@@ -36,23 +44,23 @@ describe('Duo CLI', function(){
       assert(out.stderr);
       ctx = evaluate(out.stdout);
       assert('cli-duo' == ctx.main);
-    })
+    });
 
     it('should error out when the file doesnt exist', function *() {
       var out = yield exec('duo zomg.js', 'cli-duo');
       assert(~out.stderr.indexOf('Error: cannot find entry: zomg.js'));
       assert(out.error);
-    })
+    });
 
     it('should ignore unexpanded globs', function *() {
       var out = yield exec('duo *.css', 'entries');
       if (out.error) throw out.error;
       assert(!out.stderr);
-    })
+    });
   });
 
-  describe('duo in.js out', function() {
-    it('should write to out/', function *(){
+  describe('duo in.js out', function () {
+    it('should write to out/', function *() {
       var out = yield exec('duo index.js out', 'cli-duo');
       if (out.error) throw out.error;
       ctx = yield build('cli-duo/out/index.js');
@@ -63,7 +71,7 @@ describe('Duo CLI', function(){
       rm('cli-duo/out');
     });
 
-    it('should support options', function *(){
+    it('should support options', function *() {
       var out = yield exec('duo -v -t js index.js out', 'cli-duo');
       if (out.error) throw out.error;
       ctx = yield build('cli-duo/out/index.js');
@@ -73,9 +81,9 @@ describe('Duo CLI', function(){
       assert(!out.stdout);
       rm('cli-duo/out');
     });
-  })
+  });
 
-  describe('duo [file, ...]', function() {
+  describe('duo [file, ...]', function () {
     it('should build multiple entries to duo.assets()', function *() {
       var out = yield exec('duo *.js', 'entries');
       if (out.error) throw out.error;
@@ -118,9 +126,9 @@ describe('Duo CLI', function(){
       assert(!exists('entries/out/*.css'));
       assert(!out.stdout);
     });
-  })
+  });
 
-  describe('duo [file, ...] out', function() {
+  describe('duo [file, ...] out', function () {
     it('should build multiple entries to a directory', function *() {
       var out = yield exec('duo *.js out', 'entries');
       var admin = yield build('entries/out/admin.js')
@@ -180,10 +188,10 @@ describe('Duo CLI', function(){
       assert(!exists('entries/out/*.css'));
       assert(!out.stdout);
       rm('entries/out');
-    })
-  })
+    });
+  });
 
-  describe('duo < in.js', function() {
+  describe('duo < in.js', function () {
     it('should write to stdout', function *() {
       out = yield exec('duo < index.js', 'cli-duo');
       if (out.error) throw out.error;
@@ -191,10 +199,10 @@ describe('Duo CLI', function(){
       assert(out.stderr);
       ctx = evaluate(out.stdout);
       assert('cli-duo' == ctx.main);
-    })
-  })
+    });
+  });
 
-  describe('--quiet', function() {
+  describe('--quiet', function () {
     it('should not log info to stderr', function *() {
       out = yield exec('duo -q index.js > build.js', 'cli-duo');
       if (out.error) throw out.error;
@@ -209,7 +217,7 @@ describe('Duo CLI', function(){
       var out = yield exec('duo -q zomg.js', 'cli-duo');
       assert(~out.stderr.indexOf('Error: cannot find entry: zomg.js'));
       assert(out.error);
-    })
+    });
 
     describe('with --use', function () {
       it('should not log "using : <plugin>"', function *() {
@@ -220,11 +228,11 @@ describe('Duo CLI', function(){
         assert('' == out.stdout);
         assert('' == out.stderr.trim());
         rm('cli-duo/build.js');
-      })
+      });
     });
   });
 
-  describe('duo --use <plugin>', function() {
+  describe('duo --use <plugin>', function () {
     var src = join(__dirname, '..', 'node_modules');
     var dst = join(__dirname, 'fixtures', 'plugins', 'node_modules');
 
@@ -258,16 +266,16 @@ describe('Duo CLI', function(){
     });
   });
 
-  describe('duo ls', function(){
-    beforeEach(function *(){
+  describe('duo ls', function () {
+    beforeEach(function *() {
       yield exec('duo -q index.js > build.js', 'cli-duo-ls');
     });
 
-    afterEach(function *(){
+    afterEach(function *() {
       rm('cli-duo-ls/build.js');
     });
 
-    it('should list all dependencies', function*(){
+    it('should list all dependencies', function *() {
       var out = yield exec('duo ls', 'cli-duo-ls');
       if (out.error) throw out.error;
       assert(contains(out.stdout, 'duo-ls'), 'duo-ls');
@@ -277,16 +285,16 @@ describe('Duo CLI', function(){
     });
   });
 
-  describe('duo duplicates', function(){
-    beforeEach(function *(){
+  describe('duo duplicates', function () {
+    beforeEach(function *() {
       yield exec('duo index.js > build.js', 'cli-duo-ls');
-    })
+    });
 
-    afterEach(function *(){
+    afterEach(function *() {
       rm('cli-duo-ls/build.js');
-    })
+    });
 
-    it('should list all duplicates', function*(){
+    it('should list all duplicates', function *() {
       var out = yield exec('duo duplicates', 'cli-duo-ls');
       if (out.error) throw out.error;
       assert(contains(out.stdout, 'total duplicates : 0b'));
@@ -314,47 +322,44 @@ describe('Duo CLI', function(){
 
     it('should write to stderr', function () {
       assert('' != res.stderr);
-    })
+    });
 
     it('should not write to stdout', function () {
       assert('' == res.stdout);
-    })
+    });
   });
-})
+});
 
 /**
- * Path to `fixture`
+ * Resolve the path to a `fixture`.
  *
  * @param {String} fixture
  * @return {String}
- * @api private
  */
 
-function path(fixture){
+function path(fixture) {
   return join.apply(null, [__dirname, 'fixtures'].concat(fixture.split('/')));
 }
 
 /**
- * Remove `fixture/build.js`
+ * Remove a `fixture`.
  *
  * @param {String} fixture
- * @api private
  */
 
-function rm(fixture){
+function rm(fixture) {
   fixture = path(fixture);
   rmrf(fixture);
 }
 
 /**
- * Get fixture `build.js`
+ * Get fixture `build.js`.
  *
  * @param {String} fixture
  * @return {Object}
- * @api private
  */
 
-function *build(fixture){
+function *build(fixture) {
   fixture += extname(fixture) ? '' : '/build.js';
   var file = path(fixture);
   var js = yield fs.readFile(file, 'utf-8');
@@ -362,12 +367,11 @@ function *build(fixture){
 }
 
 /**
- * Cleanup
+ * Cleanup after the tests.
  *
- * @api private
  */
 
-function cleanup(){
+function cleanup() {
   var dir = join(__dirname, 'fixtures');
   var dirs = readdir(dir);
   dirs.forEach(function(name){
@@ -380,11 +384,10 @@ function cleanup(){
 }
 
 /**
- * Check if a file exists
+ * Check if a `file` exists.
  *
  * @param {String} file
  * @return {Boolean}
- * @api private
  */
 
 function exists(file) {
@@ -392,13 +395,12 @@ function exists(file) {
 }
 
 /**
- * Evaluate `js`.
+ * Evaluate a Javascript `string` with optional `ctx`.
  *
  * @return {Object}
- * @api private
  */
 
-function evaluate(js, ctx){
+function evaluate(js, ctx) {
   var ctx = ctx || { window: {}, document: {} };
   vm.runInNewContext('main =' + js + '(1)', ctx, 'main.vm');
   vm.runInNewContext('require =' + js + '', ctx, 'require.vm');
@@ -406,29 +408,27 @@ function evaluate(js, ctx){
 }
 
 /**
- * Execute `cmd` with `cwd`
+ * Execute `cmd` with `cwd`.
  *
  * @param {String} cmd
  * @param {String} cwd
  * @return {Object}
- * @api private
  */
 
-function *exec(cmd, cwd){
+function *exec(cmd, cwd) {
   cmd = join(__dirname, '..', 'bin', cmd);
   cwd = join(__dirname, 'fixtures', cwd);
   return yield execute(cmd, { cwd: cwd });
 }
 
 /**
- * Execute `cmd` with `opts`
+ * Execute `cmd` with `opts`.
  *
  * @param {String} cmd
  * @param {Object} opts
- * @api private
  */
 
-function execute(cmd, opts){
+function execute(cmd, opts) {
   return function(done){
     proc.exec(cmd, opts, function(err, stdout, stderr){
       done(null, {
@@ -441,12 +441,11 @@ function execute(cmd, opts){
 }
 
 /**
- * Check if `haystack` contains `needle`
+ * Check if `haystack` contains `needle`.
  *
  * @param {String} needle
  * @param {String} haystack
  * @return {Boolean}
- * @api private
  */
 
 function contains(haystack, needle) {

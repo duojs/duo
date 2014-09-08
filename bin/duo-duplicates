@@ -11,7 +11,7 @@ var archy = require('archy');
 var bytes = require('bytes');
 
 /**
- * Program
+ * Program.
  */
 
 program
@@ -19,10 +19,10 @@ program
   .parse(process.argv);
 
 /**
- * Help
+ * Help.
  */
 
-program.on('--help', function(){
+program.on('--help', function () {
   console.log('Examples:');
   console.log();
   console.log('  #');
@@ -39,8 +39,7 @@ program.on('--help', function(){
 });
 
 /**
- * Get component.json
- * and mapping.json
+ * Read component.json and mapping.json.
  */
 
 try {
@@ -56,21 +55,20 @@ try {
 }
 
 /**
- * All duplicates
+ * All duplicates.
  */
 
 var dupes = duplicates(map);
 
 /**
- * Show total bytes saved if duplicates
- * are removed.
+ * Show total bytes saved if duplicates are removed.
  */
 
 console.log();
 console.log('  \033[36mtotal duplicates\033[m : \033[90m%s\033[m', bytes(total(dupes)));
 
 /**
- * Duplicates
+ * Duplicates.
  */
 
 console.log(archy({ nodes: dupes }, '  '));
@@ -85,13 +83,13 @@ if (dupes.length) process.exit(1);
  * @return {Object}
  */
 
-function duplicates(map){
+function duplicates(map) {
   var pkgs = Object.keys(map);
   var dupes = {};
   var ret = [];
 
   // get all duplicates, get total size.
-  pkgs.forEach(function(id){
+  pkgs.forEach(function (id) {
     var name = normalize(id);
     var parts = name.split('@');
     var repo = parts.shift();
@@ -120,7 +118,7 @@ function duplicates(map){
     .map(users);
 
   // Set the label.
-  function label(node){
+  function label(node) {
     var revs = node.versions.join(', ');
     var size = bytes(node.size);
     node.label = fmt('\033[36m%s - (%s) - %s\033[m', node.repo, revs, size);
@@ -128,10 +126,10 @@ function duplicates(map){
   }
 
   // get all users
-  function users(node){
-    pkgs.forEach(function(id){
+  function users(node) {
+    pkgs.forEach(function (id) {
       var deps = values(map[id].deps);
-      deps.forEach(function(dep){
+      deps.forEach(function (dep) {
         if (!~node.ids.indexOf(dep)) return;
         var nodes = node.nodes = node.nodes || [];
         id = normalize(id);
@@ -152,7 +150,7 @@ function duplicates(map){
  * @return {Number}
  */
 
-function size(id, map){
+function size(id, map) {
   var deps = map[id].deps;
   var src = map[id].src;
   var length = Buffer.byteLength(src);
@@ -174,7 +172,7 @@ function size(id, map){
  * @return {String}
  */
 
-function version(dep){
+function version(dep) {
   var repo = dep.split('/')[1];
   if (!repo) return dep;
   return repo.split('@')[1];
@@ -187,7 +185,7 @@ function version(dep){
  * @return {String}
  */
 
-function normalize(key){
+function normalize(key) {
   return key.split('/')[1] || key;
 }
 
@@ -198,8 +196,8 @@ function normalize(key){
  * @return {Number} n
  */
 
-function total(dupes){
-  return dupes.reduce(function(t, d){
+function total(dupes) {
+  return dupes.reduce(function (t, d) {
     return t += d.size - d.size / d.versions.length;
   }, 0);
 }
@@ -211,7 +209,7 @@ function total(dupes){
  * @return {Array}
  */
 
-function values(obj){
+function values(obj) {
   var ret = [];
   for (var k in obj) ret.push(obj[k]);
   return ret;
