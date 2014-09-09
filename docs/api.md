@@ -1,49 +1,80 @@
 
 # API
 
-### `duo(root)`
+The Duo Javascript API lets you easily add in custom plugins, or advanced logic for when the CLI won't suffice.
 
-Initialize Duo with a `root`. All other path will be relative to the `root` including the build directory and the installation path.
+### `new Duo(root)`
+
+Initialize a new `Duo` instance with a path to the package's `root` directory. All other path settings will be relative to the `root` directory, including the build and install directories.
 
 ```js
-var duo = Duo(__dirname);
+var duo = new Duo(__dirname);
 ```
 
-### `duo.entry(entry)`
+### `duo.entry(file)`
 
 Specify the entry file that Duo will traverse and transform.
 
 ```js
-var duo = Duo(__dirname)
-  .entry('main.js');
+duo.entry('main.js');
 ```
 
-### `duo.src(src, [type])`
-
-Instead of specifying an entry, you may specify a `src` and a `type` for duo to build from.
-
-If no `type` is found, duo will try to detect the language type using [language-classifier](https://github.com/visionmedia/node-language-classifier). You should only omit the type on javascript and css files and not on higher-level languages like stylus or coffeescript.
+You can also specify the entry by passing in a source `string` and file `type` like so:
 
 ```js
-// javascript
-var duo = Duo(__dirname)
-  .src(js)
+var source = 'var a = 0;'
+duo.entry(source, 'js');
+```
 
-// coffeescript
-var duo = Duo(__dirname)
-  .use(coffeescript)
-  .src(cs, 'coffee')
+This is useful when you're reading from `stdin`, or any case where you have the contents of the file itself already in memory.
+
+That will let you then access the module via:
+
+```js
+var Tip = window.Tip;
+```
+
+### `duo.development(boolean)`
+
+Set Duo to development mode. This will include `development` dependencies in your builds and add source maps support. Defaults to `false`.
+
+```js
+duo.development(true);
+```
+
+### `duo.copy(boolean)`
+
+Whether to copy assets to the build directory, instead of the default behavior of symlinking them. Defaults to `false`.
+
+```js
+duo.copy(true);
 ```
 
 ### `duo.global(name)`
 
-Attach the component to window object as name.
+Specify a global variable `name` to attach the package's exports to on the `window` object.
 
 ```js
-var duo = Duo(__dirname)
-  .entry('tip.js')
-  .global('Tip');
+var duo.global('Tip');
 ```
+
+### `duo.concurrency(n)`
+
+Set the maximum concurrency Duo uses to traverse dependencies. Defaults to `50`.
+
+### `duo.installTo(path)`
+
+Set the path to the install directory, where dependencies will be installed. Defaults to `./components`.
+
+### `duo.buildTo(path)`
+
+Set the path to the build directory, where assets will be copied. Defaults to `./build`.
+
+### `duo.token(token)`
+
+Set the GitHub authentication token so you can install dependencies from private repositories. If you do not set this token, Duo will automatically try to load the `token` from your `~/.netrc` file.
+
+Here's how to create a GitHub token: https://github.com/settings/tokens/new
 
 ### `duo.include(name, src)`
 
@@ -53,27 +84,29 @@ Include a file with name and its stc  without requiring it. This is particularly
 duo.include('jade-runtime', ...);
 ```
 
-### `duo.development()`
+### `duo.path(paths...)`
 
-Set duo to development mode. This includes "development" dependencies and adds source maps.
+Resolve a series of `paths...` relative to the package's `root` directory.
 
-### `duo.token(token)`
+```js
+var file = duo.path('component.json');
+```
 
-Set the github authentication token so you can load private repos. If you do not set this token, Duo will automatically try to load the `token` from your ~/.netrc.
+### `duo.installPath(paths...)`
 
-Here's how to create a GitHub token: https://github.com/settings/tokens/new
+Resolve a series of `paths...` relative to the package's install directory.
 
-### `duo.concurrency(n)`
+```js
+var folder = duo.path('my-component@1.0.0');
+```
 
-Set the maximum concurrency Duo uses to traverse. Defaults to: 10.
+### `duo.buildPath(paths...)`
 
-### `duo.install(path)`
+Resolve a series of `paths...` relative to the package's build directory.
 
-Set the installation path of the dependencies. Defaults to `components/`.
-
-### `duo.assets(path)`
-
-Set the asset path of duo. Defaults to `build/`.
+```js
+var file = duo.path('some/asset.png');
+```
 
 ### `duo.run([fn])`
 
