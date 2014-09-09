@@ -52,36 +52,6 @@ describe('Duo API', function () {
     assert.deepEqual(['one', 'two'], ctx.main);
   });
 
-  describe('.entry(file)', function () {
-    it('should work with full paths', function *() {
-      var entry = join(path('simple'), 'index.js');
-      var js = yield build('simple', entry).run();
-      var ctx = evaluate(js);
-      assert.deepEqual(['one', 'two'], ctx.main);
-    });
-
-    it('should throw if file doesn\'t exist', function *() {
-      var duo = Duo(__dirname).entry('zomg.js');
-
-      try {
-        yield duo.run();
-      } catch (e) {
-        assert(~e.message.indexOf('cannot find entry: zomg.js'));
-      }
-    });
-
-    it('should be idempotent', function *() {
-      var root = path('simple');
-      var duo = Duo(root).entry('hi.js');
-      duo.entry('index.js');
-      var js = yield duo.run();
-      var ctx = evaluate(js);
-      assert.deepEqual(['one', 'two'], ctx.main);
-      var json = yield mapping('simple');
-      assert(true == json['index.js'].entry);
-    });
-  });
-
   it('should build with no deps', function *() {
     var js = yield build('no-deps').run();
     var ctx = evaluate(js).main;
@@ -181,6 +151,58 @@ describe('Duo API', function () {
     assert('image/jpeg' == mimes[1].lookup('.jpg'));
   });
 
+  describe('.entry(file)', function () {
+    it('should work with full paths', function *() {
+      var entry = join(path('simple'), 'index.js');
+      var js = yield build('simple', entry).run();
+      var ctx = evaluate(js);
+      assert.deepEqual(['one', 'two'], ctx.main);
+    });
+
+    it('should throw if file doesn\'t exist', function *() {
+      var duo = Duo(__dirname).entry('zomg.js');
+
+      try {
+        yield duo.run();
+      } catch (e) {
+        assert(~e.message.indexOf('cannot find entry: zomg.js'));
+      }
+    });
+
+    it('should be idempotent', function *() {
+      var root = path('simple');
+      var duo = Duo(root).entry('hi.js');
+      duo.entry('index.js');
+      var js = yield duo.run();
+      var ctx = evaluate(js);
+      assert.deepEqual(['one', 'two'], ctx.main);
+      var json = yield mapping('simple');
+      assert(true == json['index.js'].entry);
+    });
+  });
+
+  describe('.entry(src, type)', function () {
+    it('should support passing strings', function *() {
+      var src = read('simple/index.js');
+      var root = path('simple');
+      var duo = Duo(root).entry(src, 'js');
+      var js = yield duo.run();
+      var ctx = evaluate(js);
+      assert.deepEqual(['one', 'two'], ctx.main);
+    });
+
+    it('should support transformed strings', function *() {
+      var src = read('coffee/index.coffee');
+      var root = path('coffee');
+      var duo = Duo(root).use(cs).entry(src, 'coffee');
+      var js = yield duo.run();
+      var ctx = evaluate(js).main;
+      assert(ctx.a == 'a');
+      assert(ctx.b == 'b');
+      assert(ctx.c == 'c');
+    });
+  });
+
   describe('.development(boolean)', function () {
     it('should contain sourcemaps when development is `true`', function *() {
       var duo = build('simple');
@@ -205,81 +227,7 @@ describe('Duo API', function () {
     });
   });
 
-  describe('.src(src, type)', function () {
-    it('should support passing strings', function *() {
-      var src = read('simple/index.js');
-      var root = path('simple');
-      var duo = Duo(root).src(src, 'js');
-      var js = yield duo.run();
-      var ctx = evaluate(js);
-      assert.deepEqual(['one', 'two'], ctx.main);
-    });
-
-    it('should support transformed strings', function *() {
-      var src = read('coffee/index.coffee');
-      var root = path('coffee');
-      var duo = Duo(root).use(cs).src(src, 'coffee');
-      var js = yield duo.run();
-      var ctx = evaluate(js).main;
-      assert(ctx.a == 'a');
-      assert(ctx.b == 'b');
-      assert(ctx.c == 'c');
-    });
-  });
-
-  describe('.src(src)', function () {
-    it('should recognize js', function *() {
-      var src = read('simple/index.js');
-      var root = path('simple');
-      var duo = Duo(root).src(src);
-      var js = yield duo.run();
-      var ctx = evaluate(js);
-      assert.deepEqual(['one', 'two'], ctx.main);
-    });
-
-    it('should recognize css', function *() {
-      this.timeout(10000);
-      var src = read('css-simple-dep/index.css');
-      var root = path('css-simple-dep');
-      var duo = Duo(root).src(src);
-      var css = yield duo.run();
-      var out = read('css-simple-dep/index.out.css');
-      assert(css.trim() == out.trim());
-    });
-
-    it('should throw for wrongly classified', function *() {
-      var src = read('coffee/index.coffee');
-      var root = path('coffee');
-
-      try {
-        Duo(root).src(src);
-      } catch(e) {
-        assert(~e.message.indexOf('could not detect a supported type on this source'))
-      }
-    });
-
-    it('should throw for non-supported languages', function *() {
-      try {
-        Duo(__dirname).src('!!;2elk;123v')
-      } catch(e) {
-        assert(~e.message.indexOf('could not detect a supported type on this source'))
-      }
-    });
-  });
-
-  describe('.copy', function () {
-    it('should copy files instead of symlink', function *() {
-      var duo = build('copy', 'index.css').copy();
-      var file = path('copy/build/duo.png');
-      var out = read('copy/index.out.css');
-      var css = yield duo.run();
-      assert(css == out);
-      var stat = yield fs.lstat(file);
-      assert(!stat.isSymbolicLink());
-    });
-  });
-
-  describe('.symlink', function () {
+  describe('.copy(boolean)', function () {
     it('should symlink files by default', function *() {
       var duo = build('symlink', 'index.css');
       var file = path('symlink/build/duo.png');
@@ -288,6 +236,16 @@ describe('Duo API', function () {
       assert(css == out);
       var stat = yield fs.lstat(file);
       assert(stat.isSymbolicLink());
+    });
+
+    it('should copy files instead of symlink', function *() {
+      var duo = build('copy', 'index.css').copy(true);
+      var file = path('copy/build/duo.png');
+      var out = read('copy/index.out.css');
+      var css = yield duo.run();
+      assert(css == out);
+      var stat = yield fs.lstat(file);
+      assert(!stat.isSymbolicLink());
     });
   });
 
@@ -298,6 +256,21 @@ describe('Duo API', function () {
       var js = yield duo.run();
       var ctx = evaluate(js);
       assert('global module' == ctx['global-module']);
+    });
+  });
+
+  describe('.buildTo()', function () {
+    it('should get the build directory', function () {
+      var duo = Duo(__dirname);
+      assert.equal(duo.buildTo(), 'build');
+    });
+  });
+
+  describe('.buildTo(dir)', function () {
+    it('should set the build directory', function () {
+      var duo = Duo(__dirname);
+      duo.buildTo('new');
+      assert.equal(duo.buildTo(), 'new');
     });
   });
 
@@ -371,7 +344,7 @@ describe('Duo API', function () {
     });
   });
 
-  describe('duo#include(name, source)', function () {
+  describe('.include(name, source)', function () {
     it('should include a string as a source', function *() {
       var duo = build('includes');
       duo.include('some-include', 'module.exports = "a"');
@@ -389,15 +362,6 @@ describe('Duo API', function () {
       var js = yield duo.run();
       var ctx = evaluate(js).main;
       assert(ctx == 'a');
-    });
-  });
-
-  describe('duo#assets(dir)', function () {
-    it('should change the assets dir', function () {
-      var duo = build('simple');
-      assert(duo.assetPath == join(duo.root, 'build'))
-      duo.assets('public')
-      assert(duo.assetPath == join(duo.root, 'public'))
     });
   });
 
@@ -472,7 +436,7 @@ describe('Duo API', function () {
       var expected = read('css-assets/index.out.css');
       var duo = build('css-assets', 'index.css')
       yield duo.write();
-      duo.assets('out');
+      duo.buildTo('out');
       yield duo.write('index.css');
       var css = read('css-assets/out/index.css');
       assert(expected.trim() == css.trim());
@@ -481,10 +445,10 @@ describe('Duo API', function () {
     });
   });
 
-  describe('.install()', function () {
+  describe('.installTo()', function () {
     it('should set the installation path', function *(){
       var duo = build('simple-deps');
-      duo.install('deps');
+      duo.installTo('deps');
       yield duo.write();
       assert(stat(path('simple-deps', 'deps')));
       var str = yield fs.readFile(path('simple-deps', 'deps', 'duo.json'));
@@ -494,7 +458,7 @@ describe('Duo API', function () {
   });
 
   describe('.token()', function () {
-    it('should set the token', function () {
+    it('should set and get the authentication token', function () {
       var duo = Duo(__dirname);
       duo.token('foo');
       assert('foo' == duo.token());
@@ -502,10 +466,10 @@ describe('Duo API', function () {
   });
 
   describe('.concurrency()', function () {
-    it('should set concurrency', function () {
+    it('should set and get the download concurrency', function () {
       var duo = Duo(__dirname);
       duo.concurrency(5);
-      assert(5 == duo._concurrency);
+      assert(5 == duo.concurrency());
     });
   });
 

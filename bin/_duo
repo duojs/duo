@@ -4,6 +4,7 @@
  * Module dependencies.
  */
 
+var detect = require('language-classifier');
 var Command = require('commander').Command;
 var exists = require('fs').existsSync;
 var resolve = require('path').resolve;
@@ -95,6 +96,15 @@ program.on('--help', function () {
   console.log();
   process.exit(0);
 });
+
+/**
+ * Language mapping.
+ */
+
+var langmap = {
+  javascript: 'js',
+  css: 'css'
+};
 
 /**
  * Command.
@@ -193,7 +203,9 @@ else program.help();
 
 function input() {
   stdin(function (src) {
-    var duo = create(root).src(src, program.type);
+    var type = program.type || langmap[detect(src)];
+    if (!type) logger.error('could not detect the file type');
+    var duo = create(root).entry(src, type);
 
     duo.run(function (err, str) {
       if (err) throw error(err);
@@ -299,8 +311,8 @@ function create(entry) {
   }
 
   // output dir
-  outdir && duo.assets(outdir);
-  program.out && duo.assets(program.out);
+  outdir && duo.buildTo(outdir);
+  program.out && duo.buildTo(program.out);
 
   // use plugins
   plugins.forEach(function (plugin) {
