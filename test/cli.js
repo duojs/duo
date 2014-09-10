@@ -215,7 +215,7 @@ describe('Duo CLI', function () {
     });
   });
 
-  describe('--quiet', function () {
+  describe('duo --quiet', function () {
     it('should not log info to stderr', function *() {
       out = yield exec('duo -q index.js > build.js', 'cli-duo');
       if (out.error) throw out.error;
