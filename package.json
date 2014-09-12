@@ -40,7 +40,7 @@
     "extend.js": "0.0.1",
     "file-deps": "0.0.5",
     "get-stdin": "~1.0.0",
-    "gnode": "0.0.8",
+    "gnode": "0.1.0",
     "json-mask": "^0.3.1",
     "language-classifier": "0.0.1",
     "max-component": "~1.0.0",
