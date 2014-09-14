@@ -52,6 +52,7 @@ var program = new Command('duo')
   .version(pkg.version)
   .usage('[options] command|[file, ...] [out]')
   .option('-c, --copy', 'opt to copy files instead of symlink', false)
+  .option('-C, --no-cache', 'enable or disable the cache during build', true)
   .option('-d, --development', 'include development dependencies.', false)
   .option('-g, --global <name>', 'expose entry as a global <name>', null)
   .option('-o, --output <dir>', 'set the output directory, defaulted to build/', null)
@@ -298,7 +299,8 @@ function create(entry) {
   var duo = Duo(root)
     .entry(resolve(program.root || cwd, entry))
     .development(!! program.development)
-    .copy(program.copy);
+    .copy(program.copy)
+    .cache(program.cache);
 
   // global
   program.global && duo.global(program.global);

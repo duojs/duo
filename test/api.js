@@ -53,6 +53,7 @@ describe('Duo API', function () {
     assert.equal(duo._copy, false);
     assert.equal(duo._development, false);
     assert.equal(duo._concurrency, 50);
+    assert.equal(duo._cache, true);
   });
 
   describe('.entry()', function () {
@@ -184,11 +185,28 @@ describe('Duo API', function () {
     });
   });
 
-  describe('.concurrency(name)', function () {
+  describe('.concurrency(value)', function () {
     it('should set the download concurrency value', function () {
       var duo = Duo(__dirname);
       duo.concurrency(1);
       assert.equal(duo.concurrency(), 1);
+    });
+  });
+
+  describe('.cache()', function () {
+    it('should get the cache flag', function () {
+      var duo = Duo(__dirname);
+      assert.equal(duo.cache(), true);
+    });
+  });
+
+  describe('.cache(value)', function () {
+    it('should set the cache flag', function () {
+      var duo = Duo(__dirname);
+      duo.cache(true);
+      assert.equal(duo.cache(), true);
+      duo.cache(false);
+      assert.equal(duo.cache(), false);
     });
   });
 
@@ -463,6 +481,24 @@ describe('Duo API', function () {
         var js = yield duo.run();
         var ctx = evaluate(js);
         assert('global module' == ctx['global-module']);
+      });
+    });
+
+    describe('with .cache(false)', function () {
+      it('should have an empty mapping', function *() {
+        var duo = build('idempotent').cache(false);
+        yield duo.run();
+        assert.deepEqual(duo.mapping, {});
+      });
+
+      it('should not update the mapping', function *() {
+        yield build('idempotent').cache(false).run();
+
+        try {
+          var json = yield mapping('idempotent');
+        } catch (e) {
+          assert.equal(e.code, "ENOENT");
+        }
       });
     });
 
