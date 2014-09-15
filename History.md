@@ -1,4 +1,15 @@
 
+0.8.4 / 2014-09-14
+==================
+
+ * Added: capability to bypass cache
+ * Bumped: gnode to 0.1.0
+ * Bumped: duo-pack to fix duplicate CSS
+ * Refactored: extract out conditionals
+ * Added: tests for new accessors
+ * Refactored: change accessors to make them all consistent
+ * Refactored: clean up style to make the repository consistent
+
 0.8.3 / 2014-09-04
 ==================
 
