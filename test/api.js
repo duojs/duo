@@ -490,16 +490,6 @@ describe('Duo API', function () {
         yield duo.run();
         assert.deepEqual(duo.mapping, {});
       });
-
-      it('should not update the mapping', function *() {
-        yield build('idempotent').cache(false).run();
-
-        try {
-          var json = yield mapping('idempotent');
-        } catch (e) {
-          assert.equal(e.code, "ENOENT");
-        }
-      });
     });
 
     describe('with .use(fn|gen)', function () {
