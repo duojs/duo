@@ -141,7 +141,7 @@ var root = findroot(program.root);
  * Asset path.
  */
 
-var outdir = assets(program.args);
+var outdir = program.output || assets(program.args);
 
 /**
  * Watching.
