@@ -78,7 +78,7 @@ Here's how to create a GitHub token: https://github.com/settings/tokens/new
 
 ### `duo.include(name, src)`
 
-Include a file with name and its stc  without requiring it. This is particularly useful for including runtimes.
+Include a file with name and its src without requiring it. This is particularly useful for including runtimes.
 
 ```js
 duo.include('jade-runtime', ...);
