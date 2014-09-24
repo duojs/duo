@@ -98,6 +98,20 @@ describe('Duo CLI', function () {
       assert(!out.stdout);
     });
 
+    it('should copy non-js/css files to build', function *() {
+      var out = yield exec('duo duo.png svg/*', 'assets');
+      if (out.error) throw out.error;
+      assert(contains(out.stderr, 'building : duo.png'));
+      assert(contains(out.stderr, 'built : duo.png'));
+      assert(contains(out.stderr, 'building : svg/logo-white.svg'));
+      assert(contains(out.stderr, 'built : svg/logo-white.svg'));
+      assert(contains(out.stderr, 'building : svg/logo-black.svg'));
+      assert(contains(out.stderr, 'built : svg/logo-black.svg'));
+      assert(exists('assets/build/duo.png'));
+      assert(exists('assets/build/svg/logo-white.svg'));
+      assert(exists('assets/build/svg/logo-black.svg'));
+    });
+
     it('should work with options', function *() {
       var out = yield exec('duo -t js *.js', 'entries');
       var admin = yield build('entries/build/admin.js')

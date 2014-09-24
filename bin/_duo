@@ -244,7 +244,7 @@ function print(entry) {
   create(entry).run(function (err, src) {
     if (err) return error(err);
     logger.end();
-    stdout.write(src);
+    if (src) stdout.write(src);
 
     // watch or exit
     program.watch
