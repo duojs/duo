@@ -293,6 +293,15 @@ describe('Duo CLI', function () {
     });
   });
 
+  describe('duo --output <dir>', function () {
+    it('should change to another output directory', function *() {
+      var out = yield exec('duo --output out *.js', 'entries');
+      assert(exists('entries/out/index.js'));
+      assert(exists('entries/out/admin.js'));
+      rm('entries/out');
+    });
+  });
+
   describe('duo ls', function () {
     beforeEach(function *() {
       yield exec('duo -q index.js > build.js', 'cli-duo-ls');
