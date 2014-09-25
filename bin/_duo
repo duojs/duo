@@ -141,7 +141,7 @@ var root = findroot(program.root);
  * Asset path.
  */
 
-var outdir = assets(program.args);
+var outdir = program.output || assets(program.args);
 
 /**
  * Watching.
@@ -224,7 +224,7 @@ function input() {
  */
 
 function build(entries) {
-  outdir && entries.pop();
+  outdir && !program.output && entries.pop();
   var len = entries.length;
 
   return !len
