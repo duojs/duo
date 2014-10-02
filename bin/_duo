@@ -447,8 +447,13 @@ function usePlugins(use) {
     try {
       var local = resolve(root, plugin);
       var npm = resolve(root, "node_modules", plugin);
-
-      var mod = require(exists(local) ? local : npm);
+      var cwd = resolve(process.cwd(), "node_modules", plugin);
+      var mod;
+      
+      if (exists(local)) mod = require(local);
+      else if (exists(npm)) mod = require(npm);
+      else mod = require(cwd);
+      
       !quiet && logger.using(plugin);
       return mod();
     } catch (e) {
