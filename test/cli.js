@@ -293,6 +293,16 @@ describe('Duo CLI', function () {
     });
   });
 
+  describe('duo --use <plugin>', function () {
+    it('should allow npm modules from the working directory', function *() {
+      var cwd = join(__dirname, '..');
+      var src = join(__dirname, 'fixtures', 'plugins');
+      var cmd = join(__dirname, '..', 'bin', 'duo');
+      var out = yield execute(cmd + ' -r ' + src + ' --use duo-jade index.js', { cwd: cwd });
+      assert(contains(out.stderr, 'using : duo-jade'));
+    });
+  });
+
   describe('duo --output <dir>', function () {
     it('should change to another output directory', function *() {
       var out = yield exec('duo --output out *.js', 'entries');
