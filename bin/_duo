@@ -207,6 +207,11 @@ function input() {
     var type = program.type || langmap[detect(src)];
     if (!type) logger.error('could not detect the file type');
     var duo = create(root).entry(src, type);
+    
+    // use plugins
+    plugins.forEach(function (plugin) {
+      duo.use(plugin);
+    });
 
     duo.run(function (err, str) {
       if (err) throw error(err);
