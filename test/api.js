@@ -759,10 +759,9 @@ describe('Duo API', function () {
         yield [a.run(), b.run()];
         var json = yield mapping('concurrent-mapping');
         var keys = Object.keys(json).sort();
-
         assert(keys[0] == 'components/component-emitter@1.1.3/index.js');
         assert(keys[1] == 'components/component-type@1.0.0/index.js');
-        assert(keys[2] == 'components/necolas-normalize.css@3.0.1/normalize.css');
+        assert(keys[2] == 'components/necolas-normalize.css@3.0.2/normalize.css');
         assert(keys[3] == 'index.css');
         assert(keys[4] == 'index.js' );
       });
