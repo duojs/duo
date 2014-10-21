@@ -1,4 +1,14 @@
 
+0.8.5 / 2014-10-20
+==================
+
+  * Bump: Update debug
+  * Fixed: --use should look for plugin in working directory
+  * Fixed: getting cli --output to be understood
+  * Added: support for working with arbitrary assets to duo
+  * Removed: incorrect test
+  * Added: Clarify all the internal methods and provide examples in the source
+
 0.8.4 / 2014-09-14
 ==================
 
