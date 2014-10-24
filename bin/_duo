@@ -62,6 +62,7 @@ var program = new Command('duo')
   .option('-u, --use <plugin>', 'use transform plugin', null)
   .option('-v, --verbose', 'show as much logs as possible', false)
   .option('-w, --watch', 'watch for changes and rebuild', false)
+  .option('-s, --standalone <standalone>', 'outputs standalone javascript umd <standalone>', '')
   .parse(process.argv);
 
 /**
@@ -302,6 +303,10 @@ function create(entry) {
     .copy(program.copy)
     .cache(program.cache);
 
+  // standalone
+  var name = program.standalone;
+  name && duo.standalone(name);
+
   // global
   program.global && duo.global(program.global);
 
@@ -449,11 +454,11 @@ function usePlugins(use) {
       var npm = resolve(root, "node_modules", plugin);
       var cwd = resolve(process.cwd(), "node_modules", plugin);
       var mod;
-      
+
       if (exists(local)) mod = require(local);
       else if (exists(npm)) mod = require(npm);
       else mod = require(cwd);
-      
+
       !quiet && logger.using(plugin);
       return mod();
     } catch (e) {

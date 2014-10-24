@@ -6,18 +6,20 @@
 
     Options:
 
-      -h, --help             output usage information
-      -V, --version          output the version number
-      -c, --copy             opt to copy files instead of symlink
-      -d, --development      include development dependencies.
-      -g, --global <name>    expose entry as a global <name>
-      -o, --output <dir>     set the output directory, defaulted to build/
-      -q, --quiet            only print to stderr when there is an error
-      -r, --root <dir>       root directory to build from.
-      -t, --type <type>      set the entry type
-      -u, --use <plugin>     use transform plugin
-      -v, --verbose          show as much logs as possible
-      -w, --watch            watch for changes and rebuild
+      -h, --help                     output usage information
+      -V, --version                  output the version number
+      -c, --copy                     opt to copy files instead of symlink
+      -C, --no-cache                 enable or disable the cache during build
+      -d, --development              include development dependencies.
+      -g, --global <name>            expose entry as a global <name>
+      -o, --output <dir>             set the output directory, defaulted to build/
+      -q, --quiet                    only print to stderr when there is an error
+      -r, --root <dir>               root directory to build from.
+      -t, --type <type>              set the entry type
+      -u, --use <plugin>             use transform plugin
+      -v, --verbose                  show as much logs as possible
+      -w, --watch                    watch for changes and rebuild
+      -s, --standalone <standalone>  outputs standalone javascript umd <standalone>
 
 ## Examples
 
