@@ -1,4 +1,10 @@
 
+0.8.7 / 2014-10-24
+==================
+
+  * fix: symlink => copy should not empty target file
+  * authentication no longer required :-)
+
 0.8.6 / 2014-10-24
 ==================
 
