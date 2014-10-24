@@ -90,12 +90,6 @@ We recommend that you authenticate with Github so you can increase your rate lim
 
 You can create a new `token` here: https://github.com/settings/tokens/new
 
-## Authors
-
-- [Matthew Mueller](https://github.com/MatthewMueller)
-- [Amir Abu Shareb](https://github.com/yields)
-- Plus many more wonderful contributors!
-
 ## Debugging
 
 If you run into an issue with Duo, often times you can resolve it by prepending `DEBUG=duo*` to your `$COMMAND`:
@@ -119,6 +113,12 @@ Download this repository and run:
 ```bash
 make test
 ```
+
+## Authors
+
+- [Matthew Mueller](https://github.com/MatthewMueller)
+- [Amir Abu Shareb](https://github.com/yields)
+- Plus many more wonderful [contributors](https://github.com/duojs/duo/graphs/contributors)!
 
 ## License
 
