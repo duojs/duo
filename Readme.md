@@ -96,6 +96,22 @@ You can create a new `token` here: https://github.com/settings/tokens/new
 - [Amir Abu Shareb](https://github.com/yields)
 - Plus many more wonderful contributors!
 
+## Debugging
+
+If you run into an issue with Duo, often times you can resolve it by prepending `DEBUG=duo*` to your `$COMMAND`:
+
+```bash
+$ DEBUG=duo* $COMMAND
+```
+
+Example:
+
+```bash
+$ DEBUG=duo* duo index.js > build.js
+```
+
+If you can't figure it out, you should open an issue: https://github.com/duojs/duo/issues
+
 ## Test
 
 Download this repository and run:
