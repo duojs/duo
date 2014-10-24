@@ -31,7 +31,7 @@
     "delegates": "0.0.3",
     "duo-css-compat": "0.0.3",
     "duo-main": "^0.0.3",
-    "duo-pack": "git://github.com/duojs/duo-pack#add/umd-support",
+    "duo-pack": "1.0.10",
     "duo-package": "~0.4.2",
     "duo-parse": "^0.1.1",
     "duo-string-to-js": "~0.1.0",
