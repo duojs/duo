@@ -7,6 +7,7 @@ var readdir = require('fs').readdirSync;
 var readfile = require('fs').readFileSync;
 var dirname = require('path').dirname;
 var coffee = require('coffee-script');
+var resolve = require('path').resolve;
 var exist = require('fs').existsSync;
 var mkdir = require('fs').mkdirSync;
 var lstat = require('fs').lstatSync;
@@ -472,6 +473,25 @@ describe('Duo API', function () {
         var stat = yield fs.lstat(file);
         assert(!stat.isSymbolicLink());
       });
+
+      it('should not empty the target file when symlinked then copied. fixes: #356', function *() {
+        // symlink
+        var duo = build('copy', 'index.css').copy(false);
+        var original = read('copy/duo.png');
+        var file = path('copy/build/duo.png');
+        var css = yield duo.run();
+        var stat = yield fs.lstat(file);
+        assert(original == read(file));
+        assert(stat.isSymbolicLink());
+
+        // copy
+        duo = build('copy', 'index.css').copy(true);
+        css = yield duo.run();
+        stat = yield fs.lstat(file);
+        assert(!stat.isSymbolicLink());
+        assert(original == read(file));
+        assert(original == read('copy/duo.png'));
+      })
     });
 
     describe('with .global(name)', function () {
@@ -974,7 +994,7 @@ function *mapping(fixture) {
  */
 
 function read(path) {
-  path = join(__dirname, 'fixtures', path);
+  path = resolve(__dirname, 'fixtures', path);
   return readfile(path, 'utf8');
 }
 
