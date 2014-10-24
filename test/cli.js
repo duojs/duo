@@ -83,6 +83,35 @@ describe('Duo CLI', function () {
     });
   });
 
+  describe('duo --standalone <name>', function(){
+    it('should support umd (amd)', function*(){
+      var out = yield exec('duo --standalone my-module index.js', 'cli-duo');
+      if (out.error) throw out.error;
+      var defs = [];
+      var define = defs.push.bind(defs);
+      define.amd = true;
+      var ctx = evaluate(out.stdout, { define: define });
+      assert('cli-duo' == defs[0]());
+    });
+
+    it('should support umd (commonjs)', function*(){
+      var out = yield exec('duo --standalone my-module index.js', 'cli-duo');
+      if (out.error) throw out.error;
+      var mod = { exports: {} };
+      mod.module = mod;
+      var ctx = evaluate(out.stdout, mod);
+      assert('cli-duo' == ctx.exports);
+    });
+
+    it('should support umd (global)', function*(){
+      var out = yield exec('duo --standalone my-module index.js', 'cli-duo');
+      if (out.error) throw out.error;
+      var global = {};
+      var ctx = evaluate(out.stdout, global);
+      assert('cli-duo' == global['my-module']);
+    });
+  });
+
   describe('duo [file, ...]', function () {
     it('should build multiple entries to duo.assets()', function *() {
       var out = yield exec('duo *.js', 'entries');

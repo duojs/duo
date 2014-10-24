@@ -42,6 +42,18 @@ Set Duo to development mode. This will include `development` dependencies in you
 duo.development(true);
 ```
 
+### `duo.standalone(name)`
+
+When you add standalone `name`, Duo will output a single standalone file that can be used anywhere (UMD).
+
+```js
+duo.standalone('my-module');
+```
+
+This is very useful when you want to let anyone use your module, duo will add a tiny 5 line function that will
+check for AMD's `define`, CommonJS `module` and export the module with `name`, if CommonJS and AMD are not found
+Duo will expose the module on the global scope `this['my-module'] = ...`.
+
 ### `duo.copy(boolean)`
 
 Whether to copy assets to the build directory, instead of the default behavior of symlinking them. Defaults to `false`.
