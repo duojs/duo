@@ -33,15 +33,6 @@ Install Duo straight from `npm` with:
 $ npm install -g duo
 ```
 
-Duo requires you to authenticate with GitHub to increase your rate limit and allow you to pull from private repositories. To do that, add the following entry to your `~/.netrc` file:
-
-    machine api.github.com
-      login <username>
-      password <token>
-
-You can create a new `token` here: https://github.com/settings/tokens/new
-
-
 ## Getting Started
 
 To get started just write normal Javascript, requiring dependencies straight from the file system or from GitHub as you need them:
@@ -89,12 +80,29 @@ And add your bundled-up stylesheet to your page!
 <link rel="stylesheet" href="build.css">
 ```
 
+## Authenticate with Github
+
+We recommend that you authenticate with Github so you can increase your rate limit and allow you to pull from private repositories. To do that, add the following entry to your `~/.netrc` file:
+
+    machine api.github.com
+      login <username>
+      password <token>
+
+You can create a new `token` here: https://github.com/settings/tokens/new
+
 ## Authors
 
 - [Matthew Mueller](https://github.com/MatthewMueller)
 - [Amir Abu Shareb](https://github.com/yields)
 - Plus many more wonderful contributors!
 
+## Test
+
+Download this repository and run:
+
+```bash
+make test
+```
 
 ## License
 
