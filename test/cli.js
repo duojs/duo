@@ -301,6 +301,7 @@ describe('Duo CLI', function () {
     });
 
     it('should allow npm modules', function *() {
+      this.timeout(10000);
       var out = yield exec('duo --use duo-jade index.js', 'plugins');
       assert(contains(out.stderr, 'using : duo-jade'));
     });
