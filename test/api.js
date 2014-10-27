@@ -273,6 +273,14 @@ describe('Duo API', function () {
       assert.deepEqual(['one', 'two'], ctx.main);
     });
 
+    it('should build require conflicts', function*(){
+      this.timeout(10000);
+      var js = yield build('require-conflict').run();
+      var ctx = evaluate(js);
+      var mod = ctx.main;
+      assert(mod.send != mod.json, 'segmentio/json == yields/send-json');
+    });
+
     it('should build with no deps', function *() {
       var js = yield build('no-deps').run();
       var ctx = evaluate(js).main;
