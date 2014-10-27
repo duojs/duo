@@ -11,7 +11,7 @@ Initialize a new `Duo` instance with a path to the package's `root` directory. A
 var duo = new Duo(__dirname);
 ```
 
-### `duo.entry(file)`
+### `duo.entry(file|source, [type])`
 
 Specify the entry file that Duo will traverse and transform.
 
@@ -19,7 +19,7 @@ Specify the entry file that Duo will traverse and transform.
 duo.entry('main.js');
 ```
 
-You can also specify the entry by passing in a source `string` and file `type` like so:
+You can also specify the entry by passing in a source `source` and file `type` like so:
 
 ```js
 var source = 'var a = 0;'
