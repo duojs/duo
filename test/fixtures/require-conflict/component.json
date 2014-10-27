@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "yields/send-json": "1.1.1",
+    "segmentio/json": "1.0.0"
+  }
+}
