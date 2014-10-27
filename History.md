@@ -1,4 +1,13 @@
 
+0.8.8 / 2014-10-27
+==================
+
+  * speed up CLI with caching and lazy-loading big modules
+  * fix: require conflicts
+  * deps: remove redundant deps
+  * bump file-deps
+  * update timeout for travis
+
 0.8.7 / 2014-10-24
 ==================
 
