@@ -20,7 +20,6 @@ var pkg = require('../package');
 var Batch = require('batch');
 var stdout = process.stdout;
 var cwd = process.cwd();
-var Duo = require('..');
 
 /**
  * Logger.
@@ -465,4 +464,13 @@ function usePlugins(use) {
       error(e);
     }
   });
+}
+
+/**
+ * Lazy-load Duo
+ */
+
+function Duo() {
+  var duo = require('..');
+  return duo.apply(duo, arguments);
 }
