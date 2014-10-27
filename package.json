@@ -38,7 +38,7 @@
     "duo-test": "0.x",
     "duo-watch": "^0.1.1",
     "extend.js": "0.0.1",
-    "file-deps": "0.0.5",
+    "file-deps": "^0.0.7",
     "get-stdin": "~1.0.0",
     "gnode": "0.1.0",
     "json-mask": "^0.3.1",
