@@ -42,6 +42,14 @@ Set Duo to development mode. This will include `development` dependencies in you
 duo.development(true);
 ```
 
+### `duo.cache(boolean)`
+
+Turn caching on or off.  With caching turned on, plugin transformations will not be called unless the file changes. Defaults to true.
+
+```js
+duo.cache(false);
+```
+
 ### `duo.standalone(name)`
 
 When you add standalone `name`, Duo will output a single standalone file that can be used anywhere (UMD).
