@@ -1,4 +1,10 @@
 
+0.8.9 / 2014-11-03
+==================
+
+  * An imperfect fix for multiple symlink creation.
+  * Add "cache" flag to API documentation
+
 0.8.8 / 2014-10-27
 ==================
 
