@@ -261,6 +261,23 @@ describe('Duo API', function () {
     });
   });
 
+  describe('.include(name, src)', function () {
+    it('should add the specified module to the includes hash', function () {
+      var duo = build('includes');
+      duo.include('some-include', 'module.exports = "a"');
+      assert('some-include' in duo.includes);
+    });
+  });
+
+  describe('.included(name)', function () {
+    it('should tell us if something has already been included', function () {
+      var duo = build('includes');
+      assert(!duo.included('some-include'));
+      duo.include('some-include', 'module.exports = "a"');
+      assert(duo.included('some-include'));
+    });
+  });
+
   describe('.run([fn])', function () {
     it('should ignore runs without an entry or source', function *() {
       var js = yield Duo(__dirname).run();
