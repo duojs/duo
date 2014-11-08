@@ -261,11 +261,17 @@ describe('Duo API', function () {
     });
   });
 
-  describe('.include(name, src)', function () {
+  describe('.include(name, src, [type])', function () {
     it('should add the specified module to the includes hash', function () {
       var duo = build('includes');
       duo.include('some-include', 'module.exports = "a"');
       assert('some-include' in duo.includes);
+    });
+
+    it('should parse the included file for dependencies (when a type is specified)', function () {
+      var duo = build('includes');
+      duo.include('some-include', 'require("other-include");', 'js');
+      assert('other-include' in duo.includes['some-include'].deps);
     });
   });
 
