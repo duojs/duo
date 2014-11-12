@@ -328,6 +328,18 @@ describe('Duo API', function () {
       assert('index' == ctx.main);
     });
 
+    it('should resolve dependencies listed as local in component.json', function *() {
+      var js = yield build('local-path').run();
+      var ctx = evaluate(js);
+      assert('index' == ctx.main);
+    });
+
+    it('should resolve dependencies listed as local in component.json with search paths', function *() {
+      var js = yield build('local-path-with-search').run();
+      var ctx = evaluate(js);
+      assert('index' == ctx.main);
+    });
+
     it('should fetch and build direct dependencies', function *() {
       this.timeout(15000);
       var js = yield build('simple-deps').run();
