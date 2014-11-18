@@ -2,7 +2,7 @@
  * Module Dependencies
  */
 
-var map = require('map-stream');
+var through = require('through2');
 var Duo = require('../../');
 var gulp = require('gulp');
 
@@ -39,7 +39,7 @@ gulp.task('styles', function() {
 function duo(opts) {
   opts = opts || {};
 
-  return map(function(file, fn) {
+  return through.obj(function(file, enc, fn) {
     Duo(file.base)
       .entry(file.path)
       .run(function(err, src) {
