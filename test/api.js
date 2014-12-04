@@ -435,6 +435,30 @@ describe('Duo API', function () {
       yield duo.run();
     });
 
+    it('should properly mark local and remote files even when installed somewhere else', function *() {
+      var duo = build('local-vs-remote');
+      duo.installTo('not components');
+
+      duo.use(function test(file) {
+        switch (file.id) {
+          case 'index.js':
+          case 'local.js':
+            assert(file.local());
+            break;
+
+          case 'not components/component-to-function@2.0.5/index.js':
+          case 'not components/component-props@1.1.2/index.js':
+            assert(file.remote());
+            break;
+
+          default:
+            throw new Error('unhandled file ' + file.id);
+          }
+      });
+
+      yield duo.run();
+    });
+
     describe('with .entry(path)', function () {
       it('should work with full paths for entry files', function *() {
         var entry = join(path('simple'), 'index.js');
