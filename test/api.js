@@ -416,12 +416,19 @@ describe('Duo API', function () {
       var duo = build('local-vs-remote');
 
       duo.use(function test(file) {
-        if (file.id.slice(0, 11) === 'components/') {
-          assert(file.remote());
-          assert(!file.local());
-        } else {
+        switch (file.id) {
+        case 'index.js':
+        case 'local.js':
           assert(file.local());
-          assert(!file.remote());
+          break;
+
+        case 'components/component-to-function@2.0.5/index.js':
+        case 'components/component-props@1.1.2/index.js':
+          assert(file.remote());
+          break;
+
+        default:
+          throw new Error('unhandled file ' + file.id);
         }
       });
 

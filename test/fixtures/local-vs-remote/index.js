@@ -1,5 +1,5 @@
 
 module.exports = [
   require('./local'),
-  require('component/each')
+  require('component/to-function@2.0.5')
 ];
