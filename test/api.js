@@ -63,6 +63,15 @@ describe('Duo API', function () {
       duo._entry = 'entry';
       assert.equal(duo.entry(), 'entry');
     });
+
+    it('should be classified as a local', function () {
+      var duo = Duo(__dirname);
+      duo.entry('path');
+      var file = duo.entry();
+      assert(file instanceof File);
+      assert(file.local());
+      assert(!file.remote());
+    });
   });
 
   describe('.entry(path)', function () {
@@ -401,6 +410,22 @@ describe('Duo API', function () {
       assert('image/x-nikon-nef' == mimes[0].lookup('.nef')); // 0.0.2
       assert(null == mimes[1].lookup('.nef')); // 0.0.1
       assert('image/jpeg' == mimes[1].lookup('.jpg'));
+    });
+
+    it('should properly mark local and remote files', function *() {
+      var duo = build('local-vs-remote');
+
+      duo.use(function test(file) {
+        if (file.id.slice(0, 11) === 'components/') {
+          assert(file.remote());
+          assert(!file.local());
+        } else {
+          assert(file.local());
+          assert(!file.remote());
+        }
+      });
+
+      yield duo.run();
     });
 
     describe('with .entry(path)', function () {
