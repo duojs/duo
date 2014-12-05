@@ -303,24 +303,24 @@ describe('Duo CLI', function () {
     it('should allow npm modules', function *() {
       this.timeout(10000);
       var out = yield exec('duo --use duo-jade index.js', 'plugins');
-      assert(contains(out.stderr, 'using : duo-jade'));
+      assert(contains(out.stderr, 'using : jade'));
     });
 
     it('should allow regular js files', function *() {
       var out = yield exec('duo --use plugin.js index.js', 'plugins');
-      assert(contains(out.stderr, 'using : plugin.js'));
+      assert(contains(out.stderr, 'using : plugin'));
     });
 
     it('should allow multiple plugins', function *() {
       var out = yield exec('duo --use duo-jade,plugin.js index.js', 'plugins');
-      assert(contains(out.stderr, 'using : duo-jade'));
-      assert(contains(out.stderr, 'using : plugin.js'));
+      assert(contains(out.stderr, 'using : jade'));
+      assert(contains(out.stderr, 'using : plugin'));
     });
 
     it('should allow multiple calls to --use', function *() {
       var out = yield exec('duo --use duo-jade --use plugin.js index.js', 'plugins');
-      assert(contains(out.stderr, 'using : duo-jade'));
-      assert(contains(out.stderr, 'using : plugin.js'));
+      assert(contains(out.stderr, 'using : jade'));
+      assert(contains(out.stderr, 'using : plugin'));
     });
 
     it('should bomb if the plugin does not exist', function *() {
@@ -332,15 +332,20 @@ describe('Duo CLI', function () {
       var out = yield exec('duo --use plugin index.js', 'plugins');
       assert(contains(out.stderr, 'using : plugin'));
     });
-  });
 
-  describe('duo --use <plugin>', function () {
+    it('should allow an array of plugins', function *() {
+      var out = yield exec('duo --use plugins index.js', 'plugins');
+      assert(contains(out.stderr, 'using : plugin1'));
+      assert(contains(out.stderr, 'using : plugin2'));
+      assert(contains(out.stderr, 'using : (anonymous)'));
+    });
+
     it('should allow npm modules from the working directory', function *() {
       var cwd = join(__dirname, '..');
       var src = join(__dirname, 'fixtures', 'plugins');
       var cmd = join(__dirname, '..', 'bin', 'duo');
       var out = yield execute(cmd + ' -r ' + src + ' --use duo-jade index.js', { cwd: cwd });
-      assert(contains(out.stderr, 'using : duo-jade'));
+      assert(contains(out.stderr, 'using : jade'));
     });
   });
 

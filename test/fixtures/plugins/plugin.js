@@ -1,5 +1,5 @@
 module.exports = function () {
-    return function () {
+    return function plugin() {
         console.log("plugin");
     };
 };

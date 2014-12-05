@@ -316,21 +316,20 @@ function create(entry) {
     duo.on('installing', log('installing'));
   }
 
+  // events
+  if (!quiet) {
+    duo.on('plugin', log('using'));
+    duo.on('install', log('installed'));
+    duo.on('running', log('building'));
+    duo.on('run', log('built'));
+  }
+
   // output dir
   outdir && duo.buildTo(outdir);
   program.out && duo.buildTo(program.out);
 
   // use plugins
-  plugins.forEach(function (plugin) {
-    duo.use(plugin);
-  });
-
-  // events
-  if (!quiet) {
-    duo.on('install', log('installed'));
-    duo.on('running', log('building'));
-    duo.on('run', log('built'));
-  }
+  plugins.forEach(duo.use, duo);
 
   return duo;
 }
@@ -457,12 +456,11 @@ function use(plugins) {
       else if (exists(npm)) mod = require(npm);
       else mod = require(cwd);
 
-      !quiet && logger.using(plugin);
-      return mod();
+      return Array.isArray(mod) ? mod : mod();
     } catch (e) {
       error(e);
     }
-  });
+  }, []);
 }
 
 /**
