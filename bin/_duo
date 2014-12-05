@@ -58,7 +58,7 @@ var program = new Command('duo')
   .option('-q, --quiet', 'only print to stderr when there is an error', false)
   .option('-r, --root <dir>', 'root directory to build from.', null)
   .option('-t, --type <type>', 'set the entry type', null)
-  .option('-u, --use <plugin>', 'use transform plugin', null)
+  .option('-u, --use <plugin>', 'use transform plugin(s)', collect, [])
   .option('-v, --verbose', 'show as much logs as possible', false)
   .option('-w, --watch', 'watch for changes and rebuild', false)
   .option('-s, --standalone <standalone>', 'outputs standalone javascript umd <standalone>', '')
@@ -153,7 +153,7 @@ var watching = false;
  * Plugins.
  */
 
-var plugins = usePlugins(program.use);
+var plugins = use(program.use);
 
 /**
  * Custom executable.
@@ -438,16 +438,14 @@ function isFile(path) {
 }
 
 /**
- * Retrieve an array of plugins from `--use`.
+ * Resolve each plugin from the string provided by the user.
  *
- * @param {String} plugins
- * @return {Array}
+ * @param {Array:String} plugins
+ * @return {Array:Function}
  */
 
-function usePlugins(use) {
-  if (!use) return [];
-
-  return use.split(",").map(function (plugin) {
+function use(plugins) {
+  return plugins.map(function (plugin) {
     try {
       var local = resolve(root, plugin);
       var npm = resolve(root, "node_modules", plugin);
@@ -455,6 +453,7 @@ function usePlugins(use) {
       var mod;
 
       if (exists(local)) mod = require(local);
+      else if (exists(local + '.js')) mod = require(local);
       else if (exists(npm)) mod = require(npm);
       else mod = require(cwd);
 
@@ -464,6 +463,18 @@ function usePlugins(use) {
       error(e);
     }
   });
+}
+
+/**
+ * Helper to capture list of plugins from CLI
+ */
+
+function collect(val, memo) {
+  val.split(',').forEach(function (val) {
+    memo.push(val);
+  });
+
+  return memo;
 }
 
 /**

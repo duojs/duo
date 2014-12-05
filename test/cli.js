@@ -317,9 +317,20 @@ describe('Duo CLI', function () {
       assert(contains(out.stderr, 'using : plugin.js'));
     });
 
+    it('should allow multiple calls to --use', function *() {
+      var out = yield exec('duo --use duo-jade --use plugin.js index.js', 'plugins');
+      assert(contains(out.stderr, 'using : duo-jade'));
+      assert(contains(out.stderr, 'using : plugin.js'));
+    });
+
     it('should bomb if the plugin does not exist', function *() {
       var out = yield exec('duo --use zomg.js index.js', 'plugins');
       assert(contains(out.stderr, 'error : Error: Cannot find module'));
+    });
+
+    it('should not require .js when a local module', function *() {
+      var out = yield exec('duo --use plugin index.js', 'plugins');
+      assert(contains(out.stderr, 'using : plugin'));
     });
   });
 
