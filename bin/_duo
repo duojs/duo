@@ -17,6 +17,7 @@ var Watch = require('duo-watch');
 var join = require('path').join;
 var spawn = require('win-fork');
 var pkg = require('../package');
+var glob = require('glob').sync;
 var Batch = require('batch');
 var stdout = process.stdout;
 var cwd = process.cwd();
@@ -62,6 +63,7 @@ var program = new Command('duo')
   .option('-v, --verbose', 'show as much logs as possible', false)
   .option('-w, --watch', 'watch for changes and rebuild', false)
   .option('-s, --standalone <standalone>', 'outputs standalone javascript umd <standalone>', '')
+  .option('-S, --stdout', 'outputs build to stdout', false)
   .parse(process.argv);
 
 /**
@@ -71,20 +73,17 @@ var program = new Command('duo')
 program.on('--help', function () {
   console.log('  Usage:');
   console.log();
-  console.log('  # build in.js to out.js');
-  console.log('  $ duo in.js > out.js');
-  console.log();
-  console.log('  # build in.css to out.css');
-  console.log('  $ duo in.css > out.css');
-  console.log();
-  console.log('  # build all files to duo.assets() (default: build/)');
+  console.log('  # build all files to build/');
   console.log('  $ duo *.{js,css}');
   console.log();
   console.log('  # build all files to the out/ folder');
-  console.log('  $ duo *.{js,css} out');
+  console.log('  $ duo --output out/ *.{js,css}');
   console.log();
   console.log('  # build from stdin and output out.css');
   console.log('  $ duo < in.css > out.css');
+  console.log();
+  console.log('  # build to out.js using stdout');
+  console.log('  $ duo --stdout in.js > out.js');
   console.log();
   console.log('  # build using a plugin');
   console.log('  $ npm install duo-whitespace');
@@ -141,7 +140,7 @@ var root = findroot(program.root);
  * Asset path.
  */
 
-var outdir = program.output || assets(program.args);
+var outdir = program.output;
 
 /**
  * Watching.
@@ -154,6 +153,15 @@ var watching = false;
  */
 
 var plugins = use(program.use);
+
+/**
+ * Stdout.
+ */
+
+if (program.stdout && program.args.length > 1) {
+  logger.error('cannot use stdout with multiple entries');
+  return;
+}
 
 /**
  * Custom executable.
@@ -194,7 +202,8 @@ if (command && !isFile(command)) {
  * Actions.
  */
 
-if (command) build(program.args.filter(globs));
+if (program.stdout && command) print(command);
+else if (program.args.length) write(entries(program.args));
 else if (!process.stdin.isTTY) input();
 else program.help();
 
@@ -215,23 +224,6 @@ function input() {
       process.exit(0);
     });
   });
-}
-
-/**
- * Build the entries.
- *
- * @param {Array} entries
- */
-
-function build(entries) {
-  outdir && !program.output && entries.pop();
-  var len = entries.length;
-
-  return !len
-    ? program.help()
-    : 1 == len && !outdir
-    ? print(entries[0])
-    : write(entries);
 }
 
 /**
@@ -260,7 +252,7 @@ function print(entry) {
  */
 
 function write(entries) {
-  entries = 'string' == typeof entries ? [entries] : entries;
+  if ('string' == typeof entries) entries = [entries];
 
   var batch = new Batch;
   var push = batch.push.bind(batch);
@@ -353,7 +345,7 @@ function watch(action) {
  * @return {Function}
  */
 
-function log (event) {
+function log(event) {
   return function (pkg) {
     pkg = pkg.slug ? pkg.slug() : pkg;
     pkg = 'source.' + (program.type || 'js') == pkg ? 'from stdin' : pkg;
@@ -395,20 +387,6 @@ function findroot(root) {
 }
 
 /**
- * Check if `entries` contains an asset path.
- *
- * @param {Array} entries
- * @return {String|Boolean}
- */
-
-function assets(entries) {
-  if (!entries.length) return false;
-  var len = entries.length;
-  var last = entries[len - 1];
-  return !isFile(last) && last;
-}
-
-/**
  * Filter out unexpanded globs.
  *
  * @param {String} entry
@@ -437,7 +415,34 @@ function isFile(path) {
 }
 
 /**
- * Resolve each plugin from the string provided by the user.
+ * Simple hueristic to check if `path` is a directory.
+ *
+ * @param {String} path
+ * @return {Boolean}
+ */
+
+function isDir(path) {
+  try {
+    return stat(path).isDirectory();
+  } catch (e) {
+    return false;
+  }
+}
+
+/**
+ * Gets a list of all files within a directory recursively (and synchronously)
+ *
+ * @param {String} path
+ * @return {Array:String}
+ */
+
+function listFiles(path, pattern) {
+  var opts = { cwd: root, nodir: true };
+  return glob(pattern || '**/*', opts);
+}
+
+/**
+ * Retrieve an array of plugins from `--use`.
  *
  * @param {Array:String} plugins
  * @return {Array:Function}
@@ -473,6 +478,26 @@ function collect(val, memo) {
   });
 
   return memo;
+}
+
+/**
+ * Normalize entries list.
+ *
+ *  - expand globs
+ *  - expand directories into list of all nested files
+ *
+ * @param {Array:String}
+ * @return {Array:String}
+ */
+
+function entries(list) {
+  return list.filter(globs).reduce(function (memo, entry) {
+    if (isDir(join(root, entry))) {
+      return memo.concat(listFiles(entry));
+    } else {
+      return memo.concat(entry);
+    }
+  }, []);
 }
 
 /**
