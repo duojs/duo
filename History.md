@@ -1,4 +1,14 @@
 
+0.9.0 / 2014-12-12
+==================
+
+  * **BREAKING** removing some magic from the cli, making all arguments treated the same
+  * allow modules to export an array of pre-configured plugins
+  * adding ability to --use multiple times, while retaining backwards compatibility
+  * adding a test for a non-default install location
+  * using installTo instead of hard-coding 'components', improving test reliability too
+  * adding File#local() and File#remote() + tests (fixes #402)
+
 0.8.10 / 2014-11-10
 ==================
 
