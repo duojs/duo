@@ -28,22 +28,18 @@ describe('Duo CLI', function () {
   });
 
   describe('duo in.js', function () {
-    it('should write to stdout', function *() {
+    it('should write to build/', function *() {
       out = yield exec('duo index.js', 'cli-duo');
       if (out.error) throw out.error;
-      assert(out.stdout);
       assert(out.stderr);
-      ctx = evaluate(out.stdout);
-      assert('cli-duo' == ctx.main);
+      assert(exists('cli-duo/build/index.js'));
     });
 
     it('should support opts', function *() {
       out = yield exec('duo -v -t js index.js', 'cli-duo');
       if (out.error) throw out.error;
-      assert(out.stdout);
       assert(out.stderr);
-      ctx = evaluate(out.stdout);
-      assert('cli-duo' == ctx.main);
+      assert(exists('cli-duo/build/index.js'));
     });
 
     it('should error out when the file doesnt exist', function *() {
@@ -51,41 +47,11 @@ describe('Duo CLI', function () {
       assert(~out.stderr.indexOf('Error: cannot find entry: zomg.js'));
       assert(out.error);
     });
-
-    it('should ignore unexpanded globs', function *() {
-      var out = yield exec('duo *.css', 'entries');
-      if (out.error) throw out.error;
-      assert(!out.stderr);
-    });
-  });
-
-  describe('duo in.js out', function () {
-    it('should write to out/', function *() {
-      var out = yield exec('duo index.js out', 'cli-duo');
-      if (out.error) throw out.error;
-      ctx = yield build('cli-duo/out/index.js');
-      assert('cli-duo' == ctx.main);
-      assert(contains(out.stderr, 'building : index.js'));
-      assert(contains(out.stderr, 'built : index.js'));
-      assert(!out.stdout);
-      rm('cli-duo/out');
-    });
-
-    it('should support options', function *() {
-      var out = yield exec('duo -v -t js index.js out', 'cli-duo');
-      if (out.error) throw out.error;
-      ctx = yield build('cli-duo/out/index.js');
-      assert('cli-duo' == ctx.main);
-      assert(contains(out.stderr, 'building : index.js'));
-      assert(contains(out.stderr, 'built : index.js'));
-      assert(!out.stdout);
-      rm('cli-duo/out');
-    });
   });
 
   describe('duo --standalone <name>', function(){
     it('should support umd (amd)', function*(){
-      var out = yield exec('duo --standalone my-module index.js', 'cli-duo');
+      var out = yield exec('duo --standalone my-module --stdout index.js', 'cli-duo');
       if (out.error) throw out.error;
       var defs = [];
       var define = defs.push.bind(defs);
@@ -95,7 +61,7 @@ describe('Duo CLI', function () {
     });
 
     it('should support umd (commonjs)', function*(){
-      var out = yield exec('duo --standalone my-module index.js', 'cli-duo');
+      var out = yield exec('duo --standalone my-module --stdout index.js', 'cli-duo');
       if (out.error) throw out.error;
       var mod = { exports: {} };
       mod.module = mod;
@@ -104,7 +70,7 @@ describe('Duo CLI', function () {
     });
 
     it('should support umd (global)', function*(){
-      var out = yield exec('duo --standalone my-module index.js', 'cli-duo');
+      var out = yield exec('duo --standalone my-module --stdout index.js', 'cli-duo');
       if (out.error) throw out.error;
       var global = {};
       var ctx = evaluate(out.stdout, global);
@@ -169,68 +135,19 @@ describe('Duo CLI', function () {
       assert(!exists('entries/out/*.css'));
       assert(!out.stdout);
     });
-  });
 
-  describe('duo [file, ...] out', function () {
-    it('should build multiple entries to a directory', function *() {
-      var out = yield exec('duo *.js out', 'entries');
-      var admin = yield build('entries/out/admin.js')
-      var index = yield build('entries/out/index.js')
+    it('should recursively copy directories', function *() {
+      var out = yield exec('duo duo.png svg', 'assets');
       if (out.error) throw out.error;
-      assert('admin' == admin.main);
-      assert('index' == index.main);
-      assert(contains(out.stderr, 'building : admin.js'));
-      assert(contains(out.stderr, 'built : admin.js'));
-      assert(contains(out.stderr, 'building : index.js'));
-      assert(contains(out.stderr, 'built : index.js'));
-      assert(!out.stdout);
-      rm('entries/out');
-    });
-
-    it('should support all directories', function *() {
-      var out = yield exec('duo *.js .out', 'entries');
-      var admin = yield build('entries/.out/admin.js')
-      var index = yield build('entries/.out/index.js')
-      if (out.error) throw out.error;
-      assert('admin' == admin.main);
-      assert('index' == index.main);
-      assert(contains(out.stderr, 'building : admin.js'));
-      assert(contains(out.stderr, 'built : admin.js'));
-      assert(contains(out.stderr, 'building : index.js'));
-      assert(contains(out.stderr, 'built : index.js'));
-      assert(!out.stdout);
-      rm('entries/.out');
-    });
-
-    it('should work with options', function *() {
-      var out = yield exec('duo -t js *.js out', 'entries');
-      var admin = yield build('entries/out/admin.js')
-      var index = yield build('entries/out/index.js')
-      if (out.error) throw out.error;
-      assert('admin' == admin.main);
-      assert('index' == index.main);
-      assert(contains(out.stderr, 'building : admin.js'));
-      assert(contains(out.stderr, 'built : admin.js'));
-      assert(contains(out.stderr, 'building : index.js'));
-      assert(contains(out.stderr, 'built : index.js'));
-      assert(!out.stdout);
-      rm('entries/out');
-    });
-
-    it('should ignore unexpanded globs', function *() {
-      var out = yield exec('duo *.js *.css out', 'entries');
-      if (out.error) throw out.error;
-      var admin = yield build('entries/out/admin.js')
-      var index = yield build('entries/out/index.js')
-      assert('admin' == admin.main);
-      assert('index' == index.main);
-      assert(contains(out.stderr, 'building : admin.js'));
-      assert(contains(out.stderr, 'built : admin.js'));
-      assert(contains(out.stderr, 'building : index.js'));
-      assert(contains(out.stderr, 'built : index.js'));
-      assert(!exists('entries/out/*.css'));
-      assert(!out.stdout);
-      rm('entries/out');
+      assert(contains(out.stderr, 'building : duo.png'));
+      assert(contains(out.stderr, 'built : duo.png'));
+      assert(contains(out.stderr, 'building : svg/logo-white.svg'));
+      assert(contains(out.stderr, 'built : svg/logo-white.svg'));
+      assert(contains(out.stderr, 'building : svg/logo-black.svg'));
+      assert(contains(out.stderr, 'built : svg/logo-black.svg'));
+      assert(exists('assets/build/duo.png'));
+      assert(exists('assets/build/svg/logo-white.svg'));
+      assert(exists('assets/build/svg/logo-black.svg'));
     });
   });
 
@@ -260,7 +177,7 @@ describe('Duo CLI', function () {
 
   describe('duo --quiet', function () {
     it('should not log info to stderr', function *() {
-      out = yield exec('duo -q index.js > build.js', 'cli-duo');
+      out = yield exec('duo --stdout -q index.js > build.js', 'cli-duo');
       if (out.error) throw out.error;
       ctx = yield build('cli-duo');
       assert('cli-duo' == ctx.main);
@@ -354,6 +271,20 @@ describe('Duo CLI', function () {
       var out = yield exec('duo --output out *.js', 'entries');
       assert(exists('entries/out/index.js'));
       assert(exists('entries/out/admin.js'));
+      rm('entries/out');
+    });
+  });
+
+  describe('duo --stdout', function () {
+    it('should output to stdout', function *() {
+      var out = yield exec('duo --stdout index.js', 'entries');
+      var index = evaluate(out.stdout);
+      assert('index' == index.main);
+    });
+
+    it('should error when multiple entries are passed', function *() {
+      var out = yield exec('duo --stdout *.js', 'entries');
+      assert(contains(out.stderr, 'cannot use stdout with multiple entries'));
       rm('entries/out');
     });
   });
