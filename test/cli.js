@@ -149,6 +149,18 @@ describe('Duo CLI', function () {
       assert(exists('assets/build/svg/logo-white.svg'));
       assert(exists('assets/build/svg/logo-black.svg'));
     });
+
+    it('should recursively copy directories even if they are the only argument', function *() {
+      var out = yield exec('duo svg', 'assets');
+      if (out.error) throw out.error;
+      assert(contains(out.stderr, 'building : svg/logo-white.svg'));
+      assert(contains(out.stderr, 'built : svg/logo-white.svg'));
+      assert(contains(out.stderr, 'building : svg/logo-black.svg'));
+      assert(contains(out.stderr, 'built : svg/logo-black.svg'));
+      assert(exists('assets/build/duo.png'));
+      assert(exists('assets/build/svg/logo-white.svg'));
+      assert(exists('assets/build/svg/logo-black.svg'));
+    });
   });
 
   describe('duo < in.js', function () {
