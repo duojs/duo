@@ -48,13 +48,13 @@ window.alert(msg);
 Then use `duo` to install your dependencies and build your file:
 
 ```
-$ duo index.js > build.js
+$ duo index.js
 ```
 
 Finally, drop a single `<script>` onto your page and you're done!
 
 ```html
-<script src="build.js"></script>
+<script src="build/index.js"></script>
 ```
 
 Same goes for CSS! You can require dependencies and assets from the file system or straight from GitHub:
@@ -71,13 +71,13 @@ body {
 Then bundle up your CSS with `duo`:
 
 ```
-$ duo index.css > build.css
+$ duo index.css
 ```
 
 And add your bundled-up stylesheet to your page!
 
 ```html
-<link rel="stylesheet" href="build.css">
+<link rel="stylesheet" href="build/index.css">
 ```
 
 ## Authenticate with Github
@@ -101,7 +101,7 @@ $ DEBUG=duo* $COMMAND
 Example:
 
 ```bash
-$ DEBUG=duo* duo index.js > build.js
+$ DEBUG=duo* duo index.js
 ```
 
 If you can't figure it out, you should open an issue: https://github.com/duojs/duo/issues
