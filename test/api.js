@@ -355,6 +355,12 @@ describe('Duo API', function () {
       assert('string' == type(''));
     });
 
+    it('should fetch dependencies via semver ranges', function *() {
+      var js = yield build('deps-semver').run();
+      var ctx = evaluate(js).main;
+      assert.equal(ctx, 'function');
+    });
+
     it('should be idempotent', function *() {
       var a = yield build('idempotent').run();
       var b = yield build('idempotent').run();
