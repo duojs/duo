@@ -20,6 +20,7 @@
       -v, --verbose                  show as much logs as possible
       -w, --watch                    watch for changes and rebuild
       -s, --standalone <standalone>  outputs standalone javascript umd <standalone>
+      -S, --stdout                   outputs build to stdout
 
 ## Examples
 
