@@ -1,4 +1,1 @@
-module.exports =
-  a: 'a'
-  b: 'b'
-  c: 'c'
+ module.exports = require('./one');
