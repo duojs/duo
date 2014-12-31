@@ -16,10 +16,11 @@
       -q, --quiet                    only print to stderr when there is an error
       -r, --root <dir>               root directory to build from.
       -t, --type <type>              set the entry type
-      -u, --use <plugin>             use transform plugin
+      -u, --use <plugin>             use transform plugin(s)
       -v, --verbose                  show as much logs as possible
       -w, --watch                    watch for changes and rebuild
       -s, --standalone <standalone>  outputs standalone javascript umd <standalone>
+      --with_require <module>        define require("<module>") for HTML
       -S, --stdout                   outputs build to stdout
 
 ## Examples
@@ -43,6 +44,9 @@ $ duo < in.css > out.css
 # build using a plugin
 $ npm install duo-whitespace
 $ duo --use duo-whitespace in.styl > out.css
+
+# build for HTML that uses <script>require('my-module');</script>
+$ duo --with_require my-module index.js
 ```
 
 ## Commands

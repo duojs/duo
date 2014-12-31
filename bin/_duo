@@ -63,6 +63,7 @@ var program = new Command('duo')
   .option('-v, --verbose', 'show as much logs as possible', false)
   .option('-w, --watch', 'watch for changes and rebuild', false)
   .option('-s, --standalone <standalone>', 'outputs standalone javascript umd <standalone>', '')
+  .option('--with_require <module>', 'define require("<module>") for HTML', '')
   .option('-S, --stdout', 'outputs build to stdout', false)
   .parse(process.argv);
 
@@ -96,6 +97,8 @@ program.on('--help', function () {
   console.log();
   process.exit(0);
 });
+
+
 
 /**
  * Language mapping.
@@ -295,8 +298,12 @@ function create(entry) {
     .cache(program.cache);
 
   // standalone
-  var name = program.standalone;
-  name && duo.standalone(name);
+  var standalone = program.standalone;
+  standalone && duo.standalone(standalone);
+
+  // with_require
+  var with_require = program.with_require;
+  with_require && duo.with_require(with_require);
 
   // global
   program.global && duo.global(program.global);
