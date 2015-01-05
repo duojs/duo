@@ -1,4 +1,10 @@
 
+0.9.1 / 2014-1-5
+==================
+
+ * Fixing bug that caused a single folder argument to be treated as a missing subcommand
+ * Handling syntax errors in manifest files more gracefully
+
 0.9.0 / 2014-12-12
 ==================
 
