@@ -361,6 +361,25 @@ describe('Duo API', function () {
       assert.equal(ctx, 'function');
     });
 
+    it('should fail when manifest has a syntax error', function *() {
+      try {
+        var success = yield build('manifest-syntax-err').run();
+      } catch (e) {
+        assert(e instanceof SyntaxError);
+      }
+      assert(!success);
+    });
+
+    it('should decorate the SyntaxError object', function *() {
+      try {
+        var success = yield build('manifest-syntax-err').run();
+      } catch (e) {
+        assert.equal(e.message, 'Unexpected token }');
+        assert.equal(e.fileName, path('manifest-syntax-err/component.json'));
+      }
+      assert(!success);
+    });
+
     it('should be idempotent', function *() {
       var a = yield build('idempotent').run();
       var b = yield build('idempotent').run();
