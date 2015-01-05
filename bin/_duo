@@ -9,6 +9,7 @@ var Command = require('commander').Command;
 var exists = require('fs').existsSync;
 var resolve = require('path').resolve;
 var dirname = require('path').dirname;
+var extname = require('path').extname;
 var mkdirp = require('mkdirp').sync;
 var Logger = require('stream-log');
 var stat = require('fs').statSync;
@@ -164,10 +165,12 @@ if (program.stdout && program.args.length > 1) {
 }
 
 /**
- * Custom executable.
+ * Use a custom executable when there is at least 1 argument (ie: "command")
+ * that does not appear to have a file extension and does not correspond to
+ * something in the filesystem.
  */
 
-if (command && !isFile(command)) {
+if (command && !extname(command) && !exists(command)) {
   var args = process.argv.slice(3);
 
   // find executable
@@ -395,23 +398,6 @@ function findroot(root) {
 
 function globs(path) {
   return !/\*/.test(path);
-}
-
-/**
- * Simple hueristic to check if `path` is a file.
- *
- * @param {String} path
- * @return {Boolean}
- */
-
-function isFile(path) {
-  if (/^[^\s]+\.\w*$/g.test(path)) return true;
-
-  try {
-    return stat(path).isFile();
-  } catch (e) {
-    return false;
-  }
 }
 
 /**
