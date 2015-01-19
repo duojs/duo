@@ -1,4 +1,9 @@
 
+0.9.2 / 2014-1-19
+==================
+
+ * Bumps `duo-pack` version to fix off-by-one sourcemap bug (#125)
+
 0.9.1 / 2014-1-5
 ==================
 
