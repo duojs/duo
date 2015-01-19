@@ -1,6 +1,6 @@
 {
   "name": "duo",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "description": "A next-generation package manager for the front-end",
   "homepage": "http://duojs.org/",
   "license": "MIT",
@@ -30,7 +30,7 @@
     "delegates": "0.0.3",
     "duo-css-compat": "^0.0.4",
     "duo-main": "^0.0.3",
-    "duo-pack": "1.0.10",
+    "duo-pack": "1.0.11",
     "duo-package": "^0.5.1",
     "duo-parse": "^0.2.0",
     "duo-string-to-js": "~0.1.0",
