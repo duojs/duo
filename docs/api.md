@@ -75,7 +75,7 @@ duo.copy(true);
 Specify a global variable `name` to attach the package's exports to on the `window` object.
 
 ```js
-var duo.global('Tip');
+duo.global('Tip');
 ```
 
 ### `duo.concurrency(n)`
