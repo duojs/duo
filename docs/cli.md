@@ -26,10 +26,10 @@
 
 ```bash
 # build in.js to out.js
-$ duo in.js > out.js
+$ duo --stdout in.js > out.js
 
 # build in.css to out.css
-$ duo in.css > out.css
+$ duo --stdout in.css > out.css
 
 # build all files to duo.assets() (default: build/)
 $ duo *.{js,css}
@@ -42,7 +42,7 @@ $ duo < in.css > out.css
 
 # build using a plugin
 $ npm install duo-whitespace
-$ duo --use duo-whitespace in.styl > out.css
+$ duo --use duo-whitespace --stdout in.styl > out.css
 ```
 
 ## Commands
