@@ -28,11 +28,6 @@ duo.entry(source, 'js');
 
 This is useful when you're reading from `stdin`, or any case where you have the contents of the file itself already in memory.
 
-That will let you then access the module via:
-
-```js
-var Tip = window.Tip;
-```
 
 ### `duo.development(boolean)`
 
@@ -76,6 +71,12 @@ Specify a global variable `name` to attach the package's exports to on the `wind
 
 ```js
 duo.global('Tip');
+```
+
+That will let you then access the module via:
+
+```js
+var Tip = window.Tip;
 ```
 
 ### `duo.concurrency(n)`
