@@ -430,7 +430,7 @@ function isDir(path) {
 
 function listFiles(path, pattern) {
   var opts = { cwd: root, nodir: true };
-  return glob(pattern || '**/*', opts);
+  return glob(join(path, pattern || '**/*'), opts);
 }
 
 /**

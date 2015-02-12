@@ -21,6 +21,8 @@ describe('Duo CLI', function () {
   var out = {};
   var ctx = {};
 
+  this.slow('1s');
+
   afterEach(function () {
     cleanup();
     out = {};
@@ -137,15 +139,14 @@ describe('Duo CLI', function () {
     });
 
     it('should recursively copy directories', function *() {
-      var out = yield exec('duo duo.png svg', 'assets');
+      var out = yield exec('duo svg', 'assets');
       if (out.error) throw out.error;
-      assert(contains(out.stderr, 'building : duo.png'));
-      assert(contains(out.stderr, 'built : duo.png'));
+      assert(!contains(out.stderr, 'building : duo.png'));
+      assert(!contains(out.stderr, 'built : duo.png'));
       assert(contains(out.stderr, 'building : svg/logo-white.svg'));
       assert(contains(out.stderr, 'built : svg/logo-white.svg'));
       assert(contains(out.stderr, 'building : svg/logo-black.svg'));
       assert(contains(out.stderr, 'built : svg/logo-black.svg'));
-      assert(exists('assets/build/duo.png'));
       assert(exists('assets/build/svg/logo-white.svg'));
       assert(exists('assets/build/svg/logo-black.svg'));
     });
@@ -153,11 +154,12 @@ describe('Duo CLI', function () {
     it('should recursively copy directories even if they are the only argument', function *() {
       var out = yield exec('duo svg', 'assets');
       if (out.error) throw out.error;
+      assert(!contains(out.stderr, 'building : duo.png'));
+      assert(!contains(out.stderr, 'built : duo.png'));
       assert(contains(out.stderr, 'building : svg/logo-white.svg'));
       assert(contains(out.stderr, 'built : svg/logo-white.svg'));
       assert(contains(out.stderr, 'building : svg/logo-black.svg'));
       assert(contains(out.stderr, 'built : svg/logo-black.svg'));
-      assert(exists('assets/build/duo.png'));
       assert(exists('assets/build/svg/logo-white.svg'));
       assert(exists('assets/build/svg/logo-black.svg'));
     });

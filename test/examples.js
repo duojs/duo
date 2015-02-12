@@ -28,6 +28,7 @@ var map = {
  */
 
 describe('Duo Examples', function () {
+  this.slow('2s')
   this.timeout('10s');
 
   ls(dir).forEach(function (example) {
