@@ -195,7 +195,7 @@ describe('Duo CLI', function () {
       if (out.error) throw out.error;
       ctx = yield build('cli-duo');
       assert('cli-duo' == ctx.main);
-      assert(!out.stderr.trim());
+      assert(!out.stderr);
       assert(!out.stdout);
       rm('cli-duo/build.js');
     });
