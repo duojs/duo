@@ -42,7 +42,7 @@ var logger = new Logger(process.stderr)
  */
 
 logger.type('error', '31m', function () {
-  logger.end();
+  if (!quiet) logger.end();
   process.exit(1);
 });
 
@@ -131,6 +131,12 @@ var bin = ['duo', command].join('-');
  */
 
 var quiet = program.quiet;
+
+/**
+ * Verbose flag.
+ */
+
+var verbose = program.verbose;
 
 /**
  * Root.
@@ -239,7 +245,7 @@ function input() {
 function print(entry) {
   create(entry).run(function (err, src) {
     if (err) return error(err);
-    logger.end();
+    if (!quiet) logger.end();
     if (src) stdout.write(src);
 
     // watch or exit
@@ -267,7 +273,7 @@ function write(entries) {
 
   batch.end(function (err) {
     if (err) return error(err);
-    logger.end();
+    if (!quiet) logger.end();
 
     // watch or exit
     program.watch
@@ -305,15 +311,14 @@ function create(entry) {
   // global
   program.global && duo.global(program.global);
 
-  // verbose
-  if (program.verbose) {
-    duo.on('resolving', log('finding'));
-    duo.on('resolve', log('found'));
-    duo.on('installing', log('installing'));
-  }
-
   // events
   if (!quiet) {
+    if (verbose) {
+      duo.on('resolving', log('finding'));
+      duo.on('resolve', log('found'));
+      duo.on('installing', log('installing'));
+    }
+
     duo.on('plugin', log('using'));
     duo.on('install', log('installed'));
     duo.on('running', log('building'));

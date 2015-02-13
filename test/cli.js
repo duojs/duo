@@ -190,8 +190,18 @@ describe('Duo CLI', function () {
   });
 
   describe('duo --quiet', function () {
-    it('should not log info to stderr', function *() {
-      out = yield exec('duo --stdout -q index.js > build.js', 'cli-duo');
+    it('should not log info to stderr when writing files', function *() {
+      out = yield exec('duo --quiet index.js', 'cli-duo');
+      if (out.error) throw out.error;
+      ctx = yield build('cli-duo/build/index.js');
+      assert('cli-duo' == ctx.main);
+      assert(!out.stderr);
+      assert(!out.stdout);
+      rm('cli-duo/build');
+    });
+
+    it('should not log info to stderr when printing to stdout', function *() {
+      out = yield exec('duo --stdout --quiet index.js > build.js', 'cli-duo');
       if (out.error) throw out.error;
       ctx = yield build('cli-duo');
       assert('cli-duo' == ctx.main);
