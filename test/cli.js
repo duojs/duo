@@ -216,6 +216,13 @@ describe('Duo CLI', function () {
       assert(out.error);
     });
 
+    it('should not allow verbose and quiet mode simultaneously', function *() {
+      var out = yield exec('duo --quiet --verbose index.js', 'cli-duo');
+      assert(~out.stderr.indexOf('error'));
+      assert(~out.stderr.indexOf('cannot use both quiet and verbose mode simultaneously'));
+      assert(out.error);
+    });
+
     describe('with --use', function () {
       it('should not log "using : <plugin>"', function *() {
         var out = yield exec(

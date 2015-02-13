@@ -139,6 +139,15 @@ var quiet = program.quiet;
 var verbose = program.verbose;
 
 /**
+ * Only quite *or* verbose should be enabled, never both.
+ */
+
+if (quiet && verbose) {
+  logger.error('cannot use both quiet and verbose mode simultaneously');
+  return;
+}
+
+/**
  * Root.
  */
 
