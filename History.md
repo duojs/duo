@@ -1,4 +1,9 @@
 
+0.9.6 / 2015-2-28
+=================
+
+ * Fixing non-js/css assets being processed as entry files.
+
 0.9.5 / 2015-2-28
 =================
 
