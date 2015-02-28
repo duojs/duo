@@ -99,7 +99,7 @@ describe('Duo CLI', function () {
       assert(!out.stdout);
     });
 
-    it.skip('should copy non-js/css files to build', function *() {
+    it('should copy non-js/css files to build', function *() {
       var out = yield exec('duo duo.png svg/*', 'assets');
       if (out.error) throw out.error;
       assert(contains(out.stderr, 'building : duo.png'));
@@ -142,7 +142,7 @@ describe('Duo CLI', function () {
       assert(!out.stdout);
     });
 
-    it.skip('should recursively copy directories', function *() {
+    it('should recursively copy directories', function *() {
       var out = yield exec('duo svg', 'assets');
       if (out.error) throw out.error;
       assert(!contains(out.stderr, 'building : duo.png'));
@@ -155,7 +155,7 @@ describe('Duo CLI', function () {
       assert(exists('assets/build/svg/logo-black.svg'));
     });
 
-    it.skip('should recursively copy directories even if they are the only argument', function *() {
+    it('should recursively copy directories even if they are the only argument', function *() {
       var out = yield exec('duo svg', 'assets');
       if (out.error) throw out.error;
       assert(!contains(out.stderr, 'building : duo.png'));
