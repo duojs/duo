@@ -14,6 +14,7 @@ var extname = require('path').extname;
 var mkdirp = require('mkdirp').sync;
 var Logger = require('stream-log');
 var stat = require('fs').statSync;
+var netrc = require('node-netrc');
 var stdin = require('get-stdin');
 var Watch = require('duo-watch');
 var join = require('path').join;
@@ -45,6 +46,14 @@ logger.type('error', '31m', function () {
   if (!quiet) logger.end();
   process.exit(1);
 });
+
+/**
+ * GitHub credentials.
+ */
+
+var auth = netrc('api.github.com') || {
+  password: process.env.GH_TOKEN
+};
 
 /**
  * Program.
@@ -295,7 +304,7 @@ function write(entries) {
   function multiple(entry) {
     return function (done) {
       create(entry).write(done);
-    }
+    };
   }
 }
 
@@ -311,6 +320,7 @@ function create(entry) {
     .entry(resolve(program.root || cwd, entry))
     .development(!! program.development)
     .copy(program.copy)
+    .token(auth.password)
     .cache(program.cache);
 
   // standalone
@@ -368,7 +378,7 @@ function log(event) {
     pkg = pkg.slug ? pkg.slug() : pkg;
     pkg = 'source.' + (program.type || 'js') == pkg ? 'from stdin' : pkg;
     logger[event](pkg);
-  }
+  };
 }
 
 /**
