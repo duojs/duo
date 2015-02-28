@@ -1,4 +1,9 @@
 
+0.9.5 / 2015-2-28
+=================
+
+ * Updating `duo-package` (handling gh token in duo directly)
+
 0.9.4 / 2015-2-13
 =================
 
