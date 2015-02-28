@@ -23,10 +23,14 @@ describe('Duo CLI', function () {
 
   this.slow('1s');
 
-  afterEach(function () {
+  beforeEach(function () {
     cleanup();
     out = {};
     ctx = {};
+  });
+
+  after(function () {
+    cleanup();
   });
 
   describe('duo in.js', function () {

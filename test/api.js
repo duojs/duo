@@ -33,6 +33,10 @@ describe('Duo API', function () {
     cleanup();
   });
 
+  after(function () {
+    cleanup();
+  });
+
   it('should throw without root', function () {
     var err;
     try {
