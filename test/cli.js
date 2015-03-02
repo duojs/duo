@@ -3,6 +3,7 @@
  * Module dependencies.
  */
 
+var convert = require('convert-source-map');
 var readdir = require('fs').readdirSync;
 var extname = require('path').extname;
 var resolve = require('path').resolve;
@@ -83,6 +84,27 @@ describe('Duo CLI', function () {
       var global = {};
       var ctx = evaluate(out.stdout, global);
       assert('cli-duo' == global['my-module']);
+    });
+  });
+
+  describe('duo --source-map', function () {
+    it('should add external sourcemaps', function *() {
+      var out = yield exec('duo --source-map index.js', 'simple');
+      if (out.error) throw out.error;
+      var entry = yield fs.readFile(path('simple/build/index.js'), 'utf8');
+      var map = convert.fromMapFileSource(entry, path('simple/build')).toObject();
+      var src = map.sourcesContent[map.sources.indexOf('/duo/two.js')];
+      assert(src.trim() == 'module.exports = \'two\';');
+    });
+  });
+
+  describe('duo --inline-source-map', function () {
+    it('should add inline sourcemaps', function *() {
+      var out = yield exec('duo --inline-source-map index.js', 'simple');
+      if (out.error) throw out.error;
+      var src = yield fs.readFile(path('simple/build/index.js'), 'utf8');
+      assert(!~ src.indexOf('//# sourceMappingURL=index.js.map'));
+      assert(!!~ src.indexOf('//# sourceMappingURL=data:application/json;'));
     });
   });
 
@@ -192,6 +214,30 @@ describe('Duo CLI', function () {
     it('should error for unknown languages', function *() {
       out = yield exec('duo < index.coffee', 'cli-duo');
       assert(contains(out.stderr, 'error : could not detect the file type'));
+    });
+
+    describe('with --inline-source-map', function () {
+      it('should output an inline source-map', function *() {
+        out = yield exec('duo --inline-source-map < index.js', 'cli-duo');
+        if (out.error) throw out.error;
+        assert(out.stdout);
+        assert(out.stderr);
+        ctx = evaluate(out.stdout);
+        assert('cli-duo' == ctx.main);
+        assert(~ out.stdout.indexOf('//# sourceMappingURL=data:application/json;'));
+      });
+    });
+
+    describe('with --source-map', function () {
+      it('should output an inline source-map (magic)', function *() {
+        out = yield exec('duo --source-map < index.js', 'cli-duo');
+        if (out.error) throw out.error;
+        assert(out.stdout);
+        assert(out.stderr);
+        ctx = evaluate(out.stdout);
+        assert('cli-duo' == ctx.main);
+        assert(~ out.stdout.indexOf('//# sourceMappingURL=data:application/json;'));
+      });
     });
   });
 
@@ -323,6 +369,30 @@ describe('Duo CLI', function () {
       var out = yield exec('duo --stdout *.js', 'entries');
       assert(contains(out.stderr, 'cannot use stdout with multiple entries'));
       rm('entries/out');
+    });
+
+    describe('with --inline-source-map', function () {
+      it('should output an inline source-map', function *() {
+        out = yield exec('duo --inline-source-map --stdout index.js', 'cli-duo');
+        if (out.error) throw out.error;
+        assert(out.stdout);
+        assert(out.stderr);
+        ctx = evaluate(out.stdout);
+        assert('cli-duo' == ctx.main);
+        assert(~ out.stdout.indexOf('//# sourceMappingURL=data:application/json;'));
+      });
+    });
+
+    describe('with --source-map', function () {
+      it('should output an inline source-map (magic)', function *() {
+        out = yield exec('duo --source-map --stdout index.js', 'cli-duo');
+        if (out.error) throw out.error;
+        assert(out.stdout);
+        assert(out.stderr);
+        ctx = evaluate(out.stdout);
+        assert('cli-duo' == ctx.main);
+        assert(~ out.stdout.indexOf('//# sourceMappingURL=data:application/json;'));
+      });
     });
   });
 
@@ -481,6 +551,7 @@ function exists(file) {
 
 function evaluate(js, ctx) {
   var ctx = ctx || { window: {}, document: {} };
+  js = convert.removeComments(js);
   vm.runInNewContext('main =' + js + '(1)', ctx, 'main.vm');
   vm.runInNewContext('require =' + js + '', ctx, 'require.vm');
   return ctx;

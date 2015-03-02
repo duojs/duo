@@ -5,6 +5,7 @@
  */
 
 var detect = require('language-classifier');
+var convert = require('convert-source-map');
 var Command = require('commander').Command;
 var relative = require('path').relative;
 var exists = require('fs').existsSync;
@@ -260,6 +261,10 @@ function input() {
       if (err) throw error(err);
       logger.end();
       stdout.write(results.code);
+      if (results.map) {
+        stdout.write('\n\n');
+        stdout.write(convert.fromObject(results.map).toComment());
+      }
       process.exit(0);
     });
   });
@@ -281,6 +286,10 @@ function print(entry) {
     if (err) return error(err);
     if (!quiet) logger.end();
     if (results.code) stdout.write(results.code);
+    if (results.map) {
+      stdout.write('\n\n');
+      stdout.write(convert.fromObject(results.map).toComment());
+    }
 
     // watch or exit
     program.watch
