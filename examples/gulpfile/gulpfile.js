@@ -42,9 +42,9 @@ function duo(opts) {
   return map(function(file, fn) {
     Duo(file.base)
       .entry(file.path)
-      .run(function(err, src) {
+      .run(function(err, results) {
         if (err) return fn(err);
-        file.contents = new Buffer(src);
+        file.contents = new Buffer(results.code);
         fn(null, file);
       });
   });

@@ -27,10 +27,10 @@ var duo = Duo(__dirname)
  * Run duo
  */
 
-duo.run(function(err, src) {
+duo.run(function(err, results) {
   if (err) throw err;
-  fs.writeFileSync(out, src);
-  var len = Buffer.byteLength(src);
+  fs.writeFileSync(out, results.code);
+  var len = Buffer.byteLength(results.code);
   console.log('all done, wrote %dkb', len / 1024 | 0);
 });
 
