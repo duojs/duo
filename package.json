@@ -28,7 +28,7 @@
     "cp": "^0.1.1",
     "debug": "^2.0.0",
     "delegates": "0.0.3",
-    "duo-css-compat": "^0.0.4",
+    "duo-css-compat": "^0.0.6",
     "duo-main": "^0.0.3",
     "duo-pack": "1.0.11",
     "duo-package": "^0.6.0",
