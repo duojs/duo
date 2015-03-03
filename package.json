@@ -46,10 +46,10 @@
     "max-component": "~1.0.0",
     "mkdirp": "^0.5.0",
     "node-netrc": "0.0.1",
-    "step.js": "~2.0.2",
     "stream-log": "0.1.0",
     "thunkify": "~2.1.1",
     "unyield": "0.0.1",
+    "ware": "^1.2.0",
     "win-fork": "^1.1.1"
   },
   "devDependencies": {
