@@ -67,8 +67,8 @@ var program = new Command('duo')
   .option('-C, --no-cache', 'enable or disable the cache during build', true)
   .option('-d, --development', 'include development dependencies.', false)
   .option('-g, --global <name>', 'expose entry as a global <name>', null)
-  .option('-i, --inline-source-map', 'include source-maps inline to the entry file', false)
-  .option('-m, --source-map', 'include source-maps in the build (as external files)', false)
+  .option('-i, --inline-source-maps', 'include source-maps inline to the entry file', false)
+  .option('-m, --source-maps', 'include source-maps in the build (as external files)', false)
   .option('-o, --output <dir>', 'set the output directory, defaulted to build/', null)
   .option('-q, --quiet', 'only print to stderr when there is an error', false)
   .option('-r, --root <dir>', 'root directory to build from.', null)
@@ -187,7 +187,7 @@ var plugins = use(program.use);
  * Source maps.
  */
 
-var sourceMap = program.inlineSourceMap ? 'inline' : program.sourceMap;
+var sourceMap = program.inlineSourceMaps ? 'inline' : program.sourceMaps;
 
 /**
  * Stdout.

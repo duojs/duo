@@ -89,7 +89,7 @@ describe('Duo CLI', function () {
 
   describe('duo --source-map', function () {
     it('should add external sourcemaps', function *() {
-      var out = yield exec('duo --source-map index.js', 'simple');
+      var out = yield exec('duo --source-maps index.js', 'simple');
       if (out.error) throw out.error;
       var entry = yield fs.readFile(path('simple/build/index.js'), 'utf8');
       var map = convert.fromMapFileSource(entry, path('simple/build')).toObject();
@@ -98,9 +98,9 @@ describe('Duo CLI', function () {
     });
   });
 
-  describe('duo --inline-source-map', function () {
+  describe('duo --inline-source-maps', function () {
     it('should add inline sourcemaps', function *() {
-      var out = yield exec('duo --inline-source-map index.js', 'simple');
+      var out = yield exec('duo --inline-source-maps index.js', 'simple');
       if (out.error) throw out.error;
       var src = yield fs.readFile(path('simple/build/index.js'), 'utf8');
       assert(!~ src.indexOf('//# sourceMappingURL=index.js.map'));
@@ -216,9 +216,9 @@ describe('Duo CLI', function () {
       assert(contains(out.stderr, 'error : could not detect the file type'));
     });
 
-    describe('with --inline-source-map', function () {
+    describe('with --inline-source-maps', function () {
       it('should output an inline source-map', function *() {
-        out = yield exec('duo --inline-source-map < index.js', 'cli-duo');
+        out = yield exec('duo --inline-source-maps < index.js', 'cli-duo');
         if (out.error) throw out.error;
         assert(out.stdout);
         assert(out.stderr);
@@ -230,7 +230,7 @@ describe('Duo CLI', function () {
 
     describe('with --source-map', function () {
       it('should output an inline source-map (magic)', function *() {
-        out = yield exec('duo --source-map < index.js', 'cli-duo');
+        out = yield exec('duo --source-maps < index.js', 'cli-duo');
         if (out.error) throw out.error;
         assert(out.stdout);
         assert(out.stderr);
@@ -371,9 +371,9 @@ describe('Duo CLI', function () {
       rm('entries/out');
     });
 
-    describe('with --inline-source-map', function () {
+    describe('with --inline-source-maps', function () {
       it('should output an inline source-map', function *() {
-        out = yield exec('duo --inline-source-map --stdout index.js', 'cli-duo');
+        out = yield exec('duo --inline-source-maps --stdout index.js', 'cli-duo');
         if (out.error) throw out.error;
         assert(out.stdout);
         assert(out.stderr);
@@ -385,7 +385,7 @@ describe('Duo CLI', function () {
 
     describe('with --source-map', function () {
       it('should output an inline source-map (magic)', function *() {
-        out = yield exec('duo --source-map --stdout index.js', 'cli-duo');
+        out = yield exec('duo --source-maps --stdout index.js', 'cli-duo');
         if (out.error) throw out.error;
         assert(out.stdout);
         assert(out.stderr);
