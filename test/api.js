@@ -693,8 +693,8 @@ describe('Duo API', function () {
         a.use(function ap() {});
         b.use(function bp() {});
 
-        assert(1 == a.plugins.length);
-        assert(1 == b.plugins.length);
+        assert(1 == a.plugins.fns.length);
+        assert(1 == b.plugins.fns.length);
       });
     });
 
