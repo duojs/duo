@@ -5,10 +5,12 @@
 
 var readdir = require('fs').readdirSync;
 var extname = require('path').extname;
+var resolve = require('path').resolve;
 var exist = require('fs').existsSync;
+var Package = require('duo-package');
 var proc = require('child_process');
 var rmrf = require('rimraf').sync;
-var join = require('path').join;
+var tmp = require('os').tmpdir();
 var assert = require('assert');
 var fs = require('co-fs');
 var vm = require('vm');
@@ -241,8 +243,8 @@ describe('Duo CLI', function () {
   });
 
   describe('duo --use <plugin>', function () {
-    var src = join(__dirname, '..', 'node_modules');
-    var dst = join(__dirname, 'fixtures', 'plugins', 'node_modules');
+    var src = resolve(__dirname, '..', 'node_modules');
+    var dst = resolve(__dirname, 'fixtures', 'plugins', 'node_modules');
 
     before(function *() {
       yield fs.symlink(src, dst);
@@ -293,9 +295,9 @@ describe('Duo CLI', function () {
     });
 
     it('should allow npm modules from the working directory', function *() {
-      var cwd = join(__dirname, '..');
-      var src = join(__dirname, 'fixtures', 'plugins');
-      var cmd = join(__dirname, '..', 'bin', 'duo');
+      var cwd = resolve(__dirname, '..');
+      var src = resolve(__dirname, 'fixtures', 'plugins');
+      var cmd = resolve(__dirname, '..', 'bin', 'duo');
       var out = yield execute(cmd + ' -r ' + src + ' --use duo-jade index.js', { cwd: cwd });
       assert(contains(out.stderr, 'using : jade'));
     });
@@ -360,10 +362,29 @@ describe('Duo CLI', function () {
     });
   });
 
+  describe('duo clean-cache', function () {
+    beforeEach(function *() {
+      yield exec('duo index.js', 'simple-deps');
+    });
+
+    it('should remove the mapping file', function *() {
+      var out = yield exec('duo clean-cache', 'simple-deps');
+      if (out.error) throw out.error;
+      assert(contains(out.stderr, 'cleaned : components/duo.json'));
+      assert(!exists('simple-deps/components/duo.json'));
+    });
+
+    it('should remove the package tmp dir', function *() {
+      var out = yield exec('duo clean-cache', 'simple-deps');
+      if (out.error) throw out.error;
+      assert(contains(out.stderr, '/duo'));
+    });
+  });
+
   describe('duo <unsupported command>', function () {
     var res = {};
     beforeEach(function (done) {
-      var duo = join(__dirname, '..', 'bin', 'duo');
+      var duo = resolve(__dirname, '..', 'bin', 'duo');
       var child = proc.spawn(duo, ['foo']);
       res.stdout = res.stderr = '';
       child.stdout.on('data', function (chunk) { res.stdout += chunk; });
@@ -396,7 +417,7 @@ describe('Duo CLI', function () {
  */
 
 function path(fixture) {
-  return join.apply(null, [__dirname, 'fixtures'].concat(fixture.split('/')));
+  return resolve.apply(null, [__dirname, 'fixtures'].concat(fixture.split('/')));
 }
 
 /**
@@ -430,12 +451,12 @@ function *build(fixture) {
  */
 
 function cleanup() {
-  var dir = join(__dirname, 'fixtures');
+  var dir = resolve(__dirname, 'fixtures');
   var dirs = readdir(dir);
   dirs.forEach(function(name){
     if ('.' == name[0]) return;
-    var components = join(dir, name, 'components');
-    var build = join(dir, name, 'build');
+    var components = resolve(dir, name, 'components');
+    var build = resolve(dir, name, 'build');
     rmrf(components);
     rmrf(build);
   });
@@ -474,8 +495,8 @@ function evaluate(js, ctx) {
  */
 
 function *exec(cmd, cwd) {
-  cmd = join(__dirname, '..', 'bin', cmd);
-  cwd = join(__dirname, 'fixtures', cwd);
+  cmd = resolve(__dirname, '..', 'bin', cmd);
+  cwd = resolve(__dirname, 'fixtures', cwd);
   return yield execute(cmd, { cwd: cwd });
 }
 
