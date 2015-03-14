@@ -274,6 +274,23 @@ describe('Duo API', function () {
     });
   });
 
+  describe('.cleanCache()', function () {
+    it('should destroy the mapping file', function *() {
+      var duo = build('simple-deps');
+      yield duo.run();
+      assert(exists('simple-deps/components/duo.json'));
+      yield duo.cleanCache();
+      assert(!exists('simple-deps/components/duo.json'));
+    });
+
+    it('should not throw an error when no cache exists', function *() {
+      var duo = build('simple-deps');
+      assert(!exists('simple-deps/components/duo.json'));
+      yield duo.cleanCache();
+      assert(!exists('simple-deps/components/duo.json'));
+    });
+  });
+
   describe('.include(name, src, [type])', function () {
     it('should add the specified module to the includes hash', function () {
       var duo = build('includes');

@@ -1,0 +1,45 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+
+var Package = require('duo-package');
+var program = require('commander');
+var Duo = require('..');
+var co = require('co');
+
+/**
+ * Logger.
+ */
+
+var logger = require('stream-log')(process.stderr)
+  .type('cleaned', '36m')
+  .type('error', '31m', function () {
+    logger.end();
+    process.exit(1);
+  });
+
+/**
+ * Program.
+ */
+
+program
+  .usage('duo clean-cache')
+  .parse(process.argv);
+
+/**
+ * Clear the caches.
+ */
+
+co(function *() {
+  try {
+    yield Duo(process.cwd()).cleanCache();
+    logger.cleaned('components/duo.json');
+
+    yield Package.cleanCache();
+    logger.cleaned(Package.cachepath);
+  } catch (err) {
+    logger.error(err);
+  }
+})();
