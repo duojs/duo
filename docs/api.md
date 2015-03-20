@@ -37,6 +37,22 @@ Set Duo to development mode. This will include `development` dependencies in you
 duo.development(true);
 ```
 
+### `duo.sourceMap(value)`
+
+Tells duo to include source-maps. When `value` is:
+
+ * `false`: (the default) no source-maps will be included
+ * `true`: the external source-maps are generated when using `Duo#write()`.
+ * `"inline"`: the source-maps will be generated when using `Duo#write()`.
+
+**NOTE**: when working with source-maps and `Duo#run()`, both `true` and `"inline"` will include a
+`map` property in the returned object. `Duo#write()` has logic to actually determine between inline
+and external source-maps.
+
+```js
+duo.development(true);
+```
+
 ### `duo.cache(boolean)`
 
 Turn caching on or off.  With caching turned on, plugin transformations will not be called unless the file changes. Defaults to true.
@@ -140,8 +156,8 @@ var src = yield duo.run();
 ```
 
 ```js
-duo.run(function(err, src) {
-  // ...
+duo.run(function(err, results) {
+  // results: { code, map }
 });
 ```
 

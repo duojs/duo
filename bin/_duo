@@ -5,6 +5,7 @@
  */
 
 var detect = require('language-classifier');
+var convert = require('convert-source-map');
 var Command = require('commander').Command;
 var relative = require('path').relative;
 var exists = require('fs').existsSync;
@@ -64,8 +65,9 @@ var program = new Command('duo')
   .usage('[options] command|[file, ...] [out]')
   .option('-c, --copy', 'opt to copy files instead of symlink', false)
   .option('-C, --no-cache', 'enable or disable the cache during build', true)
-  .option('-d, --development', 'include development dependencies.', false)
+  .option('-d, --development', 'include development dependencies and include an inline source-map', false)
   .option('-g, --global <name>', 'expose entry as a global <name>', null)
+  .option('-e, --external-source-maps', 'generate a source-map for the input entry file', false)
   .option('-o, --output <dir>', 'set the output directory, defaulted to build/', null)
   .option('-q, --quiet', 'only print to stderr when there is an error', false)
   .option('-r, --root <dir>', 'root directory to build from.', null)
@@ -181,6 +183,11 @@ var watching = false;
 var plugins = use(program.use);
 
 /**
+ * Source maps.
+ */
+
+var sourceMap = sourcemap(program.development, program.externalSourceMaps);
+/**
  * Stdout.
  */
 
@@ -245,10 +252,17 @@ function input() {
     if (!type) logger.error('could not detect the file type');
     var duo = create(root).entry(src, type);
 
-    duo.run(function (err, str) {
+    // only inline source-maps supported for stdout (if enabled at all)
+    if (sourceMap) duo.sourceMap('inline');
+
+    duo.run(function (err, results) {
       if (err) throw error(err);
       logger.end();
-      stdout.write(str);
+      stdout.write(results.code);
+      if (results.map) {
+        stdout.write('\n\n');
+        stdout.write(convert.fromObject(results.map).toComment());
+      }
       process.exit(0);
     });
   });
@@ -261,10 +275,19 @@ function input() {
  */
 
 function print(entry) {
-  create(entry).run(function (err, src) {
+  var duo = create(entry);
+
+  // only inline source-maps supported for stdout (if enabled at all)
+  if (sourceMap) duo.sourceMap('inline');
+
+  duo.run(function (err, results) {
     if (err) return error(err);
     if (!quiet) logger.end();
-    if (src) stdout.write(src);
+    if (results.code) stdout.write(results.code);
+    if (results.map) {
+      stdout.write('\n\n');
+      stdout.write(convert.fromObject(results.map).toComment());
+    }
 
     // watch or exit
     program.watch
@@ -319,6 +342,7 @@ function create(entry) {
   var duo = Duo(root)
     .entry(resolve(program.root || cwd, entry))
     .development(!! program.development)
+    .sourceMap(sourceMap)
     .copy(program.copy)
     .token(auth.password)
     .cache(program.cache);
@@ -514,6 +538,24 @@ function entries(list) {
       return memo.concat(entry);
     }
   }, []);
+}
+
+/**
+ * Determine the appropriate source-maps value.
+ *
+ *  - when `--external-source-maps is on, return `true`
+ *  - when `--development` is on, return `'inline'`
+ *  - otherwise, return `false`
+ *
+ * @param {Boolean} development
+ * @param {Boolean} external
+ * @returns {Boolean|String}
+ */
+
+function sourcemap(development, external) {
+  if (external) return true;
+  if (development) return 'inline';
+  return false;
 }
 
 /**
