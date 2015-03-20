@@ -87,24 +87,34 @@ describe('Duo CLI', function () {
     });
   });
 
-  describe('duo --source-map', function () {
-    it('should add external sourcemaps', function *() {
-      var out = yield exec('duo --source-maps index.js', 'simple');
+  describe('duo --development', function () {
+    it('should include inline source-maps', function *() {
+      var out = yield exec('duo --development index.js', 'simple');
+      if (out.error) throw out.error;
+      var entry = yield fs.readFile(path('simple/build/index.js'), 'utf8');
+      var map = convert.fromSource(entry).toObject();
+      var src = map.sourcesContent[map.sources.indexOf('/duo/two.js')];
+      assert(src.trim() == 'module.exports = \'two\';');
+    });
+  });
+
+  describe('duo --external-source-maps', function () {
+    it('should add external source-maps', function *() {
+      var out = yield exec('duo --external-source-maps index.js', 'simple');
       if (out.error) throw out.error;
       var entry = yield fs.readFile(path('simple/build/index.js'), 'utf8');
       var map = convert.fromMapFileSource(entry, path('simple/build')).toObject();
       var src = map.sourcesContent[map.sources.indexOf('/duo/two.js')];
       assert(src.trim() == 'module.exports = \'two\';');
     });
-  });
 
-  describe('duo --inline-source-maps', function () {
-    it('should add inline sourcemaps', function *() {
-      var out = yield exec('duo --inline-source-maps index.js', 'simple');
+    it('should behave the same way with `--development` on', function *() {
+      var out = yield exec('duo --development --external-source-maps index.js', 'simple');
       if (out.error) throw out.error;
-      var src = yield fs.readFile(path('simple/build/index.js'), 'utf8');
-      assert(!~ src.indexOf('//# sourceMappingURL=index.js.map'));
-      assert(!!~ src.indexOf('//# sourceMappingURL=data:application/json;'));
+      var entry = yield fs.readFile(path('simple/build/index.js'), 'utf8');
+      var map = convert.fromMapFileSource(entry, path('simple/build')).toObject();
+      var src = map.sourcesContent[map.sources.indexOf('/duo/two.js')];
+      assert(src.trim() == 'module.exports = \'two\';');
     });
   });
 
@@ -216,9 +226,9 @@ describe('Duo CLI', function () {
       assert(contains(out.stderr, 'error : could not detect the file type'));
     });
 
-    describe('with --inline-source-maps', function () {
+    describe('with --development', function () {
       it('should output an inline source-map', function *() {
-        out = yield exec('duo --inline-source-maps < index.js', 'cli-duo');
+        out = yield exec('duo --development < index.js', 'cli-duo');
         if (out.error) throw out.error;
         assert(out.stdout);
         assert(out.stderr);
@@ -228,9 +238,9 @@ describe('Duo CLI', function () {
       });
     });
 
-    describe('with --source-map', function () {
+    describe('with --external-source-maps', function () {
       it('should output an inline source-map (magic)', function *() {
-        out = yield exec('duo --source-maps < index.js', 'cli-duo');
+        out = yield exec('duo --external-source-maps < index.js', 'cli-duo');
         if (out.error) throw out.error;
         assert(out.stdout);
         assert(out.stderr);
@@ -371,9 +381,9 @@ describe('Duo CLI', function () {
       rm('entries/out');
     });
 
-    describe('with --inline-source-maps', function () {
+    describe('with --development', function () {
       it('should output an inline source-map', function *() {
-        out = yield exec('duo --inline-source-maps --stdout index.js', 'cli-duo');
+        out = yield exec('duo --development --stdout index.js', 'cli-duo');
         if (out.error) throw out.error;
         assert(out.stdout);
         assert(out.stderr);
@@ -383,9 +393,9 @@ describe('Duo CLI', function () {
       });
     });
 
-    describe('with --source-map', function () {
+    describe('with --external-source-maps', function () {
       it('should output an inline source-map (magic)', function *() {
-        out = yield exec('duo --source-maps --stdout index.js', 'cli-duo');
+        out = yield exec('duo --external-source-maps --stdout index.js', 'cli-duo');
         if (out.error) throw out.error;
         assert(out.stdout);
         assert(out.stderr);

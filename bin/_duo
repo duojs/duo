@@ -65,10 +65,9 @@ var program = new Command('duo')
   .usage('[options] command|[file, ...] [out]')
   .option('-c, --copy', 'opt to copy files instead of symlink', false)
   .option('-C, --no-cache', 'enable or disable the cache during build', true)
-  .option('-d, --development', 'include development dependencies.', false)
+  .option('-d, --development', 'include development dependencies and include an inline source-map', false)
   .option('-g, --global <name>', 'expose entry as a global <name>', null)
-  .option('-i, --inline-source-maps', 'include source-maps inline to the entry file', false)
-  .option('-m, --source-maps', 'include source-maps in the build (as external files)', false)
+  .option('-e, --external-source-maps', 'generate a source-map for the input entry file', false)
   .option('-o, --output <dir>', 'set the output directory, defaulted to build/', null)
   .option('-q, --quiet', 'only print to stderr when there is an error', false)
   .option('-r, --root <dir>', 'root directory to build from.', null)
@@ -187,8 +186,7 @@ var plugins = use(program.use);
  * Source maps.
  */
 
-var sourceMap = program.inlineSourceMaps ? 'inline' : program.sourceMaps;
-
+var sourceMap = sourcemap(program.development, program.externalSourceMaps);
 /**
  * Stdout.
  */
@@ -540,6 +538,24 @@ function entries(list) {
       return memo.concat(entry);
     }
   }, []);
+}
+
+/**
+ * Determine the appropriate source-maps value.
+ *
+ *  - when `--external-source-maps is on, return `true`
+ *  - when `--development` is on, return `'inline'`
+ *  - otherwise, return `false`
+ *
+ * @param {Boolean} development
+ * @param {Boolean} external
+ * @returns {Boolean|String}
+ */
+
+function sourcemap(development, external) {
+  if (external) return true;
+  if (development) return 'inline';
+  return false;
 }
 
 /**
