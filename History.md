@@ -1,4 +1,13 @@
 
+0.10.0 / 2015-03-19
+===================
+
+ * **BREAKING** now returning a `{ code, map }` object from `Duo#run()`
+ * Added `Duo#sourceMap()` to JS API
+ * Added external source-maps support with the `--external-source-maps` CLI flag
+ * Added `duo clean-cache` to CLI
+ * Updated `duo-css-compat` to have cleaner name displayed in CLI
+
 0.9.6 / 2015-2-28
 =================
 
