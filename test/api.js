@@ -728,6 +728,15 @@ describe('Duo API', function () {
       });
     });
 
+    describe('with .use(alt)', function () {
+      it('should support calling "alternate" plugins on the resulting build', function *() {
+        var plugin = require(path('alt-plugin/plugin.js'));
+        var duo = build('alt-plugin').use(plugin);
+        var results = yield duo.run();
+        assert(/^\"use strict";\n\n/.test(results.code));
+      });
+    });
+
     describe('with .include(name, source)', function () {
       it('should include a string as a source', function *() {
         var duo = build('includes');
