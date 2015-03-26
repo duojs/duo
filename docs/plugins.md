@@ -116,3 +116,37 @@ The following methods are available on `file`:
    this is useful to make sure the file is only included once.
  * `local()`: checks if the given file is local to the project root.
  * `remote()`: checks if the given file is part of a downloaded dependency.
+
+### Alternate Plugins
+
+Currently, plugins _generally_ only deal with individual files. Eventually,
+an entire hooks system will be implemented to make writing plugins even easier.
+Until that time, if you wish to write a plugin that processes the entire build,
+rather than all the individual files, you can use the following API:
+
+```js
+module.exports = function (config) {
+  function pluginName(build) {
+    // build.code: the source code for the entire build (what will be written to the output file)
+    // build.map: an object representing the external source-map (if available)
+  }
+
+  // **REQUIRED** this tells duo that this plugin is not a typical one,
+  // this will hook it into the final step in the build
+  pluginName.alternate = true;
+
+  return pluginName;
+};
+```
+
+An "alternate plugin" like this should modify `build.code` and `build.map`
+respectively to achieve the desired result.
+
+Example use-cases include things like CSS preprocessors, which benefit from
+having all the available variables/mixins to apply to the entire output file.
+Another example is using a JS/CSS minifier within duo itself.
+
+**NOTICE**: the above API is not permanent, but it was the best way to get
+the feature in without breaking backwards compatibility. At some point, a more
+robust plugin system will be developed, and will likely require plugins to be
+updated.
