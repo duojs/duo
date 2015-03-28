@@ -31,7 +31,7 @@
     "delegates": "0.0.3",
     "duo-css-compat": "^0.0.6",
     "duo-main": "^0.0.3",
-    "duo-pack": "^2.0.0",
+    "duo-pack": "^3.0.0",
     "duo-package": "^0.7.0",
     "duo-parse": "^0.2.0",
     "duo-string-to-js": "~0.1.0",
