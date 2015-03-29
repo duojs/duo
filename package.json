@@ -41,12 +41,13 @@
     "file-deps": "^0.0.7",
     "get-stdin": "~1.0.0",
     "glob": "^4.3.1",
-    "gnode": "0.1.0",
+    "has-generators": "^1.0.1",
     "json-mask": "^0.3.1",
     "language-classifier": "0.0.1",
     "max-component": "~1.0.0",
     "mkdirp": "^0.5.0",
     "node-netrc": "0.0.1",
+    "path-search": "^1.0.0",
     "rimraf-then": "^1.0.0",
     "step.js": "~2.0.2",
     "stream-log": "0.1.0",
@@ -60,12 +61,14 @@
     "coffee-script": "~1.7.1",
     "duo-jade": "0.x",
     "expect.js": "^0.3.1",
+    "gnode": "^0.1.1",
+    "gulp": "~3.8.7",
     "istanbul": "git://github.com/gotwarlost/istanbul#c6f8fc8b102cfa4e4455d6a165485b38cb58160c",
+    "map-stream": "~0.1.0",
     "mocha": "^1.20.1",
     "regenerator": "~0.4.9",
     "rimraf": "^2.2.8",
-    "styl": "^0.2.7",
-    "map-stream": "~0.1.0",
-    "gulp": "~3.8.7"
+    "semver": "^4.3.3",
+    "styl": "^0.2.7"
   }
 }
