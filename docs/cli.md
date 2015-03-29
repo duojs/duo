@@ -49,3 +49,31 @@ $ duo --use duo-whitespace --stdout in.styl > out.css
 
     ls           list all dependencies.
     duplicates   show all duplicates.
+
+## Using with Node 0.10
+
+Internally, duo uses generators for control flow. With node 0.11 and 0.12, the
+necessary `--harmony-generators` flag is added dynamically. (with iojs, the flag
+is not needed at all)
+
+In the past, we have used [gnode](https://www.npmjs.com/package/gnode) to
+support both node 0.10 and 0.11. However, with node 0.12 and iojs, not to
+mention weird edge-cases and bugs in gnode/regenerator, it made sense to remove
+this hard dependency from duo core.
+
+If you are still using node 0.10, you can still use duo! There are a lot of
+great ES6/generator transpilation libraries that include their own CLI wrapper
+for node. (see [gnode](https://www.npmjs.com/package/gnode#cli-examples) and
+[babel](https://babeljs.io/docs/usage/cli/) for examples)
+
+```sh
+# uses gnode to execute duo's executable
+$ gnode ./node_modules/.bin/duo index.js
+
+# uses babel to do the same
+$ babel-node ./node_modules/.bin/duo index.js
+```
+
+In this particular setup, it's _far_ easier to just install `duo` locally,
+instead of globally. (but you can still do the same thing, you'll just need
+to find out what path the `duo` bin was installed to)
