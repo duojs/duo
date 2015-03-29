@@ -583,17 +583,17 @@ describe('Duo API', function () {
       it('should generate sourcemaps', function *() {
         var duo = build('simple').sourceMap(true);
         var js = yield duo.run();
-        assert(!~ js.code.indexOf('//# sourceMappingURL'));
+        assert(js.code.indexOf('//# sourceMappingURL') > -1);
         assert(js.map);
       });
     });
 
-    describe('with .sourceMap("inline")', function () {
+    describe.only('with .sourceMap("inline")', function () {
       it('should generate sourcemaps', function *() {
         var duo = build('simple').sourceMap('inline');
         var js = yield duo.run();
-        assert(!~ js.code.indexOf('//# sourceMappingURL'));
-        assert(js.map);
+        assert(js.code.indexOf('//# sourceMappingURL') > -1);
+        assert(!js.map);
       });
     });
 
