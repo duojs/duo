@@ -1,4 +1,12 @@
 
+0.11.0 / 2015-03-29
+===================
+
+ * **BREAKING** removing gnode and native node 0.10 support (see [docs](docs/cli.md#using-with-node-010))
+ * Adding travis tests for node 0.12 and iojs
+ * Updating duo-package and duo-pack
+ * Adding support for "alternate plugins" (see [docs](docs/plugins.md#alternate-plugins))
+
 0.10.0 / 2015-03-19
 ===================
 
