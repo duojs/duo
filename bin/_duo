@@ -120,24 +120,6 @@ var langmap = {
 };
 
 /**
- * Command.
- */
-
-var command = program.args[0];
-
-/**
- * $PATH.
- */
-
-var paths = [__dirname].concat(process.env.PATH.split(':'));
-
-/**
- * Bin.
- */
-
-var bin = ['duo', command].join('-');
-
-/**
  * Quiet flag.
  */
 
@@ -197,47 +179,10 @@ if (program.stdout && program.args.length > 1) {
 }
 
 /**
- * Use a custom executable when there is at least 1 argument (ie: "command")
- * that does not appear to have a file extension and does not correspond to
- * something in the filesystem.
- */
-
-if (command && !extname(command) && !exists(command)) {
-  var args = process.argv.slice(3);
-
-  // find executable
-  var exec = paths.reduce(function (binary, path) {
-    path = resolve(path, bin);
-    return exists(path) && stat(path)
-      ? path
-      : binary;
-  }, bin);
-
-  // does not exist
-  if (!exists(exec)) {
-    logger.error(bin + '(1) does not exist');
-    return;
-  }
-
-  // spawn
-  args.unshift(exec);
-
-  // proxy subcommands through gnode(1)
-  var gnode = require.resolve('gnode');
-  var bin = join(dirname(gnode), 'bin', 'gnode');
-  args.unshift(bin);
-
-  var proc = spawn('node', args, { stdio: 'inherit', customFds: [0, 1, 2] });
-  proc.on('close', process.exit.bind(process));
-
-  return;
-}
-
-/**
  * Actions.
  */
 
-if (program.stdout && command) print(command);
+if (program.stdout && program.args.length) print(program.args[0]);
 else if (program.args.length) write(entries(program.args));
 else if (!process.stdin.isTTY) input();
 else program.help();

@@ -4,21 +4,74 @@
  * Module dependencies.
  */
 
-var path = require('path');
+var exists = require('fs').existsSync;
+var search = require('path-search');
+var Logger = require('stream-log');
 var spawn = require('win-fork');
+var path = require('path');
+var extname = path.extname;
+var resolve = path.resolve;
+
+/**
+ * Logger.
+ */
+
+var logger = new Logger(process.stderr)
+
+/**
+ * Error.
+ */
+
+logger.type('error', '31m', function () {
+  logger.end();
+  process.exit(1);
+});
 
 /**
  * Resolve.
  */
 
-var duo = path.resolve(__dirname, '_duo');
 var args = process.argv.slice(2);
+
+/**
+ * Extract the first argument to test as a sub-command.
+ */
+
+var command = args.shift();
+
+/**
+ * If we're not talking about a sub-command, fall back on `_duo`.
+ */
+
+var fallback = resolve(__dirname, '_duo');
+
+/**
+ * Rebuild the args array correctly based on the command/subcommand/etc.
+ */
+
+if (command && subcommand(command)) {
+  var paths = [__dirname].concat(process.env.PATH.split(':'));
+  var subcommand = search(paths, 'duo-' + command);
+
+  if (!subcommand) logger.error('duo-' + command + '(1) not found');
+  args.unshift(subcommand);
+} else if (command) {
+  args.unshift(fallback, command);
+} else {
+  args.unshift(fallback);
+}
+
+/**
+ * Add the necessary node flag.
+ */
+
+if (!require('has-generators')) args.unshift('--harmony-generators');
 
 /**
  * Spawn.
  */
 
-var proc = spawn(duo, args, { stdio: 'inherit' });
+var proc = spawn(process.execPath, args, { stdio: 'inherit' });
 
 /**
  * Exit.
@@ -27,3 +80,14 @@ var proc = spawn(duo, args, { stdio: 'inherit' });
 proc.on('exit', function (code) {
   process.exit(code);
 });
+
+/**
+ * Checks if an argument could be a valid sub-command.
+ */
+
+function subcommand(arg) {
+  if (path.extname(arg)) return false;
+  if (arg[0] === '-') return false;
+  if (exists(arg)) return false;
+  return true;
+}
