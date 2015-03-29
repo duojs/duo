@@ -57,6 +57,7 @@
     "win-fork": "^1.1.1"
   },
   "devDependencies": {
+    "bluebird": "^2.9.20",
     "co-mocha": "0.0.4",
     "coffee-script": "~1.7.1",
     "duo-jade": "0.x",
