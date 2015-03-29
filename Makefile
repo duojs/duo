@@ -17,7 +17,7 @@ node_modules: package.json
 	@npm install
 
 coverage: $(SRC) $(TESTS)
-	$(NODE) $(NODE_FLAGS) $(ISTANBUL) cover $(MOCHA)
+	@$(NODE) $(NODE_FLAGS) $(ISTANBUL) cover $(MOCHA)
 
 clean:
 	@rm -rf coverage test/fixtures/*/{components,deps,out,build.js}
