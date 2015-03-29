@@ -11,15 +11,14 @@ var spawn = require('win-fork');
  * Resolve.
  */
 
-var gnode = require.resolve('gnode/bin/gnode');
 var duo = path.resolve(__dirname, '_duo');
-var args = [duo].concat(process.argv.slice(2));
+var args = process.argv.slice(2);
 
 /**
  * Spawn.
  */
 
-var proc = spawn(gnode, args, { stdio: 'inherit' });
+var proc = spawn(duo, args, { stdio: 'inherit' });
 
 /**
  * Exit.
