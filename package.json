@@ -8,11 +8,13 @@
     "type": "git",
     "url": "https://github.com/duojs/duo.git"
   },
+  "main": "lib/duo.js",
   "bin": {
     "duo": "bin/duo",
     "_duo": "bin/_duo",
     "duo-duplicates": "bin/duo-duplicates",
-    "duo-ls": "bin/duo-ls"
+    "duo-ls": "bin/duo-ls",
+    "duo-clean-cache": "bin/duo-clean-cache"
   },
   "dependencies": {
     "archy": "0.0.2",
