@@ -1,4 +1,10 @@
 
+0.11.1 / 2015-03-29
+===================
+
+ * Bugfix: removing gnode from JS API
+ * Adds `entry` to alternate plugins API
+
 0.11.0 / 2015-03-29
 ===================
 
