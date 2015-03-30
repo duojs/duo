@@ -126,9 +126,10 @@ rather than all the individual files, you can use the following API:
 
 ```js
 module.exports = function (config) {
-  function pluginName(build) {
+  function pluginName(build, entry) {
     // build.code: the source code for the entire build (what will be written to the output file)
     // build.map: an object representing the external source-map (if available)
+    // entry: the entry file being processed
   }
 
   // **REQUIRED** this tells duo that this plugin is not a typical one,
