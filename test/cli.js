@@ -457,6 +457,14 @@ describe('Duo CLI', function () {
       if (out.error) throw out.error;
       assert(contains(out.stderr, '/duo'));
     });
+
+    describe('with --quiet', function () {
+      it('should not have any output', function *() {
+        var out = yield exec('clean-cache --quiet', 'simple-deps');
+        if (out.error) throw out.error;
+        assert.equal(out.stderr, '');
+      });
+    });
   });
 
   describe('duo <unsupported command>', function () {

@@ -26,7 +26,14 @@ var logger = require('stream-log')(process.stderr)
 
 program
   .usage('duo clean-cache')
+  .option('-q, --quiet', 'only print to stderr when there is an error', false)
   .parse(process.argv);
+
+/**
+ * Quiet flag.
+ */
+
+var quiet = program.quiet;
 
 /**
  * Clear the caches.
@@ -35,10 +42,10 @@ program
 co(function *() {
   try {
     yield Duo(process.cwd()).cleanCache();
-    logger.cleaned('components/duo.json');
+    if (!quiet) logger.cleaned('components/duo.json');
 
     yield Package.cleanCache();
-    logger.cleaned(Package.cachepath);
+    if (!quiet) logger.cleaned(Package.cachepath);
   } catch (err) {
     logger.error(err);
   }
