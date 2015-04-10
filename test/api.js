@@ -588,7 +588,7 @@ describe('Duo API', function () {
       });
     });
 
-    describe.only('with .sourceMap("inline")', function () {
+    describe('with .sourceMap("inline")', function () {
       it('should generate sourcemaps', function *() {
         var duo = build('simple').sourceMap('inline');
         var js = yield duo.run();
