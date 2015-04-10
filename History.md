@@ -1,4 +1,13 @@
 
+0.11.2 / 2015-04-09
+===================
+
+  * Merge pull request #457 from duojs/clean-cache-quiet
+  * moving gitter badge alongside other badges
+  * fixing arrays for alt plugins
+  * removing only in test
+  * adding a quiet mode for clean-cache
+
 0.11.1 / 2015-03-29
 ===================
 
