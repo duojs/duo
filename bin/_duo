@@ -33,7 +33,7 @@ var cwd = process.cwd();
 var logger = new Logger(process.stderr)
   .type('building', '36m')
   .type('built', '36m')
-  .type('written', '36m')
+  .type('wrote', '36m')
   .type('installing', '36m')
   .type('installed', '36m')
   .type('finding', '36m')
@@ -312,7 +312,7 @@ function create(entry) {
     duo.on('install', log('installed'));
     duo.on('running', log('building'));
     duo.on('run', log('built'));
-    duo.on('write', log('written'));
+    duo.on('write', log('wrote'));
   }
 
   // output dir
