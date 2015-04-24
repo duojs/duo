@@ -94,7 +94,7 @@ describe('Duo CLI', function () {
       if (out.error) throw out.error;
       var entry = yield fs.readFile(path('simple/build/index.js'), 'utf8');
       var map = convert.fromSource(entry).toObject();
-      var src = map.sourcesContent[map.sources.indexOf('/duo/two.js')];
+      var src = map.sourcesContent[map.sources.indexOf('two.js')];
       assert(src.trim() == 'module.exports = \'two\';');
     });
   });
@@ -105,7 +105,7 @@ describe('Duo CLI', function () {
       if (out.error) throw out.error;
       var entry = yield fs.readFile(path('simple/build/index.js'), 'utf8');
       var map = convert.fromMapFileSource(entry, path('simple/build')).toObject();
-      var src = map.sourcesContent[map.sources.indexOf('/duo/two.js')];
+      var src = map.sourcesContent[map.sources.indexOf('two.js')];
       assert(src.trim() == 'module.exports = \'two\';');
     });
 
@@ -114,7 +114,7 @@ describe('Duo CLI', function () {
       if (out.error) throw out.error;
       var entry = yield fs.readFile(path('simple/build/index.js'), 'utf8');
       var map = convert.fromMapFileSource(entry, path('simple/build')).toObject();
-      var src = map.sourcesContent[map.sources.indexOf('/duo/two.js')];
+      var src = map.sourcesContent[map.sources.indexOf('two.js')];
       assert(src.trim() == 'module.exports = \'two\';');
     });
   });
