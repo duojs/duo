@@ -118,7 +118,7 @@ describe('Duo CLI', function () {
       assert(src.trim() == 'module.exports = \'two\';');
     });
 
-    it('should log that the map was wrote', function *() {
+    it('should log that the map was written', function *() {
       var out = yield exec('--external-source-maps index.js', 'simple');
       if (out.error) throw out.error;
       assert(contains(out.stderr, 'wrote : index.js'));
