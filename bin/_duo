@@ -31,9 +31,11 @@ var cwd = process.cwd();
  */
 
 var logger = new Logger(process.stderr)
+  // success
+  .type('wrote', '32m')
+  // info
   .type('building', '36m')
   .type('built', '36m')
-  .type('wrote', '36m')
   .type('installing', '36m')
   .type('installed', '36m')
   .type('finding', '36m')
