@@ -117,6 +117,13 @@ describe('Duo CLI', function () {
       var src = map.sourcesContent[map.sources.indexOf('two.js')];
       assert(src.trim() == 'module.exports = \'two\';');
     });
+
+    it('should log that the map was written', function *() {
+      var out = yield exec('--external-source-maps index.js', 'simple');
+      if (out.error) throw out.error;
+      assert(contains(out.stderr, 'wrote : index.js'));
+      assert(contains(out.stderr, 'wrote : index.js.map'));
+    });
   });
 
   describe('duo [file, ...]', function () {
@@ -129,8 +136,10 @@ describe('Duo CLI', function () {
       assert('index' == index.main);
       assert(contains(out.stderr, 'building : admin.js'));
       assert(contains(out.stderr, 'built : admin.js'));
+      assert(contains(out.stderr, 'wrote : admin.js'));
       assert(contains(out.stderr, 'building : index.js'));
       assert(contains(out.stderr, 'built : index.js'));
+      assert(contains(out.stderr, 'wrote : index.js'));
       assert(!out.stdout);
     });
 
@@ -157,8 +166,10 @@ describe('Duo CLI', function () {
       assert('index' == index.main);
       assert(contains(out.stderr, 'building : admin.js'));
       assert(contains(out.stderr, 'built : admin.js'));
+      assert(contains(out.stderr, 'wrote : admin.js'));
       assert(contains(out.stderr, 'building : index.js'));
       assert(contains(out.stderr, 'built : index.js'));
+      assert(contains(out.stderr, 'wrote : index.js'));
       assert(!out.stdout);
     });
 
@@ -171,8 +182,10 @@ describe('Duo CLI', function () {
       assert('index' == index.main);
       assert(contains(out.stderr, 'building : admin.js'));
       assert(contains(out.stderr, 'built : admin.js'));
+      assert(contains(out.stderr, 'wrote : admin.js'));
       assert(contains(out.stderr, 'building : index.js'));
       assert(contains(out.stderr, 'built : index.js'));
+      assert(contains(out.stderr, 'wrote : index.js'));
       assert(!exists('entries/out/*.css'));
       assert(!out.stdout);
     });
