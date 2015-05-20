@@ -60,7 +60,7 @@
   },
   "devDependencies": {
     "bluebird": "^2.9.20",
-    "co-mocha": "0.0.4",
+    "co-mocha": "^1.1.0",
     "coffee-script": "~1.7.1",
     "duo-jade": "0.x",
     "expect.js": "^0.3.1",
@@ -68,7 +68,7 @@
     "gulp": "~3.8.7",
     "istanbul": "git://github.com/gotwarlost/istanbul#c6f8fc8b102cfa4e4455d6a165485b38cb58160c",
     "map-stream": "~0.1.0",
-    "mocha": "^1.20.1",
+    "mocha": "^2.2.5",
     "regenerator": "~0.4.9",
     "rimraf": "^2.2.8",
     "semver": "^4.3.3",
