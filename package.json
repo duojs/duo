@@ -60,7 +60,7 @@
   },
   "devDependencies": {
     "bluebird": "^2.9.20",
-    "co-mocha": "^1.1.0",
+    "co-mocha": "~1.0.3",
     "coffee-script": "~1.7.1",
     "duo-jade": "0.x",
     "expect.js": "^0.3.1",
