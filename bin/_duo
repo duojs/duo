@@ -65,7 +65,7 @@ var auth = netrc('api.github.com') || {
 
 var program = new Command('duo')
   .version(pkg.version)
-  .usage('[options] command|[file, ...] [out]')
+  .usage('[options] command|[file, ...]')
   .option('-c, --copy', 'opt to copy files instead of symlink', false)
   .option('-C, --no-cache', 'enable or disable the cache during build', true)
   .option('-d, --development', 'include development dependencies and include an inline source-map', false)
