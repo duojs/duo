@@ -317,7 +317,7 @@ describe('Duo API', function () {
   describe('.run([fn])', function () {
     it('should ignore runs without an entry or source', function *() {
       var js = yield Duo(__dirname).run();
-      assert.equal('', js);
+      assert.deepEqual(js, { code: '' });
     });
 
     it('should build simple modules', function *() {

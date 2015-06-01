@@ -480,6 +480,31 @@ describe('Duo CLI', function () {
     });
   });
 
+  describe('duo install file...', function () {
+    it('should download the remote dependencies', function *() {
+      var out = yield exec('install index.js', 'install-deps');
+      if (out.error) throw out.error;
+      assert(exists('install-deps/components/duo.json'));
+      assert(exists('install-deps/components/component-type@1.1.0'));
+      assert(!exists('install-deps/components/suitcss-base@0.8.0'));
+    });
+
+    it('should not output built files', function *() {
+      var out = yield exec('install index.js', 'install-deps');
+      if (out.error) throw out.error;
+      assert(!exists('install-deps/build'));
+    });
+
+    it('should accept multiple entry files', function *() {
+      var out = yield exec('install index.js index.css', 'install-deps');
+      if (out.error) throw out.error;
+      assert(exists('install-deps/components/duo.json'));
+      assert(exists('install-deps/components/component-type@1.1.0'));
+      assert(exists('install-deps/components/suitcss-base@0.8.0'));
+      assert(!exists('install-deps/build'));
+    });
+  });
+
   describe('duo <unsupported command>', function () {
     var res = {};
     beforeEach(function (done) {

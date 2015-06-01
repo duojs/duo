@@ -1,0 +1,243 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+
+var relative = require('path').relative;
+var resolve = require('path').resolve;
+var program = require('commander');
+var Logger = require('stream-log');
+var util = require('../lib/util');
+var stdin = require('get-stdin');
+var join = require('path').join;
+var pkg = require('../package');
+var Batch = require('batch');
+var cwd = process.cwd();
+
+/**
+ * Logger.
+ */
+
+var logger = new Logger(process.stderr)
+  .type('building', '36m')
+  .type('built', '36m')
+  .type('installing', '36m')
+  .type('installed', '36m')
+  .type('finding', '36m')
+  .type('found', '36m')
+  .type('using', '36m');
+
+/**
+ * Error.
+ */
+
+logger.type('error', '31m', function () {
+  if (!quiet) logger.end();
+  process.exit(1);
+});
+
+/**
+ * Program.
+ */
+
+program
+  .usage('duo install file...')
+  .option('-c, --copy', 'opt to copy files instead of symlink', false)
+  .option('-C, --no-cache', 'enable or disable the cache during build', true)
+  .option('-d, --development', 'include development dependencies and include an inline source-map', false)
+  .option('-q, --quiet', 'only print to stderr when there is an error', false)
+  .option('-r, --root <dir>', 'root directory to build from.', null)
+  .option('-t, --type <type>', 'set the entry type', null)
+  .option('-u, --use <plugin>', 'use transform plugin(s)', util.collect, [])
+  .option('-v, --verbose', 'show as much logs as possible', false)
+  .parse(process.argv);
+
+/**
+ * Examples.
+ */
+
+program.on('--help', function () {
+  console.log('  Examples:');
+  console.log();
+  console.log('    # install dependencies for index.js and index.css');
+  console.log('    $ duo install index.{js,css}');
+  console.log();
+  console.log('    # include transform plugins');
+  console.log('    $ duo install --use duo-babel index.{js,css}');
+  console.log();
+  process.exit(0);
+});
+
+/**
+ * Quiet flag.
+ */
+
+var quiet = program.quiet;
+
+/**
+ * Verbose flag.
+ */
+
+var verbose = program.verbose;
+
+/**
+ * Only quite *or* verbose should be enabled, never both.
+ */
+
+if (quiet && verbose) {
+  logger.error('cannot use both quiet and verbose mode simultaneously');
+  return;
+}
+
+/**
+ * GitHub credentials.
+ */
+
+var auth = util.auth();
+
+/**
+ * Root.
+ */
+
+var root = util.findroot(program.root);
+
+/**
+ * Plugins.
+ */
+
+try {
+  var plugins = util.plugins(root, program.use);
+} catch (err) {
+  error(err);
+}
+
+/**
+ * Actions.
+ */
+
+if (program.args.length) write(util.entries(root, program.args));
+else if (!process.stdin.isTTY) input();
+else program.help();
+
+/**
+ * Accept standard input.
+ */
+
+function input() {
+  stdin(function (src) {
+    var type = program.type || util.type(src);
+    if (!type) logger.error('could not detect the file type');
+    var duo = create(root).entry(src, type);
+
+    duo.install(function (err, mapping) {
+      if (err) throw error(err);
+      logger.end();
+      process.exit(0);
+    });
+  });
+}
+
+/**
+ * Write the entries.
+ *
+ * @param {Array} entries
+ */
+
+function write(entries) {
+  if ('string' == typeof entries) entries = [entries];
+
+  var batch = new Batch;
+  var push = batch.push.bind(batch);
+
+  var duos = entries
+    .map(multiple)
+    .map(push);
+
+  batch.end(function (err) {
+    if (err) return error(err);
+    if (!quiet) logger.end();
+    process.exit(0);
+  });
+
+  // write multiple entries to
+  // the directory `out`
+  function multiple(entry) {
+    return function (done) {
+      create(entry).install(done);
+    };
+  }
+}
+
+/**
+ * Create a duo instance.
+ *
+ * @param {entry} entry
+ * @return {Duo}
+ */
+
+function create(entry) {
+  var duo = Duo(root)
+    .entry(resolve(program.root || cwd, entry))
+    .copy(program.copy)
+    .token(auth.password)
+    .cache(program.cache);
+
+  // events
+  if (!quiet) {
+    if (verbose) {
+      duo.on('resolving', log('finding'));
+      duo.on('resolve', log('found'));
+      duo.on('installing', log('installing'));
+    }
+
+    duo.on('plugin', log('using'));
+    duo.on('install', log('installed'));
+    duo.on('running', log('building'));
+    duo.on('run', log('built'));
+  }
+
+  // use plugins
+  plugins.forEach(duo.use, duo);
+
+  return duo;
+}
+
+/**
+ * Error.
+ */
+
+function error(err) {
+  err = 'string' == typeof err ? new Error(err) : err;
+  if (err instanceof SyntaxError && err.fileName) {
+    var msg = err.message;
+    var file = relative(process.cwd(), err.fileName);
+    logger.error('Syntax error:', msg, 'in:', file);
+  } else {
+    logger.error(err.stack);
+  }
+}
+
+/**
+ * Log an event.
+ *
+ * @param {String} event
+ * @return {Function}
+ */
+
+function log(event) {
+  return function (pkg) {
+    pkg = pkg.slug ? pkg.slug() : pkg;
+    pkg = 'source.' + (program.type || 'js') == pkg ? 'from stdin' : pkg;
+    logger[event](pkg);
+  };
+}
+
+/**
+ * Lazy-load Duo
+ */
+
+function Duo() {
+  var duo = require('..');
+  return duo.apply(duo, arguments);
+}
