@@ -12,9 +12,10 @@
   "bin": {
     "duo": "bin/duo",
     "_duo": "bin/_duo",
+    "duo-clean-cache": "bin/duo-clean-cache",
     "duo-duplicates": "bin/duo-duplicates",
-    "duo-ls": "bin/duo-ls",
-    "duo-clean-cache": "bin/duo-clean-cache"
+    "duo-install": "bin/duo-install",
+    "duo-ls": "bin/duo-ls"
   },
   "dependencies": {
     "archy": "0.0.2",

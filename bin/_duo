@@ -4,24 +4,20 @@
  * Module dependencies.
  */
 
-var detect = require('language-classifier');
 var convert = require('convert-source-map');
 var Command = require('commander').Command;
 var relative = require('path').relative;
-var exists = require('fs').existsSync;
 var resolve = require('path').resolve;
 var dirname = require('path').dirname;
 var extname = require('path').extname;
 var mkdirp = require('mkdirp').sync;
 var Logger = require('stream-log');
-var stat = require('fs').statSync;
-var netrc = require('node-netrc');
+var util = require('../lib/util');
 var stdin = require('get-stdin');
 var Watch = require('duo-watch');
 var join = require('path').join;
 var spawn = require('win-fork');
 var pkg = require('../package');
-var glob = require('glob').sync;
 var Batch = require('batch');
 var stdout = process.stdout;
 var cwd = process.cwd();
@@ -52,14 +48,6 @@ logger.type('error', '31m', function () {
 });
 
 /**
- * GitHub credentials.
- */
-
-var auth = netrc('api.github.com') || {
-  password: process.env.GH_TOKEN
-};
-
-/**
  * Program.
  */
 
@@ -75,7 +63,7 @@ var program = new Command('duo')
   .option('-q, --quiet', 'only print to stderr when there is an error', false)
   .option('-r, --root <dir>', 'root directory to build from.', null)
   .option('-t, --type <type>', 'set the entry type', null)
-  .option('-u, --use <plugin>', 'use transform plugin(s)', collect, [])
+  .option('-u, --use <plugin>', 'use transform plugin(s)', util.collect, [])
   .option('-v, --verbose', 'show as much logs as possible', false)
   .option('-w, --watch', 'watch for changes and rebuild', false)
   .option('-s, --standalone <standalone>', 'outputs standalone javascript umd <standalone>', '')
@@ -107,20 +95,12 @@ program.on('--help', function () {
   console.log();
   console.log('  Commands:');
   console.log();
+  console.log('    install      install dependencies for a file.');
   console.log('    ls           list all dependencies.');
   console.log('    duplicates   show all duplicates.');
   console.log();
   process.exit(0);
 });
-
-/**
- * Language mapping.
- */
-
-var langmap = {
-  javascript: 'js',
-  css: 'css'
-};
 
 /**
  * Quiet flag.
@@ -147,7 +127,7 @@ if (quiet && verbose) {
  * Root.
  */
 
-var root = findroot(program.root);
+var root = util.findroot(program.root);
 
 /**
  * Asset path.
@@ -165,13 +145,24 @@ var watching = false;
  * Plugins.
  */
 
-var plugins = use(program.use);
+try {
+  var plugins = util.plugins(root, program.use);
+} catch (err) {
+  error(err);
+}
 
 /**
  * Source maps.
  */
 
 var sourceMap = sourcemap(program.development, program.externalSourceMaps);
+
+/**
+ * GitHub Authentication.
+ */
+
+var auth = util.auth();
+
 /**
  * Stdout.
  */
@@ -186,7 +177,7 @@ if (program.stdout && program.args.length > 1) {
  */
 
 if (program.stdout && program.args.length) print(program.args[0]);
-else if (program.args.length) write(entries(program.args));
+else if (program.args.length) write(util.entries(root, program.args));
 else if (!process.stdin.isTTY) input();
 else program.help();
 
@@ -196,7 +187,7 @@ else program.help();
 
 function input() {
   stdin(function (src) {
-    var type = program.type || langmap[detect(src)];
+    var type = program.type || util.type(src);
     if (!type) logger.error('could not detect the file type');
     var duo = create(root).entry(src, type);
 
@@ -340,21 +331,6 @@ function watch(action) {
 }
 
 /**
- * Log an event.
- *
- * @param {String} event
- * @return {Function}
- */
-
-function log(event) {
-  return function (pkg) {
-    pkg = pkg.slug ? pkg.slug() : pkg;
-    pkg = 'source.' + (program.type || 'js') == pkg ? 'from stdin' : pkg;
-    logger[event](pkg);
-  };
-}
-
-/**
  * Error.
  */
 
@@ -370,123 +346,18 @@ function error(err) {
 }
 
 /**
- * Find the root.
+ * Log an event.
  *
- * @param {String} root
- * @param {String}
+ * @param {String} event
+ * @return {Function}
  */
 
-function findroot(root) {
-  if (root) return resolve(cwd, root);
-  var sep = require('path').sep;
-  var parts = cwd.split(sep);
-  var path = cwd;
-
-  while (!exists(join(path, 'component.json')) && parts.length > 1) {
-    parts.pop();
-    path = parts.join(sep);
-  }
-
-  return parts.length <= 1
-    ? cwd
-    : path;
-}
-
-/**
- * Filter out unexpanded globs.
- *
- * @param {String} entry
- * @return {Boolean}
- */
-
-function globs(path) {
-  return !/\*/.test(path);
-}
-
-/**
- * Simple hueristic to check if `path` is a directory.
- *
- * @param {String} path
- * @return {Boolean}
- */
-
-function isDir(path) {
-  try {
-    return stat(path).isDirectory();
-  } catch (e) {
-    return false;
-  }
-}
-
-/**
- * Gets a list of all files within a directory recursively (and synchronously)
- *
- * @param {String} path
- * @return {Array:String}
- */
-
-function listFiles(path, pattern) {
-  var opts = { cwd: root, nodir: true };
-  return glob(join(path, pattern || '**/*'), opts);
-}
-
-/**
- * Retrieve an array of plugins from `--use`.
- *
- * @param {Array:String} plugins
- * @return {Array:Function}
- */
-
-function use(plugins) {
-  return plugins.map(function (plugin) {
-    try {
-      var local = resolve(root, plugin);
-      var npm = resolve(root, "node_modules", plugin);
-      var cwd = resolve(process.cwd(), "node_modules", plugin);
-      var mod;
-
-      if (exists(local)) mod = require(local);
-      else if (exists(local + '.js')) mod = require(local);
-      else if (exists(npm)) mod = require(npm);
-      else mod = require(cwd);
-
-      return Array.isArray(mod) ? mod : mod();
-    } catch (e) {
-      error(e);
-    }
-  }, []);
-}
-
-/**
- * Helper to capture list of plugins from CLI
- */
-
-function collect(val, memo) {
-  val.split(',').forEach(function (val) {
-    memo.push(val);
-  });
-
-  return memo;
-}
-
-/**
- * Normalize entries list.
- *
- *  - expand globs
- *  - expand directories into list of all nested files
- *
- * @param {Array:String}
- * @return {Array:String}
- */
-
-function entries(list) {
-  return list.filter(globs).reduce(function (memo, entry) {
-    if (isDir(join(root, entry))) {
-      return memo.concat(listFiles(entry));
-    } else {
-      return memo.concat(entry);
-    }
-  }, []);
+function log(event) {
+  return function (pkg) {
+    pkg = pkg.slug ? pkg.slug() : pkg;
+    pkg = 'source.' + (program.type || 'js') == pkg ? 'from stdin' : pkg;
+    logger[event](pkg);
+  };
 }
 
 /**
