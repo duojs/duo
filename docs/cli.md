@@ -2,7 +2,7 @@
 
 ## Usage
 
-    Usage: duo [options] command|[file, ...] [out]
+    Usage: duo [options] command|[file, ...]
 
     Options:
 
@@ -47,6 +47,7 @@ $ duo --use duo-whitespace --stdout in.styl > out.css
 
 ## Commands
 
+    install      install dependencies for a file.
     ls           list all dependencies.
     duplicates   show all duplicates.
 
