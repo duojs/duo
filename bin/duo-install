@@ -14,6 +14,7 @@ var join = require('path').join;
 var pkg = require('../package');
 var Batch = require('batch');
 var cwd = process.cwd();
+var hasError = false;
 
 /**
  * Logger.
@@ -33,7 +34,7 @@ var logger = new Logger(process.stderr)
  */
 
 logger.type('error', '31m', function () {
-  process.exitCode = 1;
+  hasError = true;
 });
 
 /**
@@ -42,6 +43,7 @@ logger.type('error', '31m', function () {
 
 process.on('exit', function () {
   if (!quiet) logger.end();
+  if (hasError) process.exit(1);
 });
 
 /**
