@@ -33,8 +33,15 @@ var logger = new Logger(process.stderr)
  */
 
 logger.type('error', '31m', function () {
+  process.exitCode = 1;
+});
+
+/**
+ * End logger output after process exit.
+ */
+
+process.on('exit', function () {
   if (!quiet) logger.end();
-  process.exit(1);
 });
 
 /**
@@ -110,6 +117,7 @@ try {
   var plugins = util.plugins(root, program.use);
 } catch (err) {
   error(err);
+  return;
 }
 
 /**
@@ -127,12 +135,11 @@ else program.help();
 function input() {
   stdin(function (src) {
     var type = program.type || util.type(src);
-    if (!type) logger.error('could not detect the file type');
+    if (!type) return logger.error('could not detect the file type');
     var duo = create(root).entry(src, type);
 
     duo.install(function (err, mapping) {
-      if (err) throw error(err);
-      logger.end();
+      if (err) return error(err);
       process.exit(0);
     });
   });
@@ -156,7 +163,6 @@ function write(entries) {
 
   batch.end(function (err) {
     if (err) return error(err);
-    if (!quiet) logger.end();
     process.exit(0);
   });
 
