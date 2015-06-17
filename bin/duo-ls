@@ -10,6 +10,7 @@ var join = require('path').join;
 var archy = require('archy');
 var cwd = process.cwd();
 var fs = require('fs');
+var hasError = false;
 
 /**
  * Paths.
@@ -22,8 +23,16 @@ var mapping = join(process.cwd());
  */
 
 logger.type('error', '31m', function () {
+  hasError = true;
+});
+
+/**
+ * End logger output after finished.
+ */
+
+process.on('exit', function () {
   logger.end();
-  process.exit(1);
+  if (hasError) process.exit(1);
 });
 
 /**
@@ -59,6 +68,7 @@ try {
   var map = JSON.parse(read(join(cwd, 'components', 'duo.json')));
 } catch (e) {
   logger.error(e.stack || e);
+  return;
 }
 
 /**
@@ -69,6 +79,7 @@ try {
   var component = JSON.parse(read(join(cwd, 'component.json')));
 } catch (e) {
   logger.error(e.stack || e);
+  return;
 }
 
 /**

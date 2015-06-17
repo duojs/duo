@@ -8,6 +8,7 @@ var Package = require('duo-package');
 var program = require('commander');
 var Duo = require('..');
 var co = require('co');
+var hasError = false;
 
 /**
  * Logger.
@@ -16,9 +17,17 @@ var co = require('co');
 var logger = require('stream-log')(process.stderr)
   .type('cleaned', '36m')
   .type('error', '31m', function () {
-    logger.end();
-    process.exit(1);
+    hasError = true;
   });
+
+/**
+ * End logger output on finished.
+ */
+
+process.on('exit', function () {
+  if (!quiet) logger.end();
+  if (hasError) process.exit(1);
+});
 
 /**
  * Program.

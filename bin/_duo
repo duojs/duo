@@ -21,6 +21,7 @@ var pkg = require('../package');
 var Batch = require('batch');
 var stdout = process.stdout;
 var cwd = process.cwd();
+var hasError = false;
 
 /**
  * Logger.
@@ -43,8 +44,16 @@ var logger = new Logger(process.stderr)
  */
 
 logger.type('error', '31m', function () {
+  hasError = true;
+});
+
+/**
+ * End logger output.
+ */
+
+process.on('exit', function () {
   if (!quiet) logger.end();
-  process.exit(1);
+  if (hasError) process.exit(1);
 });
 
 /**
@@ -149,6 +158,7 @@ try {
   var plugins = util.plugins(root, program.use);
 } catch (err) {
   error(err);
+  return;
 }
 
 /**
@@ -188,15 +198,14 @@ else program.help();
 function input() {
   stdin(function (src) {
     var type = program.type || util.type(src);
-    if (!type) logger.error('could not detect the file type');
+    if (!type) return logger.error('could not detect the file type');
     var duo = create(root).entry(src, type);
 
     // only inline source-maps supported for stdout (if enabled at all)
     if (sourceMap) duo.sourceMap('inline');
 
     duo.run(function (err, results) {
-      if (err) throw error(err);
-      logger.end();
+      if (err) return error(err);
       stdout.write(results.code);
       if (results.map) {
         stdout.write('\n\n');
@@ -221,7 +230,6 @@ function print(entry) {
 
   duo.run(function (err, results) {
     if (err) return error(err);
-    if (!quiet) logger.end();
     if (results.code) stdout.write(results.code);
     if (results.map) {
       stdout.write('\n\n');
@@ -253,7 +261,6 @@ function write(entries) {
 
   batch.end(function (err) {
     if (err) return error(err);
-    if (!quiet) logger.end();
 
     // watch or exit
     program.watch
