@@ -1,4 +1,9 @@
 
+0.12.1 / 2015-06-17
+===================
+
+  * No longer forcefully closing process on errors (waiting until call stack clears)
+
 0.12.0 / 2015-06-01
 ===================
 
