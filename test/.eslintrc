@@ -1,0 +1,9 @@
+{
+  "env": {
+    "mocha": true
+  },
+  "rules": {
+    "new-cap": 0,
+    "no-use-before-define": 0
+  }
+}

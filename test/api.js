@@ -5,22 +5,18 @@
 
 var readdir = require('fs').readdirSync;
 var readfile = require('fs').readFileSync;
-var dirname = require('path').dirname;
 var coffee = require('coffee-script');
 var resolve = require('path').resolve;
 var exist = require('fs').existsSync;
-var mkdir = require('fs').mkdirSync;
 var lstat = require('fs').lstatSync;
 var rmrf = require('rimraf').sync;
 var stat = require('fs').statSync;
-var expect = require('expect.js');
 var File = require('../lib/file');
 var join = require('path').join;
 var assert = require('assert');
 var styl = require('styl');
 var fs = require('co-fs');
 var Duo = require('..');
-var noop = function (){};
 var vm = require('vm');
 var slice = [].slice;
 
@@ -331,13 +327,13 @@ describe('Duo API', function () {
       var js = yield build('require-conflict').run();
       var ctx = evaluate(js.code);
       var mod = ctx.main;
-      assert(mod.send != mod.json, 'segmentio/json == yields/send-json');
+      assert(mod.send !== mod.json, 'segmentio/json == yields/send-json');
     });
 
     it('should build with no deps', function *() {
       var js = yield build('no-deps').run();
       var ctx = evaluate(js.code).main;
-      assert('a' == ctx)
+      assert.equal('a', ctx);
     });
 
     it('resolve directories like `require(./lib)`', function *() {
@@ -362,11 +358,10 @@ describe('Duo API', function () {
       this.timeout(15000);
       var js = yield build('simple-deps').run();
       var ctx = evaluate(js.code);
-      var type = ctx.main;
       assert(ctx.mods);
       assert.equal(2, ctx.mods.length);
       assert.equal('string', ctx.mods[0](''));
-      assert('function' == typeof ctx.mods[1]);
+      assert.equal(typeof ctx.mods[1], 'function');
     });
 
     it('should fetch dependencies from manifest', function *() {
@@ -567,15 +562,15 @@ describe('Duo API', function () {
         var js = yield duo.run();
         var ctx = evaluate(js.code);
         assert.equal('trigger', ctx.mods[0].name);
-        assert('function' == typeof ctx.mods[1].equal);
+        assert.equal(typeof ctx.mods[1].equal, 'function');
       });
     });
 
     describe('with .sourceMap(false)', function () {
       it('should not generate sourcemaps', function *() {
         var js = yield build('simple').run();
-        assert(!~ js.code.indexOf('//# sourceMappingURL'));
-        assert(! js.map);
+        assert.equal(js.code.indexOf('//# sourceMappingURL'), -1);
+        assert(!js.map);
       });
     });
 
@@ -626,6 +621,7 @@ describe('Duo API', function () {
         var original = read('copy/duo.png');
         var file = path('copy/build/duo.png');
         var css = yield duo.run();
+        assert(css);
         var stat = yield fs.lstat(file);
         assert.equal(original, read(file));
         assert(stat.isSymbolicLink());
@@ -637,7 +633,7 @@ describe('Duo API', function () {
         assert(!stat.isSymbolicLink());
         assert.equal(original, read(file));
         assert.equal(original, read('copy/duo.png'));
-      })
+      });
     });
 
     describe('with .global(name)', function () {
@@ -646,7 +642,7 @@ describe('Duo API', function () {
         duo.global('global-module');
         var js = yield duo.run();
         var ctx = evaluate(js.code);
-        assert('global module' == ctx['global-module']);
+        assert.equal(ctx['global-module'], 'global module');
       });
     });
 
@@ -670,7 +666,7 @@ describe('Duo API', function () {
       });
 
       it('should transform deps', function *() {
-        var duo = build('coffee-deps')
+        var duo = build('coffee-deps');
         duo.use(cs);
         var js = yield duo.run();
         var ctx = evaluate(js.code).main;
@@ -701,17 +697,17 @@ describe('Duo API', function () {
           }, 30);
         });
 
-        var js = yield duo.run();
+        yield duo.run();
         assert(called);
       });
 
       it('should work sync', function *() {
         var duo = build('no-deps');
         var called = false;
-        duo.use(function (file, entry) {
+        duo.use(function () {
           called = true;
         });
-        var js = yield duo.run();
+        yield duo.run();
         assert(called);
       });
 
@@ -749,11 +745,13 @@ describe('Duo API', function () {
       it('should be idempotent', function *() {
         var duo = build('includes');
         duo.include('some-include', 'module.exports = "a"');
+
         var js = yield duo.run();
         var ctx = evaluate(js.code).main;
         assert.equal(ctx, 'a');
-        var js = yield duo.run();
-        var ctx = evaluate(js.code).main;
+
+        js = yield duo.run();
+        ctx = evaluate(js.code).main;
         assert.equal(ctx, 'a');
       });
     });
@@ -776,8 +774,8 @@ describe('Duo API', function () {
         assert(json['two.js'], 'two.js not found in manifest');
 
         // don't let pack change the IDs of the deps
-        assert('string' == typeof json['one.js'].deps['ms']);
-        assert('string' == typeof json['two.js'].deps['type']);
+        assert.equal(typeof json['one.js'].deps.ms, 'string');
+        assert.equal(typeof json['two.js'].deps.type, 'string');
       });
     });
 
@@ -884,11 +882,13 @@ describe('Duo API', function () {
     describe('with components', function () {
       it('should build multi-asset components', function *() {
         this.timeout(15000);
+
         var duo = build('js-css-dep');
         var js = yield duo.run();
         var ctx = evaluate(js.code).main;
         assert(ctx({}).dom);
-        var duo = build('js-css-dep', 'index.css');
+
+        duo = build('js-css-dep', 'index.css');
         var out = read('js-css-dep/index.out.css');
         var css = yield duo.run();
         assert.equal(css.code.trim(), out.trim());
@@ -899,7 +899,8 @@ describe('Duo API', function () {
         var js = yield duo.run();
         var ctx = evaluate(js.code).main;
         assert.equal('local', ctx);
-        var duo = build('main-obj', 'index.css');
+
+        duo = build('main-obj', 'index.css');
         var out = read('main-obj/index.out.css');
         var css = yield duo.run();
         assert.equal(css.code.trim(), out.trim());
@@ -912,9 +913,9 @@ describe('Duo API', function () {
         // TODO: figure out how to simulate a browser-like
         // environment to run this code. For now we're just
         // ensuring nothing throws.
-        var js = yield duo.run();
+        yield duo.run();
 
-        var duo = build('hybrid-full', 'index.css');
+        duo = build('hybrid-full', 'index.css');
         var css = yield duo.run();
 
         // this is more resistent to version changes
@@ -923,7 +924,7 @@ describe('Duo API', function () {
         var body = css.code.indexOf('.hybrid-full {');
 
         // test order
-        assert(-1 < menu < dropdown < body);
+        assert(body > dropdown > menu > -1);
       });
     });
 
@@ -938,7 +939,7 @@ describe('Duo API', function () {
         assert.equal(keys[1], 'components/component-type@1.0.0/index.js');
         assert.equal(keys[2], 'components/necolas-normalize.css@3.0.2/normalize.css');
         assert.equal(keys[3], 'index.css');
-        assert(keys[4] == 'index.js' );
+        assert.equal(keys[4], 'index.js' );
       });
 
       it('should have entry keys for entry files', function *() {
@@ -980,13 +981,12 @@ describe('Duo API', function () {
       var duo = build('simple-deps');
       duo.write(function (err) {
         if (err) return done(err);
-        var js = read('simple-deps/build/index.js')
+        var js = read('simple-deps/build/index.js');
         var ctx = evaluate(js);
-        var type = ctx.main;
         assert(ctx.mods);
         assert.equal(2, ctx.mods.length);
         assert.equal('string', ctx.mods[0](''));
-        assert('function' == typeof ctx.mods[1]);
+        assert(typeof ctx.mods[1], 'function');
         done();
       });
     });
@@ -1036,7 +1036,7 @@ describe('Duo API', function () {
 
     it('should bundle assets even if in the cache', function *() {
       var expected = read('css-assets/index.out.css');
-      var duo = build('css-assets', 'index.css')
+      var duo = build('css-assets', 'index.css');
       yield duo.write();
       duo.buildTo('out');
       yield duo.write('index.css');
@@ -1064,8 +1064,8 @@ describe('Duo API', function () {
         yield duo.write();
         var src = yield fs.readFile(path('simple', 'build/index.js'), 'utf8');
         assert(exists('simple/build/index.js'));
-        assert(!~ src.indexOf('//# sourceMappingURL=')); // inline
-        assert(!exists('simple/build/index.js.map'));    // external
+        assert.equal(src.indexOf('//# sourceMappingURL='), -1); // inline
+        assert(!exists('simple/build/index.js.map'));           // external
       });
     });
 
@@ -1075,7 +1075,7 @@ describe('Duo API', function () {
         yield duo.write();
         var src = yield fs.readFile(path('simple', 'build/index.js'), 'utf8');
         assert(exists('simple/build/index.js'));
-        assert(!!~ src.indexOf('//# sourceMappingURL=index.js.map')); // link
+        assert(src.indexOf('//# sourceMappingURL=index.js.map') > -1); // link
         assert(exists('simple/build/index.js.map'));
       });
     });
@@ -1086,7 +1086,7 @@ describe('Duo API', function () {
         yield duo.write();
         var src = yield fs.readFile(path('simple', 'build/index.js'), 'utf8');
         assert(exists('simple/build/index.js'));
-        assert(!!~ src.indexOf('//# sourceMappingURL='));
+        assert(src.indexOf('//# sourceMappingURL=') > -1);
         assert(!exists('simple/build/index.js.map'));
       });
     });
@@ -1138,7 +1138,7 @@ function exists(file) {
  */
 
 function evaluate(js, ctx) {
-  var ctx = ctx || { window: {}, document: {} };
+  if (!ctx) ctx = { window: {}, document: {} };
   vm.runInNewContext('main =' + js + '(1)', ctx, 'main.vm');
   vm.runInNewContext('require =' + js + '', ctx, 'require.vm');
   return ctx;
@@ -1152,7 +1152,7 @@ function cleanup() {
   var dir = join(__dirname, 'fixtures');
   var dirs = readdir(dir);
   dirs.forEach(function (name) {
-    if ('.' == name[0]) return;
+    if (name[0] === '.') return;
     var components = join(dir, name, 'components');
     var build = join(dir, name, 'build');
     rmrf(components);
@@ -1205,7 +1205,7 @@ function isSymlink(path) {
  */
 
 function cs(file) {
-  if ('coffee' != file.type) return;
+  if (file.type !== 'coffee') return;
   file.type = 'js';
   file.src = coffee.compile(file.src);
 }
@@ -1217,7 +1217,7 @@ function cs(file) {
  */
 
 function stylus(file) {
-  if ('styl' != file.type) return;
+  if (file.type !== 'styl') return;
   file.type = 'css';
   file.src = styl(file.src, { whitespace: true }).toString();
 }

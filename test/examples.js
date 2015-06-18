@@ -20,7 +20,7 @@ var dir = join(__dirname, '..', 'examples');
 
 var map = {
   css: 'build/build.css',
-  default: 'build.js',
+  default: 'build.js'
 };
 
 /**
@@ -28,7 +28,7 @@ var map = {
  */
 
 describe('Duo Examples', function () {
-  this.slow('2s')
+  this.slow('2s');
   this.timeout('10s');
 
   ls(dir).forEach(function (example) {
@@ -41,7 +41,7 @@ describe('Duo Examples', function () {
       var proc = spawn('node', args);
       var build = join(root, map[example] || map.default);
       proc.on('close', function (code) {
-        assert(0 == code);
+        assert.equal(code, 0);
         assert(exists(build));
         done();
       });

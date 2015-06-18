@@ -8,10 +8,8 @@ var readdir = require('fs').readdirSync;
 var extname = require('path').extname;
 var resolve = require('path').resolve;
 var exist = require('fs').existsSync;
-var Package = require('duo-package');
 var proc = require('child_process');
 var rmrf = require('rimraf').sync;
-var tmp = require('os').tmpdir();
 var assert = require('assert');
 var semver = require('semver');
 var fs = require('co-fs');
@@ -66,8 +64,8 @@ describe('Duo CLI', function () {
       var defs = [];
       var define = defs.push.bind(defs);
       define.amd = true;
-      var ctx = evaluate(out.stdout, { define: define });
-      assert('cli-duo' == defs[0]());
+      evaluate(out.stdout, { define: define });
+      assert.equal(defs[0](), 'cli-duo');
     });
 
     it('should support umd (commonjs)', function*(){
@@ -76,15 +74,15 @@ describe('Duo CLI', function () {
       var mod = { exports: {} };
       mod.module = mod;
       var ctx = evaluate(out.stdout, mod);
-      assert('cli-duo' == ctx.exports);
+      assert.equal(ctx.exports, 'cli-duo');
     });
 
     it('should support umd (global)', function*(){
       var out = yield exec('--standalone my-module --stdout index.js', 'cli-duo');
       if (out.error) throw out.error;
       var global = {};
-      var ctx = evaluate(out.stdout, global);
-      assert('cli-duo' == global['my-module']);
+      evaluate(out.stdout, global);
+      assert.equal(global['my-module'], 'cli-duo');
     });
   });
 
@@ -95,7 +93,7 @@ describe('Duo CLI', function () {
       var entry = yield fs.readFile(path('simple/build/index.js'), 'utf8');
       var map = convert.fromSource(entry).toObject();
       var src = map.sourcesContent[map.sources.indexOf('/two.js')];
-      assert(src.trim() == 'module.exports = \'two\';');
+      assert.equal(src.trim(), 'module.exports = \'two\';');
     });
   });
 
@@ -106,7 +104,7 @@ describe('Duo CLI', function () {
       var entry = yield fs.readFile(path('simple/build/index.js'), 'utf8');
       var map = convert.fromMapFileSource(entry, path('simple/build')).toObject();
       var src = map.sourcesContent[map.sources.indexOf('/two.js')];
-      assert(src.trim() == 'module.exports = \'two\';');
+      assert.equal(src.trim(), 'module.exports = \'two\';');
     });
 
     it('should behave the same way with `--development` on', function *() {
@@ -115,7 +113,7 @@ describe('Duo CLI', function () {
       var entry = yield fs.readFile(path('simple/build/index.js'), 'utf8');
       var map = convert.fromMapFileSource(entry, path('simple/build')).toObject();
       var src = map.sourcesContent[map.sources.indexOf('/two.js')];
-      assert(src.trim() == 'module.exports = \'two\';');
+      assert.equal(src.trim(), 'module.exports = \'two\';');
     });
 
     it('should log that the map was written', function *() {
@@ -130,10 +128,10 @@ describe('Duo CLI', function () {
     it('should build multiple entries to duo.assets()', function *() {
       var out = yield exec('*.js', 'entries');
       if (out.error) throw out.error;
-      var admin = yield build('entries/build/admin.js')
-      var index = yield build('entries/build/index.js')
-      assert('admin' == admin.main);
-      assert('index' == index.main);
+      var admin = yield build('entries/build/admin.js');
+      var index = yield build('entries/build/index.js');
+      assert.equal('admin', admin.main);
+      assert.equal('index', index.main);
       assert(contains(out.stderr, 'building : admin.js'));
       assert(contains(out.stderr, 'built : admin.js'));
       assert(contains(out.stderr, 'wrote : admin.js'));
@@ -159,11 +157,11 @@ describe('Duo CLI', function () {
 
     it('should work with options', function *() {
       var out = yield exec('-t js *.js', 'entries');
-      var admin = yield build('entries/build/admin.js')
-      var index = yield build('entries/build/index.js')
+      var admin = yield build('entries/build/admin.js');
+      var index = yield build('entries/build/index.js');
       if (out.error) throw out.error;
-      assert('admin' == admin.main);
-      assert('index' == index.main);
+      assert.equal('admin', admin.main);
+      assert.equal('index', index.main);
       assert(contains(out.stderr, 'building : admin.js'));
       assert(contains(out.stderr, 'built : admin.js'));
       assert(contains(out.stderr, 'wrote : admin.js'));
@@ -175,11 +173,11 @@ describe('Duo CLI', function () {
 
     it('should ignore unexpanded globs', function *() {
       var out = yield exec('*.js *.css', 'entries');
-      var admin = yield build('entries/build/admin.js')
-      var index = yield build('entries/build/index.js')
+      var admin = yield build('entries/build/admin.js');
+      var index = yield build('entries/build/index.js');
       if (out.error) throw out.error;
-      assert('admin' == admin.main);
-      assert('index' == index.main);
+      assert.equal('admin', admin.main);
+      assert.equal('index', index.main);
       assert(contains(out.stderr, 'building : admin.js'));
       assert(contains(out.stderr, 'built : admin.js'));
       assert(contains(out.stderr, 'wrote : admin.js'));
@@ -224,7 +222,7 @@ describe('Duo CLI', function () {
       assert(out.stdout);
       assert(out.stderr);
       ctx = evaluate(out.stdout);
-      assert('cli-duo' == ctx.main);
+      assert.equal(ctx.main, 'cli-duo');
     });
 
     it('should write to stdout with css', function *() {
@@ -247,8 +245,8 @@ describe('Duo CLI', function () {
         assert(out.stdout);
         assert(out.stderr);
         ctx = evaluate(out.stdout);
-        assert('cli-duo' == ctx.main);
-        assert(~ out.stdout.indexOf('//# sourceMappingURL=data:application/json;'));
+        assert.equal(ctx.main, 'cli-duo');
+        assert(out.stdout.indexOf('//# sourceMappingURL=data:application/json;') > -1);
       });
     });
 
@@ -259,8 +257,8 @@ describe('Duo CLI', function () {
         assert(out.stdout);
         assert(out.stderr);
         ctx = evaluate(out.stdout);
-        assert('cli-duo' == ctx.main);
-        assert(~ out.stdout.indexOf('//# sourceMappingURL=data:application/json;'));
+        assert.equal(ctx.main, 'cli-duo');
+        assert(out.stdout.indexOf('//# sourceMappingURL=data:application/json;') > -1);
       });
     });
   });
@@ -270,7 +268,7 @@ describe('Duo CLI', function () {
       out = yield exec('--quiet index.js', 'cli-duo');
       if (out.error) throw out.error;
       ctx = yield build('cli-duo/build/index.js');
-      assert('cli-duo' == ctx.main);
+      assert.equal(ctx.main, 'cli-duo');
       assert(!out.stderr);
       assert(!out.stdout);
       rm('cli-duo/build');
@@ -280,7 +278,7 @@ describe('Duo CLI', function () {
       out = yield exec('--stdout --quiet index.js > build.js', 'cli-duo');
       if (out.error) throw out.error;
       ctx = yield build('cli-duo');
-      assert('cli-duo' == ctx.main);
+      assert.equal(ctx.main, 'cli-duo');
       assert(!out.stderr);
       assert(!out.stdout);
       rm('cli-duo/build.js');
@@ -302,8 +300,7 @@ describe('Duo CLI', function () {
     describe('with --use', function () {
       it('should not log "using : <plugin>"', function *() {
         var out = yield exec('--quiet --use plugin.js index.js > build.js', 'cli-duo');
-        assert('' == out.stdout);
-        assert('' == out.stderr.trim());
+        assert.equal(out.stdout, '');
         rm('cli-duo/build.js');
       });
     });
@@ -372,7 +369,7 @@ describe('Duo CLI', function () {
 
   describe('duo --output <dir>', function () {
     it('should change to another output directory', function *() {
-      var out = yield exec('--output out *.js', 'entries');
+      yield exec('--output out *.js', 'entries');
       assert(exists('entries/out/index.js'));
       assert(exists('entries/out/admin.js'));
       rm('entries/out');
@@ -383,7 +380,7 @@ describe('Duo CLI', function () {
     it('should output to stdout', function *() {
       var out = yield exec('--stdout index.js', 'entries');
       var index = evaluate(out.stdout);
-      assert('index' == index.main);
+      assert.equal(index.main, 'index');
     });
 
     it('should error when multiple entries are passed', function *() {
@@ -399,8 +396,8 @@ describe('Duo CLI', function () {
         assert(out.stdout);
         assert(out.stderr);
         ctx = evaluate(out.stdout);
-        assert('cli-duo' == ctx.main);
-        assert(~ out.stdout.indexOf('//# sourceMappingURL=data:application/json;'));
+        assert.equal(ctx.main, 'cli-duo');
+        assert(out.stdout.indexOf('//# sourceMappingURL=data:application/json;') > -1);
       });
     });
 
@@ -411,8 +408,8 @@ describe('Duo CLI', function () {
         assert(out.stdout);
         assert(out.stderr);
         ctx = evaluate(out.stdout);
-        assert('cli-duo' == ctx.main);
-        assert(~ out.stdout.indexOf('//# sourceMappingURL=data:application/json;'));
+        assert.equal(ctx.main, 'cli-duo');
+        assert(out.stdout.indexOf('//# sourceMappingURL=data:application/json;') > -1);
       });
     });
   });
@@ -520,15 +517,15 @@ describe('Duo CLI', function () {
     });
 
     it('should exit with a non-zero code', function () {
-      assert(0 != res.code);
+      assert(res.code !== 0);
     });
 
     it('should write to stderr', function () {
-      assert('' != res.stderr);
+      assert(res.stderr !== '');
     });
 
     it('should not write to stdout', function () {
-      assert('' == res.stdout);
+      assert(res.stdout === '');
     });
   });
 });
@@ -578,7 +575,7 @@ function cleanup() {
   var dir = resolve(__dirname, 'fixtures');
   var dirs = readdir(dir);
   dirs.forEach(function(name){
-    if ('.' == name[0]) return;
+    if (name[0] === '.') return;
     var components = resolve(dir, name, 'components');
     var build = resolve(dir, name, 'build');
     rmrf(components);
@@ -604,7 +601,7 @@ function exists(file) {
  */
 
 function evaluate(js, ctx) {
-  var ctx = ctx || { window: {}, document: {} };
+  if (!ctx) ctx = { window: {}, document: {} };
   js = convert.removeComments(js);
   vm.runInNewContext('main =' + js + '(1)', ctx, 'main.vm');
   vm.runInNewContext('require =' + js + '', ctx, 'require.vm');
@@ -668,5 +665,5 @@ function execute(cmd, opts) {
 function contains(haystack, needle) {
   var rcolors = /\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]/g;
   haystack = haystack.replace(rcolors, '');
-  return !! ~haystack.indexOf(needle);
+  return haystack.indexOf(needle) > -1;
 }
