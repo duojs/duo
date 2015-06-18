@@ -9,6 +9,7 @@
     "consistent-return": 0,
     "curly": [ 2, "multi-line" ],
     "no-shadow": 0,
+    "no-sync": 2,
     "no-underscore-dangle": 0,
     "no-use-before-define": [ 2, "nofunc" ],
     "strict": 0,
