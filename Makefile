@@ -3,8 +3,9 @@ NODE ?= node
 NODE_FLAGS ?= $(shell $(NODE) --v8-options | grep generators | cut -d ' ' -f 3)
 
 BIN := ./node_modules/.bin
-MOCHA ?= $(BIN)/_mocha
+ESLINT ?= $(BIN)/eslint
 ISTANBUL ?= $(BIN)/istanbul
+MOCHA ?= $(BIN)/_mocha
 
 SRC = $(wildcard index.js lib/*.js)
 TESTS = $(wildcard test/*.js)
@@ -22,6 +23,9 @@ coverage: $(SRC) $(TESTS)
 clean:
 	@rm -rf coverage test/fixtures/*/{components,deps,out,build.js}
 	@rm -rf examples/*/{components,build*}
+
+lint:
+	@$(ESLINT) .
 
 
 .PHONY: test coverage clean

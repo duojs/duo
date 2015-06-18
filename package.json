@@ -64,6 +64,7 @@
     "co-mocha": "~1.0.3",
     "coffee-script": "~1.7.1",
     "duo-jade": "0.x",
+    "eslint": "^0.23.0",
     "expect.js": "^0.3.1",
     "gnode": "^0.1.1",
     "gulp": "~3.8.7",
