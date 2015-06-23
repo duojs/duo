@@ -40,7 +40,7 @@
     "file-deps": "^0.0.7",
     "get-stdin": "~1.0.0",
     "glob": "^4.3.1",
-    "gnode": "0.1.0",
+    "gnode": "0.1.1",
     "json-mask": "^0.3.1",
     "language-classifier": "0.0.1",
     "max-component": "~1.0.0",
