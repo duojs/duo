@@ -445,7 +445,7 @@ describe('Duo CLI', function () {
     it('should list all duplicates', function *() {
       var out = yield exec('duplicates', 'cli-duo-ls');
       if (out.error) throw out.error;
-      assert(contains(out.stdout, 'total duplicates : 0b'));
+      assert(contains(out.stdout, 'total duplicates : 0B'));
       assert(!out.stderr.trim());
     });
   });
