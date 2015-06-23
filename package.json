@@ -68,10 +68,10 @@
     "expect.js": "^0.3.1",
     "gnode": "^0.1.1",
     "gulp": "~3.8.7",
-    "istanbul": "git://github.com/gotwarlost/istanbul#c6f8fc8b102cfa4e4455d6a165485b38cb58160c",
+    "istanbul": "^0.3.15",
     "map-stream": "~0.1.0",
     "mocha": "^2.2.5",
-    "regenerator": "~0.4.9",
+    "regenerator": "^0.8.31",
     "rimraf": "^2.2.8",
     "semver": "^4.3.3",
     "styl": "^0.2.7"
