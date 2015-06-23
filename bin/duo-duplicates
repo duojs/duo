@@ -45,8 +45,6 @@ program.on('--help', function () {
 try {
   var cwd = process.cwd();
   var map = require(join(cwd, 'components', 'duo.json'));
-  var component = require(join(cwd, 'component.json'));
-  var root = Object.keys(map)[0];
 } catch (e) {
   console.error();
   console.error(e);
@@ -86,7 +84,6 @@ if (dupes.length) process.exit(1);
 function duplicates(map) {
   var pkgs = Object.keys(map);
   var dupes = {};
-  var ret = [];
 
   // get all duplicates, get total size.
   pkgs.forEach(function (id) {
@@ -95,7 +92,6 @@ function duplicates(map) {
     var repo = parts.shift();
     var version = parts.shift();
     var node = dupes[repo] = dupes[repo] || {};
-    var src = map[id].src;
     node.versions = node.versions || [];
     node.ids = node.ids || [];
 
@@ -157,7 +153,7 @@ function size(id, map) {
   var visited = {};
 
   for (var dep in deps) {
-    if ('.' != dep[0]) continue;
+    if (dep[0] !== '.') continue;
     if (visited[dep]) continue;
     visited[dep] = true;
     length += Buffer.byteLength(map[deps[dep]].src);
@@ -198,7 +194,7 @@ function normalize(key) {
 
 function total(dupes) {
   return dupes.reduce(function (t, d) {
-    return t += d.size - d.size / d.versions.length;
+    return t + d.size - d.size / d.versions.length;
   }, 0);
 }
 

@@ -9,14 +9,13 @@ var search = require('path-search');
 var Logger = require('stream-log');
 var spawn = require('win-fork');
 var path = require('path');
-var extname = path.extname;
 var resolve = path.resolve;
 
 /**
  * Logger.
  */
 
-var logger = new Logger(process.stderr)
+var logger = new Logger(process.stderr);
 
 /**
  * Error.
@@ -51,10 +50,10 @@ var fallback = resolve(__dirname, '_duo');
 
 if (command && subcommand(command)) {
   var paths = [__dirname].concat(process.env.PATH.split(':'));
-  var subcommand = search(paths, 'duo-' + command);
+  var subcmd = search(paths, 'duo-' + command);
 
-  if (!subcommand) logger.error('duo-' + command + '(1) not found');
-  args.unshift(subcommand);
+  if (!subcmd) logger.error('duo-' + command + '(1) not found');
+  args.unshift(subcmd);
 } else if (command) {
   args.unshift(fallback, command);
 } else {

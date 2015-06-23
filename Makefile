@@ -25,7 +25,7 @@ clean:
 	@rm -rf examples/*/{components,build*}
 
 lint:
-	@$(ESLINT) .
+	@$(ESLINT) . bin/*
 
 
 .PHONY: test coverage clean

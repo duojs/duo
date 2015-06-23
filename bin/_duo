@@ -8,53 +8,15 @@ var convert = require('convert-source-map');
 var Command = require('commander').Command;
 var relative = require('path').relative;
 var resolve = require('path').resolve;
-var dirname = require('path').dirname;
-var extname = require('path').extname;
-var mkdirp = require('mkdirp').sync;
 var Logger = require('stream-log');
 var util = require('../lib/util');
 var stdin = require('get-stdin');
 var Watch = require('duo-watch');
-var join = require('path').join;
-var spawn = require('win-fork');
 var pkg = require('../package');
 var Batch = require('batch');
 var stdout = process.stdout;
 var cwd = process.cwd();
 var hasError = false;
-
-/**
- * Logger.
- */
-
-var logger = new Logger(process.stderr)
-  // success
-  .type('wrote', '32m')
-  // info
-  .type('building', '36m')
-  .type('built', '36m')
-  .type('installing', '36m')
-  .type('installed', '36m')
-  .type('finding', '36m')
-  .type('found', '36m')
-  .type('using', '36m');
-
-/**
- * Error.
- */
-
-logger.type('error', '31m', function () {
-  hasError = true;
-});
-
-/**
- * End logger output.
- */
-
-process.on('exit', function () {
-  if (!quiet) logger.end();
-  if (hasError) process.exit(1);
-});
 
 /**
  * Program.
@@ -110,6 +72,40 @@ program.on('--help', function () {
   console.log();
   process.exit(0);
 });
+
+/**
+ * Logger.
+ */
+
+var logger = new Logger(process.stderr)
+  // success
+  .type('wrote', '32m')
+  // info
+  .type('building', '36m')
+  .type('built', '36m')
+  .type('installing', '36m')
+  .type('installed', '36m')
+  .type('finding', '36m')
+  .type('found', '36m')
+  .type('using', '36m');
+
+/**
+ * Error.
+ */
+
+logger.type('error', '31m', function () {
+  hasError = true;
+});
+
+/**
+ * End logger output after process exit.
+ */
+
+process.on('exit', function () {
+  if (!program.quiet) logger.end();
+  if (hasError) process.exit(1);
+});
+
 
 /**
  * Quiet flag.
@@ -183,6 +179,15 @@ if (program.stdout && program.args.length > 1) {
 }
 
 /**
+ * End logger output.
+ */
+
+process.on('exit', function () {
+  if (!quiet) logger.end();
+  if (hasError) process.exit(1);
+});
+
+/**
  * Actions.
  */
 
@@ -250,12 +255,12 @@ function print(entry) {
  */
 
 function write(entries) {
-  if ('string' == typeof entries) entries = [entries];
+  if (typeof entries === 'string') entries = [entries];
 
-  var batch = new Batch;
+  var batch = new Batch();
   var push = batch.push.bind(batch);
 
-  var duos = entries
+  entries
     .map(multiple)
     .map(push);
 
@@ -285,9 +290,9 @@ function write(entries) {
  */
 
 function create(entry) {
-  var duo = Duo(root)
+  var duo = new Duo(root)
     .entry(resolve(program.root || cwd, entry))
-    .development(!! program.development)
+    .development(!!program.development)
     .sourceMap(sourceMap)
     .copy(program.copy)
     .token(auth.password)
@@ -334,7 +339,7 @@ function create(entry) {
 function watch(action) {
   if (watching) return;
   watching = true;
-  Watch(root).watch(action);
+  new Watch(root).watch(action);
 }
 
 /**
@@ -342,7 +347,7 @@ function watch(action) {
  */
 
 function error(err) {
-  err = 'string' == typeof err ? new Error(err) : err;
+  err = typeof err === 'string' ? new Error(err) : err;
   if (err instanceof SyntaxError && err.fileName) {
     var msg = err.message;
     var file = relative(process.cwd(), err.fileName);
@@ -362,7 +367,7 @@ function error(err) {
 function log(event) {
   return function (pkg) {
     pkg = pkg.slug ? pkg.slug() : pkg;
-    pkg = 'source.' + (program.type || 'js') == pkg ? 'from stdin' : pkg;
+    pkg = 'source.' + (program.type || 'js') === pkg ? 'from stdin' : pkg;
     logger[event](pkg);
   };
 }

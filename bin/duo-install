@@ -10,41 +10,9 @@ var program = require('commander');
 var Logger = require('stream-log');
 var util = require('../lib/util');
 var stdin = require('get-stdin');
-var join = require('path').join;
-var pkg = require('../package');
 var Batch = require('batch');
 var cwd = process.cwd();
 var hasError = false;
-
-/**
- * Logger.
- */
-
-var logger = new Logger(process.stderr)
-  .type('building', '36m')
-  .type('built', '36m')
-  .type('installing', '36m')
-  .type('installed', '36m')
-  .type('finding', '36m')
-  .type('found', '36m')
-  .type('using', '36m');
-
-/**
- * Error.
- */
-
-logger.type('error', '31m', function () {
-  hasError = true;
-});
-
-/**
- * End logger output after process exit.
- */
-
-process.on('exit', function () {
-  if (!quiet) logger.end();
-  if (hasError) process.exit(1);
-});
 
 /**
  * Program.
@@ -76,6 +44,36 @@ program.on('--help', function () {
   console.log('    $ duo install --use duo-babel index.{js,css}');
   console.log();
   process.exit(0);
+});
+
+/**
+ * Logger.
+ */
+
+var logger = new Logger(process.stderr)
+  .type('building', '36m')
+  .type('built', '36m')
+  .type('installing', '36m')
+  .type('installed', '36m')
+  .type('finding', '36m')
+  .type('found', '36m')
+  .type('using', '36m');
+
+/**
+ * Error.
+ */
+
+logger.type('error', '31m', function () {
+  hasError = true;
+});
+
+/**
+ * End logger output after process exit.
+ */
+
+process.on('exit', function () {
+  if (!program.quiet) logger.end();
+  if (hasError) process.exit(1);
 });
 
 /**
@@ -140,7 +138,7 @@ function input() {
     if (!type) return logger.error('could not detect the file type');
     var duo = create(root).entry(src, type);
 
-    duo.install(function (err, mapping) {
+    duo.install(function (err) {
       if (err) return error(err);
       process.exit(0);
     });
@@ -154,12 +152,12 @@ function input() {
  */
 
 function write(entries) {
-  if ('string' == typeof entries) entries = [entries];
+  if (typeof entries === 'string') entries = [entries];
 
-  var batch = new Batch;
+  var batch = new Batch();
   var push = batch.push.bind(batch);
 
-  var duos = entries
+  entries
     .map(multiple)
     .map(push);
 
@@ -185,7 +183,7 @@ function write(entries) {
  */
 
 function create(entry) {
-  var duo = Duo(root)
+  var duo = new Duo(root)
     .entry(resolve(program.root || cwd, entry))
     .copy(program.copy)
     .token(auth.password)
@@ -216,7 +214,7 @@ function create(entry) {
  */
 
 function error(err) {
-  err = 'string' == typeof err ? new Error(err) : err;
+  err = typeof err === 'string' ? new Error(err) : err;
   if (err instanceof SyntaxError && err.fileName) {
     var msg = err.message;
     var file = relative(process.cwd(), err.fileName);
@@ -236,7 +234,7 @@ function error(err) {
 function log(event) {
   return function (pkg) {
     pkg = pkg.slug ? pkg.slug() : pkg;
-    pkg = 'source.' + (program.type || 'js') == pkg ? 'from stdin' : pkg;
+    pkg = 'source.' + (program.type || 'js') === pkg ? 'from stdin' : pkg;
     logger[event](pkg);
   };
 }

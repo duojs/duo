@@ -13,12 +13,6 @@ var fs = require('fs');
 var hasError = false;
 
 /**
- * Paths.
- */
-
-var mapping = join(process.cwd());
-
-/**
  * Logger.
  */
 
@@ -95,7 +89,7 @@ var max = program.depth || Infinity;
 var ls = list(map, 0, {
   label: pretty(component.name + '@' + (component.version || '')),
   name: Object.keys(map)[0],
-  nodes: [],
+  nodes: []
 });
 
 /**
@@ -119,7 +113,7 @@ function list(map, depth, node){
   var deps = values(map[node.name].deps);
 
   deps.forEach(function (dep) {
-    if (depth == max) return;
+    if (depth === max) return;
     var label = pretty(dep);
     var child = { nodes: [], label: label, name: dep };
     var a = dep.split('@')[0];
@@ -127,7 +121,7 @@ function list(map, depth, node){
 
     // don't list files of components
     // but get their dependencies.
-    if (a == b) {
+    if (a === b) {
       var realname = node.name;
       node.name = dep;
       list(map, depth, node);
@@ -201,7 +195,7 @@ function pretty(dep) {
 
 function has(nodes, node) {
   for (var i = 0; i < nodes.length; ++i) {
-    if (nodes[i].name == node.name) return true;
+    if (nodes[i].name === node.name) return true;
   }
   return false;
 }

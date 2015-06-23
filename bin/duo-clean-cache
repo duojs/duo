@@ -11,6 +11,15 @@ var co = require('co');
 var hasError = false;
 
 /**
+ * Program.
+ */
+
+program
+  .usage('duo clean-cache')
+  .option('-q, --quiet', 'only print to stderr when there is an error', false)
+  .parse(process.argv);
+
+/**
  * Logger.
  */
 
@@ -25,18 +34,9 @@ var logger = require('stream-log')(process.stderr)
  */
 
 process.on('exit', function () {
-  if (!quiet) logger.end();
+  if (!program.quiet) logger.end();
   if (hasError) process.exit(1);
 });
-
-/**
- * Program.
- */
-
-program
-  .usage('duo clean-cache')
-  .option('-q, --quiet', 'only print to stderr when there is an error', false)
-  .parse(process.argv);
 
 /**
  * Quiet flag.
@@ -50,7 +50,7 @@ var quiet = program.quiet;
 
 co(function *() {
   try {
-    yield Duo(process.cwd()).cleanCache();
+    yield new Duo(process.cwd()).cleanCache();
     if (!quiet) logger.cleaned('components/duo.json');
 
     yield Package.cleanCache();
