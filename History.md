@@ -1,4 +1,11 @@
 
+0.12.2 / 2015-06-23
+===================
+
+  * meta: adding eslint
+  * meta: upgrading deps and updating tests
+  * build: removing sync file io
+
 0.12.1 / 2015-06-17
 ===================
 
