@@ -8,6 +8,7 @@
   "rules": {
     "consistent-return": 0,
     "curly": [ 2, "multi-line" ],
+    "new-cap": [ 2, { "capIsNewExceptions": [ "Mapping" ] } ],
     "no-octal-escape": 0,
     "no-process-exit": 0,
     "no-shadow": 0,
