@@ -14,6 +14,7 @@ var stat = require('fs').statSync;
 var File = require('../lib/file');
 var join = require('path').join;
 var assert = require('assert');
+var wait = require('co-wait');
 var styl = require('styl');
 var fs = require('co-fs');
 var Duo = require('..');
@@ -650,8 +651,7 @@ describe('Duo API', function () {
       it('should have an empty mapping', function *() {
         var duo = build('idempotent').cache(false);
         yield duo.run();
-        var mapping = duo.mapping();
-        assert.deepEqual(mapping.map, {});
+        assert.deepEqual(duo.map, {});
       });
     });
 
@@ -947,6 +947,7 @@ describe('Duo API', function () {
         var a = build('entries', 'index.js');
         var b = build('entries', 'admin.js');
         yield [a.run(), b.run()];
+        yield wait(250); // writing to mapping happens async
         var json = yield mapping('entries');
         assert.equal(true, json['index.js'].entry);
         assert.equal(true, json['admin.js'].entry);

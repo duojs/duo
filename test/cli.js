@@ -481,7 +481,6 @@ describe('Duo CLI', function () {
     it('should download the remote dependencies', function *() {
       var out = yield exec('install index.js', 'install-deps');
       if (out.error) throw out.error;
-      assert(exists('install-deps/components/duo.json'));
       assert(exists('install-deps/components/component-type@1.1.0'));
       assert(!exists('install-deps/components/suitcss-base@0.8.0'));
     });
@@ -495,10 +494,14 @@ describe('Duo CLI', function () {
     it('should accept multiple entry files', function *() {
       var out = yield exec('install index.js index.css', 'install-deps');
       if (out.error) throw out.error;
-      assert(exists('install-deps/components/duo.json'));
       assert(exists('install-deps/components/component-type@1.1.0'));
       assert(exists('install-deps/components/suitcss-base@0.8.0'));
-      assert(!exists('install-deps/build'));
+    });
+
+    it('should still write the mapping file', function *() {
+      var out = yield exec('install index.js', 'install-deps');
+      if (out.error) throw out.error;
+      assert(exists('install-deps/components/duo.json'));
     });
   });
 
