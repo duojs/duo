@@ -650,7 +650,8 @@ describe('Duo API', function () {
       it('should have an empty mapping', function *() {
         var duo = build('idempotent').cache(false);
         yield duo.run();
-        assert.deepEqual(duo.mapping, {});
+        var mapping = duo.mapping();
+        assert.deepEqual(mapping.map, {});
       });
     });
 
