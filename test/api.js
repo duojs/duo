@@ -273,18 +273,18 @@ describe('Duo API', function () {
 
   describe('.cleanCache()', function () {
     it('should destroy the mapping file', function *() {
-      var duo = build('simple-deps');
+      var duo = build('simple');
       yield duo.run();
-      assert(exists('simple-deps/components/duo.json'));
+      assert(exists('simple/components/duo.json'));
       yield duo.cleanCache();
-      assert(!exists('simple-deps/components/duo.json'));
+      assert(!exists('simple/components/duo.json'));
     });
 
     it('should not throw an error when no cache exists', function *() {
-      var duo = build('simple-deps');
-      assert(!exists('simple-deps/components/duo.json'));
+      var duo = build('simple');
+      assert(!exists('simple/components/duo.json'));
       yield duo.cleanCache();
-      assert(!exists('simple-deps/components/duo.json'));
+      assert(!exists('simple/components/duo.json'));
     });
   });
 
