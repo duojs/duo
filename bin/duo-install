@@ -140,7 +140,6 @@ function input() {
 
     duo.install(function (err) {
       if (err) return error(err);
-      process.exit(0);
     });
   });
 }
@@ -163,7 +162,6 @@ function write(entries) {
 
   batch.end(function (err) {
     if (err) return error(err);
-    process.exit(0);
   });
 
   // write multiple entries to

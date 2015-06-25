@@ -216,7 +216,6 @@ function input() {
         stdout.write('\n\n');
         stdout.write(convert.fromObject(results.map).toComment());
       }
-      process.exit(0);
     });
   });
 }
@@ -242,9 +241,7 @@ function print(entry) {
     }
 
     // watch or exit
-    program.watch
-      ? watch(print)
-      : process.exit(0);
+    if (program.watch) watch(print);
   });
 }
 
@@ -268,9 +265,7 @@ function write(entries) {
     if (err) return error(err);
 
     // watch or exit
-    program.watch
-      ? watch(write)
-      : process.exit(0);
+    if (program.watch) watch(write);
   });
 
   // write multiple entries to
