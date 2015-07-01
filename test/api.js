@@ -270,6 +270,22 @@ describe('Duo API', function () {
     });
   });
 
+  describe('.hash(input)', function () {
+    var duo = Duo(__dirname);
+
+    it('should hash a string into md5', function () {
+      assert.equal(duo.hash('Hello World'), 'b10a8db164e0754105b7a99be72e3fe5');
+    });
+
+    it('should hash an object by serializing to JSON first', function () {
+      assert.equal(duo.hash({}), '99914b932bd37a50b983c5e7c90ae93b');
+    });
+
+    it('should allow Buffers too', function () {
+      assert.equal(duo.hash(new Buffer('abc')), '900150983cd24fb0d6963f7d28e17f72');
+    });
+  });
+
   describe('.cleanCache()', function () {
     it('should destroy the mapping file', function *() {
       var duo = build('simple-deps');
