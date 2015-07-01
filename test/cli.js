@@ -458,8 +458,8 @@ describe('Duo CLI', function () {
     it('should remove the mapping file', function *() {
       var out = yield exec('clean-cache', 'simple-deps');
       if (out.error) throw out.error;
-      assert(contains(out.stderr, 'cleaned : components/duo.json'));
-      assert(!exists('simple-deps/components/duo.json'));
+      assert(contains(out.stderr, 'cleaned : components/duo-cache'));
+      assert(!exists('simple-deps/components/duo-cache'));
     });
 
     it('should remove the package tmp dir', function *() {
@@ -481,7 +481,7 @@ describe('Duo CLI', function () {
     it('should download the remote dependencies', function *() {
       var out = yield exec('install index.js', 'install-deps');
       if (out.error) throw out.error;
-      assert(exists('install-deps/components/duo.json'));
+      assert(exists('install-deps/components/duo-cache'));
       assert(exists('install-deps/components/component-type@1.1.0'));
       assert(!exists('install-deps/components/suitcss-base@0.8.0'));
     });
@@ -495,7 +495,7 @@ describe('Duo CLI', function () {
     it('should accept multiple entry files', function *() {
       var out = yield exec('install index.js index.css', 'install-deps');
       if (out.error) throw out.error;
-      assert(exists('install-deps/components/duo.json'));
+      assert(exists('install-deps/components/duo-cache'));
       assert(exists('install-deps/components/component-type@1.1.0'));
       assert(exists('install-deps/components/suitcss-base@0.8.0'));
       assert(!exists('install-deps/build'));

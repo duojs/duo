@@ -9,6 +9,8 @@ var program = require('commander');
 var join = require('path').join;
 var archy = require('archy');
 var cwd = process.cwd();
+var Duo = require('..');
+var co = require('co');
 var fs = require('fs');
 var hasError = false;
 
@@ -55,50 +57,53 @@ program.on('--help', function () {
 });
 
 /**
- * Map.
- */
-
-try {
-  var map = JSON.parse(read(join(cwd, 'components', 'duo.json')));
-} catch (e) {
-  logger.error(e.stack || e);
-  return;
-}
-
-/**
- * Component.
- */
-
-try {
-  var component = JSON.parse(read(join(cwd, 'component.json')));
-} catch (e) {
-  logger.error(e.stack || e);
-  return;
-}
-
-/**
- * Max depth.
+ * Params.
  */
 
 var max = program.depth || Infinity;
 
 /**
- * List.
+ * Run.
  */
 
-var ls = list(map, 0, {
-  label: pretty(component.name + '@' + (component.version || '')),
-  name: Object.keys(map)[0],
-  nodes: []
-});
+co(function *() {
+  /**
+   * Map.
+   */
 
-/**
- * Print.
- */
+  var duo = new Duo(cwd);
+  var cache = yield duo.getCache();
+  var map = yield cache.read();
 
-console.log();
-console.log(archy(ls, '  '));
-console.log();
+  /**
+   * Component.
+   */
+
+  try {
+    var component = JSON.parse(read(join(cwd, 'component.json')));
+  } catch (e) {
+    logger.error(e.stack || e);
+    return;
+  }
+
+  /**
+   * List.
+   */
+
+  var ls = list(map, 0, {
+    label: pretty(component.name + '@' + (component.version || '')),
+    name: entries(map)[0].id,
+    nodes: []
+  });
+
+  /**
+   * Print.
+   */
+
+  console.log();
+  console.log(archy(ls, '  '));
+  console.log();
+})();
 
 /**
  * List using `map` and `depth`.
@@ -137,6 +142,16 @@ function list(map, depth, node){
   });
 
   return node;
+}
+
+/**
+ * Find all the entry files for a given map.
+ */
+
+function entries(map) {
+  return values(map).filter(function (file) {
+    return !!file.entry;
+  });
 }
 
 /**
