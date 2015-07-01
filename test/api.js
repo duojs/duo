@@ -656,7 +656,7 @@ describe('Duo API', function () {
       });
     });
 
-    describe.only('with .use(fn|gen)', function () {
+    describe('with .use(fn|gen)', function () {
       it('should transform entry files', function *() {
         var duo = build('coffee', 'index.coffee');
         duo.use(cs);
