@@ -1,4 +1,10 @@
 
+0.13.0 / 2015-07-03
+===================
+
+  * adding a hash function that can be used by plugins
+  * overhauling cache with new duo-cache module
+
 0.12.3 / 2015-06-24
 ===================
 
