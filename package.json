@@ -32,7 +32,7 @@
     "cp": "^0.2.0",
     "debug": "^2.0.0",
     "delegates": "^0.1.0",
-    "duo-cache": "duojs/cache",
+    "duo-cache": "^2.0.1",
     "duo-css-compat": "^0.2.0",
     "duo-main": "^0.0.3",
     "duo-pack": "^3.0.0",
