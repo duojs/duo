@@ -51,7 +51,7 @@ var quiet = program.quiet;
 co(function *() {
   try {
     yield new Duo(process.cwd()).cleanCache();
-    if (!quiet) logger.cleaned('components/duo.json');
+    if (!quiet) logger.cleaned('components/duo-cache');
 
     yield Package.cleanCache();
     if (!quiet) logger.cleaned(Package.cachepath);

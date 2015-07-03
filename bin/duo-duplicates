@@ -9,6 +9,8 @@ var fmt = require('util').format;
 var join = require('path').join;
 var archy = require('archy');
 var bytes = require('bytes');
+var Duo = require('..');
+var co = require('co');
 
 /**
  * Program.
@@ -39,40 +41,46 @@ program.on('--help', function () {
 });
 
 /**
- * Read component.json and mapping.json.
+ * Params.
  */
 
-try {
-  var cwd = process.cwd();
-  var map = require(join(cwd, 'components', 'duo.json'));
-} catch (e) {
-  console.error();
-  console.error(e);
-  console.error();
-  process.exit(1);
-}
+var cwd = process.cwd();
 
 /**
- * All duplicates.
+ * Run!
  */
 
-var dupes = duplicates(map);
+co(function *() {
+  /**
+   * Read cache.
+   */
 
-/**
- * Show total bytes saved if duplicates are removed.
- */
+  var duo = new Duo(cwd);
+  var cache = yield duo.getCache();
+  var map = yield cache.read();
 
-console.log();
-console.log('  \033[36mtotal duplicates\033[m : \033[90m%s\033[m', bytes(total(dupes)));
+  /**
+   * All duplicates.
+   */
 
-/**
- * Duplicates.
- */
+  var dupes = duplicates(map);
 
-console.log(archy({ nodes: dupes }, '  '));
+  /**
+   * Show total bytes saved if duplicates are removed.
+   */
 
-// Exit with 1 on duplicates
-if (dupes.length) process.exit(1);
+  console.log();
+  console.log('  \033[36mtotal duplicates\033[m : \033[90m%s\033[m', bytes(total(dupes)));
+
+  /**
+   * Duplicates.
+   */
+
+  console.log(archy({ nodes: dupes }, '  '));
+
+  // Exit with 1 on duplicates
+  if (dupes.length) process.exit(1);
+})();
 
 /**
  * Get all duplicates.

@@ -3,14 +3,14 @@
  * Module dependencies.
  */
 
-var readdir = require('fs').readdirSync;
 var readfile = require('fs').readFileSync;
+var readdir = require('fs').readdirSync;
 var coffee = require('coffee-script');
 var resolve = require('path').resolve;
 var exist = require('fs').existsSync;
 var lstat = require('fs').lstatSync;
+var cache = require('../lib/cache');
 var rmrf = require('rimraf').sync;
-var stat = require('fs').statSync;
 var File = require('../lib/file');
 var join = require('path').join;
 var assert = require('assert');
@@ -25,11 +25,13 @@ var slice = [].slice;
  */
 
 describe('Duo API', function () {
-  beforeEach(function () {
+  beforeEach(function *() {
+    yield cache.clean();
     cleanup();
   });
 
-  after(function () {
+  after(function *() {
+    yield cache.clean();
     cleanup();
   });
 
@@ -271,19 +273,19 @@ describe('Duo API', function () {
   });
 
   describe('.cleanCache()', function () {
-    it('should destroy the mapping file', function *() {
+    it('should destroy the cache', function *() {
       var duo = build('simple-deps');
       yield duo.run();
-      assert(exists('simple-deps/components/duo.json'));
+      assert(exists('simple-deps/components/duo-cache'));
       yield duo.cleanCache();
-      assert(!exists('simple-deps/components/duo.json'));
+      assert(!exists('simple-deps/components/duo-cache'));
     });
 
     it('should not throw an error when no cache exists', function *() {
       var duo = build('simple-deps');
-      assert(!exists('simple-deps/components/duo.json'));
+      assert(!exists('simple-deps/components/duo-cache'));
       yield duo.cleanCache();
-      assert(!exists('simple-deps/components/duo.json'));
+      assert(!exists('simple-deps/components/duo-cache'));
     });
   });
 
@@ -525,7 +527,7 @@ describe('Duo API', function () {
         var js = yield duo.run();
         var ctx = evaluate(js.code);
         assert.deepEqual(['one', 'two'], ctx.main);
-        var json = yield mapping('simple');
+        var json = yield mapping(duo);
         assert.equal(true, json['index.js'].entry);
       });
     });
@@ -769,7 +771,7 @@ describe('Duo API', function () {
         assert.equal('string', type(''));
 
         // Ensure both bundles are in the manifest
-        var json = yield mapping('bundles');
+        var json = yield mapping(one);
         assert(json['one.js'], 'one.js not found in manifest');
         assert(json['two.js'], 'two.js not found in manifest');
 
@@ -933,7 +935,7 @@ describe('Duo API', function () {
         var a = build('concurrent-mapping', 'index.css');
         var b = build('concurrent-mapping');
         yield [a.run(), b.run()];
-        var json = yield mapping('concurrent-mapping');
+        var json = yield mapping(a);
         var keys = Object.keys(json).sort();
         assert.equal(keys[0], 'components/component-emitter@1.1.3/index.js');
         assert.equal(keys[1], 'components/component-type@1.0.0/index.js');
@@ -946,7 +948,7 @@ describe('Duo API', function () {
         var a = build('entries', 'index.js');
         var b = build('entries', 'admin.js');
         yield [a.run(), b.run()];
-        var json = yield mapping('entries');
+        var json = yield mapping(a);
         assert.equal(true, json['index.js'].entry);
         assert.equal(true, json['admin.js'].entry);
       });
@@ -1051,9 +1053,8 @@ describe('Duo API', function () {
         var duo = build('simple-deps');
         duo.installTo('deps');
         yield duo.write();
-        assert(stat(path('simple-deps', 'deps')));
-        var str = yield fs.readFile(path('simple-deps', 'deps', 'duo.json'));
-        assert(str && JSON.parse(str));
+        assert(exists('simple-deps/deps'));
+        assert(exists('simple-deps/deps/duo-cache'));
         rmrf(path('simple-deps', 'deps'));
       });
     });
@@ -1167,11 +1168,9 @@ function cleanup() {
  * @return {Object}
  */
 
-function *mapping(fixture) {
-  var root = path(fixture);
-  var mapping = join(root, 'components', 'duo.json');
-  var str = yield fs.readFile(mapping, 'utf8');
-  return JSON.parse(str);
+function *mapping(duo) {
+  var cache = yield duo.getCache();
+  return yield cache.read();
 }
 
 /**
