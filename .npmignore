@@ -1,6 +1,10 @@
 node_modules/
 components/
+docs/
 examples/
 test/
 *.sock
 *.tmproj
+.travis.yml
+History.md
+Makefile
