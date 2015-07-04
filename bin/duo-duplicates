@@ -6,7 +6,6 @@
 
 var program = require('commander');
 var fmt = require('util').format;
-var join = require('path').join;
 var archy = require('archy');
 var bytes = require('bytes');
 var Duo = require('..');
