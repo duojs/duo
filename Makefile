@@ -11,7 +11,7 @@ SRC = $(wildcard index.js lib/*.js)
 TESTS = $(wildcard test/*.js)
 
 
-test: clean node_modules lint
+test: clean node_modules
 	@$(NODE) $(NODE_FLAGS) $(MOCHA)
 
 node_modules: package.json
