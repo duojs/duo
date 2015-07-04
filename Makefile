@@ -11,7 +11,7 @@ SRC = $(wildcard index.js lib/*.js)
 TESTS = $(wildcard test/*.js)
 
 
-test: clean node_modules
+test: clean node_modules lint
 	@$(NODE) $(NODE_FLAGS) $(MOCHA)
 
 node_modules: package.json
@@ -24,7 +24,7 @@ clean:
 	@rm -rf coverage test/fixtures/*/{components,deps,out,build.js}
 	@rm -rf examples/*/{components,build*}
 
-lint:
+lint: node_modules
 	@$(ESLINT) . bin/*
 
 

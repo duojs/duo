@@ -1,21 +1,3 @@
 {
-  "env": {
-    "node": true
-  },
-  "ecmaFeatures": {
-    "generators": true
-  },
-  "rules": {
-    "consistent-return": 0,
-    "curly": [ 2, "multi-line" ],
-    "no-octal-escape": 0,
-    "no-process-exit": 0,
-    "no-shadow": 0,
-    "no-sync": 1,
-    "no-underscore-dangle": 0,
-    "no-unused-expressions": 0,
-    "no-use-before-define": [ 2, "nofunc" ],
-    "strict": 0,
-    "quotes": [ 2, "single" ]
-  }
+  "extends": "duo"
 }

@@ -65,6 +65,7 @@
     "coffee-script": "^1.9.3",
     "duo-jade": "0.x",
     "eslint": "^0.23.0",
+    "eslint-config-duo": "0.0.1",
     "expect.js": "^0.3.1",
     "gnode": "^0.1.1",
     "gulp": "^3.9.0",
