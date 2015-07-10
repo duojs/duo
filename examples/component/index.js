@@ -7,7 +7,9 @@ var assert = require('assert');
 var Duo = require('../../');
 var path = require('path');
 var fs = require('fs');
+var util = require('../../lib/util');
 var join = path.join;
+var token = util.auth().password;
 
 /**
  * Paths
@@ -19,7 +21,9 @@ var out = join(__dirname, 'build.js');
  * Initialize `duo`
  */
 
-var duo = Duo(__dirname).entry('main.js');
+var duo = Duo(__dirname)
+  .token(token)
+  .entry('main.js');
 
 /**
  * Run `duo`

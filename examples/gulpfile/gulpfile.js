@@ -5,6 +5,8 @@
 var map = require('map-stream');
 var Duo = require('../../');
 var gulp = require('gulp');
+var util = require('../../lib/util');
+var token = util.auth().password;
 
 /**
  * Default
@@ -41,6 +43,7 @@ function duo(opts) {
 
   return map(function(file, fn) {
     Duo(file.base)
+      .token(token)
       .entry(file.path)
       .run(function(err, results) {
         if (err) return fn(err);
