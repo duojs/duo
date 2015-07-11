@@ -20,7 +20,7 @@ var fs = require('co-fs');
 var Duo = require('..');
 var vm = require('vm');
 var slice = [].slice;
-var token = util.auth().token;
+var token = util.auth().password;
 
 /**
  * Tests.
