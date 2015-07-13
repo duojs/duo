@@ -12,6 +12,7 @@ var lstat = require('fs').lstatSync;
 var cache = require('../lib/cache');
 var rmrf = require('rimraf').sync;
 var File = require('../lib/file');
+var util = require('../lib/util');
 var join = require('path').join;
 var assert = require('assert');
 var styl = require('styl');
@@ -19,6 +20,7 @@ var fs = require('co-fs');
 var Duo = require('..');
 var vm = require('vm');
 var slice = [].slice;
+var token = util.auth().password;
 
 /**
  * Tests.
@@ -1119,7 +1121,7 @@ describe('Duo API', function () {
 
 function build(fixture, file) {
   var root = path(fixture);
-  var duo = Duo(root).entry(file || 'index.js');
+  var duo = Duo(root).entry(file || 'index.js').token(token);
   return duo;
 }
 

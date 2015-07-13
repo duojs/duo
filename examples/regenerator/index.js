@@ -8,6 +8,8 @@ var fs = require('fs');
 var regen = require('regenerator');
 var path = require('path');
 var join = path.join;
+var util = require('../../lib/util');
+var token = util.auth().password;
 
 /**
  * Paths
@@ -20,6 +22,7 @@ out = join(__dirname, 'build.js');
  */
 
 var duo = Duo(__dirname)
+  .token(token)
   .use(regenerator)
   .entry('main.js')
 

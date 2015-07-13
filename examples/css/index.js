@@ -10,7 +10,9 @@ var fs = require('fs');
 var path = require('path');
 var relative = path.relative;
 var mkdir = require('mkdirp').sync;
+var util = require('../../lib/util');
 var join = path.join;
+var token = util.auth().password;
 
 /**
  * Paths
@@ -28,6 +30,7 @@ mkdir(build);
  */
 
 var duo = Duo(__dirname)
+  .token(token)
   .entry('main.css');
 
 /**

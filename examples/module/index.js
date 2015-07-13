@@ -8,6 +8,8 @@ var Duo = require('../../');
 var path = require('path');
 var fs = require('fs');
 var join = path.join;
+var util = require('../../lib/util');
+var token = util.auth().password;
 
 /**
  * Paths
@@ -20,6 +22,7 @@ out = join(__dirname, 'build.js');
  */
 
 var duo = Duo(__dirname)
+  .token(token)
   .development(true)
   .entry('main.js')
 
