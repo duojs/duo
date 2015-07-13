@@ -1,7 +1,7 @@
 ![duo](https://i.cloudup.com/zxYO3-GNkP.png)
 
-[![npm version][https://img.shields.io/npm/v/duo.svg]][https://npmjs.org/package/duo]
-[![build status][https://img.shields.io/travis/duojs/duo.svg]][https://travis-ci.org/duojs/duo]
+[![npm version](https://img.shields.io/npm/v/duo.svg)](https://npmjs.org/package/duo)
+[![build status](https://img.shields.io/travis/duojs/duo.svg)](https://travis-ci.org/duojs/duo)
 [![Join the chat at https://gitter.im/duojs/duo](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/duojs/duo?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Duo is a next-generation package manager that blends the best ideas from [Component](https://github.com/component/component), [Browserify](https://github.com/substack/node-browserify) and [Go](http://golang.org/) to make organizing and writing front-end code quick and painless.
