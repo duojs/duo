@@ -1,6 +1,6 @@
 {
   "name": "duo",
-  "version": "0.13.2",
+  "version": "0.14.0",
   "description": "A next-generation package manager for the front-end",
   "homepage": "http://duojs.org/",
   "license": "MIT",
