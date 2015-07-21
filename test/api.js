@@ -570,6 +570,10 @@ describe('Duo API', function () {
         assert.equal(ctx.b, 'b');
         assert.equal(ctx.c, 'c');
       });
+
+      it('should not fail when the input source code is empty', function *() {
+        yield Duo(path('simple')).entry('', 'css').run();
+      });
     });
 
     // describe('with .development(false)');
