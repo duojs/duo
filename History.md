@@ -1,4 +1,10 @@
 
+0.14.1 / 2015-07-22
+===================
+
+  * bug: allowing files with dots in the name to be required
+  * bug: fixing an error caused by an empty string as the entry source code
+
 0.14.0 / 2015-07-13
 ===================
 
