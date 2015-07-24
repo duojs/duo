@@ -208,6 +208,23 @@ describe('Duo API', function () {
     });
   });
 
+  describe('.update()', function () {
+    it('should get the update flag', function () {
+      var duo = Duo(__dirname);
+      assert.equal(duo.update(), true);
+    });
+  });
+
+  describe('.update(value)', function () {
+    it('should set the update flag', function () {
+      var duo = Duo(__dirname);
+      duo.update(true);
+      assert.equal(duo.update(), true);
+      duo.update(false);
+      assert.equal(duo.update(), false);
+    });
+  });
+
   describe('.cache()', function () {
     it('should get the cache flag', function () {
       var duo = Duo(__dirname);

@@ -33,6 +33,7 @@ var program = new Command('duo')
   .option('-r, --root <dir>', 'root directory to build from.', null)
   .option('-t, --type <type>', 'set the entry type', null)
   .option('-u, --use <plugin>', 'use transform plugin(s)', util.collect, [])
+  .option('-U, --update', 'always update dependencies', false)
   .option('-v, --verbose', 'show as much logs as possible', false)
   .option('-w, --watch', 'watch for changes and rebuild', false)
   .option('-s, --standalone <standalone>', 'outputs standalone javascript umd <standalone>', '')
@@ -293,6 +294,7 @@ function create(entry) {
     .sourceMap(sourceMap)
     .cache(program.cache)
     .copy(program.copy)
+    .update(program.update)
     .token(token)
     .entry(entry);
 

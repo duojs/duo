@@ -25,6 +25,7 @@ program
   .option('-r, --root <dir>', 'root directory to build from.', null)
   .option('-t, --type <type>', 'set the entry type', null)
   .option('-u, --use <plugin>', 'use transform plugin(s)', util.collect, [])
+  .option('-U, --update', 'always update dependencies', false)
   .option('-v, --verbose', 'show as much logs as possible', false)
   .parse(process.argv);
 
@@ -184,6 +185,7 @@ function create(entry) {
   var duo = new Duo(root)
     .copy(program.copy)
     .cache(program.cache)
+    .update(program.update)
     .token(token)
     .entry(entry);
 
