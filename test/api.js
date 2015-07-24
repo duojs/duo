@@ -211,7 +211,7 @@ describe('Duo API', function () {
   describe('.update()', function () {
     it('should get the update flag', function () {
       var duo = Duo(__dirname);
-      assert.equal(duo.update(), true);
+      assert.equal(duo.update(), false);
     });
   });
 
