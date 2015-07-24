@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "component/domify": "^1.4.0"
+  }
+}
