@@ -62,6 +62,7 @@
   "devDependencies": {
     "bluebird": "^2.9.20",
     "co-mocha": "~1.0.3",
+    "co-wait": "0.0.0",
     "coffee-script": "^1.9.3",
     "duo-jade": "0.x",
     "eslint": "^0.23.0",

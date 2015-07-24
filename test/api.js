@@ -15,6 +15,7 @@ var File = require('../lib/file');
 var util = require('../lib/util');
 var join = require('path').join;
 var assert = require('assert');
+var wait = require('co-wait');
 var styl = require('styl');
 var fs = require('co-fs');
 var Duo = require('..');
@@ -524,6 +525,30 @@ describe('Duo API', function () {
       });
 
       yield duo.run();
+    });
+
+    it('should update dependencies when the manifest changes', function *() {
+      var duo = build('manifest-modify');
+
+      var a = path('manifest-modify', 'component-a.json');
+      var b = path('manifest-modify', 'component-b.json');
+      var manifest = path('manifest-modify', 'component.json');
+
+      // write manifest a
+      yield fs.writeFile(manifest, yield fs.readFile(a, 'utf8'));
+      var adeps = yield duo.install();
+
+      yield wait(1000); // need to wait so mtime changes
+
+      // write manifest b
+      yield fs.writeFile(manifest, yield fs.readFile(b, 'utf8'));
+      var bdeps = yield duo.install();
+
+      // assertions
+      assert.notDeepEqual(Object.keys(adeps), Object.keys(bdeps));
+
+      // cleanup
+      yield fs.unlink(manifest);
     });
 
     describe('with .entry(path)', function () {
