@@ -49,7 +49,7 @@ var cwd = process.cwd();
  * Run!
  */
 
-co(function *() {
+co(function* () {
   /**
    * Read cache.
    */

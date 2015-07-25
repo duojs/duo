@@ -36,29 +36,29 @@ describe('Duo CLI', function () {
   });
 
   describe('duo in.js', function () {
-    it('should write to build/', function *() {
+    it('should write to build/', function* () {
       out = yield exec('index.js', 'cli-duo');
       if (out.error) throw out.error;
       assert(out.stderr);
       assert(exists('cli-duo/build/index.js'));
     });
 
-    it('should support opts', function *() {
+    it('should support opts', function* () {
       out = yield exec('-v -t js index.js', 'cli-duo');
       if (out.error) throw out.error;
       assert(out.stderr);
       assert(exists('cli-duo/build/index.js'));
     });
 
-    it('should error out when the file doesnt exist', function *() {
+    it('should error out when the file doesnt exist', function* () {
       var out = yield exec('zomg.js', 'cli-duo');
       assert(~out.stderr.indexOf('Error: cannot find entry: zomg.js'));
       assert(out.error);
     });
   });
 
-  describe('duo --standalone <name>', function(){
-    it('should support umd (amd)', function*(){
+  describe('duo --standalone <name>', function () {
+    it('should support umd (amd)', function* () {
       var out = yield exec('--standalone my-module --stdout index.js', 'cli-duo');
       if (out.error) throw out.error;
       var defs = [];
@@ -68,7 +68,7 @@ describe('Duo CLI', function () {
       assert.equal(defs[0](), 'cli-duo');
     });
 
-    it('should support umd (commonjs)', function*(){
+    it('should support umd (commonjs)', function* () {
       var out = yield exec('--standalone my-module --stdout index.js', 'cli-duo');
       if (out.error) throw out.error;
       var mod = { exports: {} };
@@ -77,7 +77,7 @@ describe('Duo CLI', function () {
       assert.equal(ctx.exports, 'cli-duo');
     });
 
-    it('should support umd (global)', function*(){
+    it('should support umd (global)', function* () {
       var out = yield exec('--standalone my-module --stdout index.js', 'cli-duo');
       if (out.error) throw out.error;
       var global = {};
@@ -87,7 +87,7 @@ describe('Duo CLI', function () {
   });
 
   describe('duo --development', function () {
-    it('should include inline source-maps', function *() {
+    it('should include inline source-maps', function* () {
       var out = yield exec('--development index.js', 'simple');
       if (out.error) throw out.error;
       var entry = yield fs.readFile(path('simple/build/index.js'), 'utf8');
@@ -98,7 +98,7 @@ describe('Duo CLI', function () {
   });
 
   describe('duo --external-source-maps', function () {
-    it('should add external source-maps', function *() {
+    it('should add external source-maps', function* () {
       var out = yield exec('--external-source-maps index.js', 'simple');
       if (out.error) throw out.error;
       var entry = yield fs.readFile(path('simple/build/index.js'), 'utf8');
@@ -107,7 +107,7 @@ describe('Duo CLI', function () {
       assert.equal(src.trim(), 'module.exports = \'two\';');
     });
 
-    it('should behave the same way with `--development` on', function *() {
+    it('should behave the same way with `--development` on', function* () {
       var out = yield exec('--development --external-source-maps index.js', 'simple');
       if (out.error) throw out.error;
       var entry = yield fs.readFile(path('simple/build/index.js'), 'utf8');
@@ -116,7 +116,7 @@ describe('Duo CLI', function () {
       assert.equal(src.trim(), 'module.exports = \'two\';');
     });
 
-    it('should log that the map was written', function *() {
+    it('should log that the map was written', function* () {
       var out = yield exec('--external-source-maps index.js', 'simple');
       if (out.error) throw out.error;
       assert(contains(out.stderr, 'wrote : index.js'));
@@ -125,7 +125,7 @@ describe('Duo CLI', function () {
   });
 
   describe('duo [file, ...]', function () {
-    it('should build multiple entries to duo.assets()', function *() {
+    it('should build multiple entries to duo.assets()', function* () {
       var out = yield exec('*.js', 'entries');
       if (out.error) throw out.error;
       var admin = yield build('entries/build/admin.js');
@@ -141,7 +141,7 @@ describe('Duo CLI', function () {
       assert(!out.stdout);
     });
 
-    it('should copy non-js/css files to build', function *() {
+    it('should copy non-js/css files to build', function* () {
       var out = yield exec('duo.png svg/*', 'assets');
       if (out.error) throw out.error;
       assert(contains(out.stderr, 'building : duo.png'));
@@ -155,7 +155,7 @@ describe('Duo CLI', function () {
       assert(exists('assets/build/svg/logo-black.svg'));
     });
 
-    it('should work with options', function *() {
+    it('should work with options', function* () {
       var out = yield exec('-t js *.js', 'entries');
       var admin = yield build('entries/build/admin.js');
       var index = yield build('entries/build/index.js');
@@ -171,7 +171,7 @@ describe('Duo CLI', function () {
       assert(!out.stdout);
     });
 
-    it('should ignore unexpanded globs', function *() {
+    it('should ignore unexpanded globs', function* () {
       var out = yield exec('*.js *.css', 'entries');
       var admin = yield build('entries/build/admin.js');
       var index = yield build('entries/build/index.js');
@@ -188,7 +188,7 @@ describe('Duo CLI', function () {
       assert(!out.stdout);
     });
 
-    it('should recursively copy directories', function *() {
+    it('should recursively copy directories', function* () {
       var out = yield exec('svg', 'assets');
       if (out.error) throw out.error;
       assert(!contains(out.stderr, 'building : duo.png'));
@@ -201,7 +201,7 @@ describe('Duo CLI', function () {
       assert(exists('assets/build/svg/logo-black.svg'));
     });
 
-    it('should recursively copy directories even if they are the only argument', function *() {
+    it('should recursively copy directories even if they are the only argument', function* () {
       var out = yield exec('svg', 'assets');
       if (out.error) throw out.error;
       assert(!contains(out.stderr, 'building : duo.png'));
@@ -216,7 +216,7 @@ describe('Duo CLI', function () {
   });
 
   describe('duo < in.js', function () {
-    it('should write to stdout with js', function *() {
+    it('should write to stdout with js', function* () {
       out = yield exec('< index.js', 'cli-duo');
       if (out.error) throw out.error;
       assert(out.stdout);
@@ -225,7 +225,7 @@ describe('Duo CLI', function () {
       assert.equal(ctx.main, 'cli-duo');
     });
 
-    it('should write to stdout with css', function *() {
+    it('should write to stdout with css', function* () {
       out = yield exec('< index.css', 'cli-duo');
       if (out.error) throw out.error;
       assert(out.stdout);
@@ -233,13 +233,13 @@ describe('Duo CLI', function () {
       assert(~out.stdout.indexOf('body {'));
     });
 
-    it('should error for unknown languages', function *() {
+    it('should error for unknown languages', function* () {
       out = yield exec('< index.coffee', 'cli-duo');
       assert(contains(out.stderr, 'error : could not detect the file type'));
     });
 
     describe('with --development', function () {
-      it('should output an inline source-map', function *() {
+      it('should output an inline source-map', function* () {
         out = yield exec('--development < index.js', 'cli-duo');
         if (out.error) throw out.error;
         assert(out.stdout);
@@ -251,7 +251,7 @@ describe('Duo CLI', function () {
     });
 
     describe('with --external-source-maps', function () {
-      it('should output an inline source-map (magic)', function *() {
+      it('should output an inline source-map (magic)', function* () {
         out = yield exec('--external-source-maps < index.js', 'cli-duo');
         if (out.error) throw out.error;
         assert(out.stdout);
@@ -264,7 +264,7 @@ describe('Duo CLI', function () {
   });
 
   describe('duo --quiet', function () {
-    it('should not log info to stderr when writing files', function *() {
+    it('should not log info to stderr when writing files', function* () {
       out = yield exec('--quiet index.js', 'cli-duo');
       if (out.error) throw out.error;
       ctx = yield build('cli-duo/build/index.js');
@@ -274,7 +274,7 @@ describe('Duo CLI', function () {
       rm('cli-duo/build');
     });
 
-    it('should not log info to stderr when printing to stdout', function *() {
+    it('should not log info to stderr when printing to stdout', function* () {
       out = yield exec('--stdout --quiet index.js > build.js', 'cli-duo');
       if (out.error) throw out.error;
       ctx = yield build('cli-duo');
@@ -284,13 +284,13 @@ describe('Duo CLI', function () {
       rm('cli-duo/build.js');
     });
 
-    it('should log if there is an error', function *() {
+    it('should log if there is an error', function* () {
       var out = yield exec('-q zomg.js', 'cli-duo');
       assert(~out.stderr.indexOf('Error: cannot find entry: zomg.js'));
       assert(out.error);
     });
 
-    it('should not allow verbose and quiet mode simultaneously', function *() {
+    it('should not allow verbose and quiet mode simultaneously', function* () {
       var out = yield exec('--quiet --verbose index.js', 'cli-duo');
       assert(~out.stderr.indexOf('error'));
       assert(~out.stderr.indexOf('cannot use both quiet and verbose mode simultaneously'));
@@ -298,7 +298,7 @@ describe('Duo CLI', function () {
     });
 
     describe('with --use', function () {
-      it('should not log "using : <plugin>"', function *() {
+      it('should not log "using : <plugin>"', function* () {
         var out = yield exec('--quiet --use plugin.js index.js > build.js', 'cli-duo');
         assert.equal(out.stdout, '');
         rm('cli-duo/build.js');
@@ -310,55 +310,55 @@ describe('Duo CLI', function () {
     var src = resolve(__dirname, '..', 'node_modules');
     var dst = resolve(__dirname, 'fixtures', 'plugins', 'node_modules');
 
-    before(function *() {
+    before(function* () {
       yield fs.symlink(src, dst);
     });
 
-    after(function *() {
+    after(function* () {
       yield fs.unlink(dst);
     });
 
-    it('should allow npm modules', function *() {
+    it('should allow npm modules', function* () {
       this.timeout(10000);
       var out = yield exec('--use duo-jade index.js', 'plugins');
       assert(contains(out.stderr, 'using : jade'));
     });
 
-    it('should allow regular js files', function *() {
+    it('should allow regular js files', function* () {
       var out = yield exec('--use plugin.js index.js', 'plugins');
       assert(contains(out.stderr, 'using : plugin'));
     });
 
-    it('should allow multiple plugins', function *() {
+    it('should allow multiple plugins', function* () {
       var out = yield exec('--use duo-jade,plugin.js index.js', 'plugins');
       assert(contains(out.stderr, 'using : jade'));
       assert(contains(out.stderr, 'using : plugin'));
     });
 
-    it('should allow multiple calls to --use', function *() {
+    it('should allow multiple calls to --use', function* () {
       var out = yield exec('--use duo-jade --use plugin.js index.js', 'plugins');
       assert(contains(out.stderr, 'using : jade'));
       assert(contains(out.stderr, 'using : plugin'));
     });
 
-    it('should bomb if the plugin does not exist', function *() {
+    it('should bomb if the plugin does not exist', function* () {
       var out = yield exec('--use zomg.js index.js', 'plugins');
       assert(contains(out.stderr, 'error : Error: Cannot find module'));
     });
 
-    it('should not require .js when a local module', function *() {
+    it('should not require .js when a local module', function* () {
       var out = yield exec('--use plugin index.js', 'plugins');
       assert(contains(out.stderr, 'using : plugin'));
     });
 
-    it('should allow an array of plugins', function *() {
+    it('should allow an array of plugins', function* () {
       var out = yield exec('--use plugins index.js', 'plugins');
       assert(contains(out.stderr, 'using : plugin1'));
       assert(contains(out.stderr, 'using : plugin2'));
       assert(contains(out.stderr, 'using : (anonymous)'));
     });
 
-    it('should allow npm modules from the working directory', function *() {
+    it('should allow npm modules from the working directory', function* () {
       var cwd = resolve(__dirname, '..');
       var src = resolve(__dirname, 'fixtures', 'plugins');
       var cmd = resolve(__dirname, '..', 'bin', 'duo');
@@ -368,7 +368,7 @@ describe('Duo CLI', function () {
   });
 
   describe('duo --output <dir>', function () {
-    it('should change to another output directory', function *() {
+    it('should change to another output directory', function* () {
       yield exec('--output out *.js', 'entries');
       assert(exists('entries/out/index.js'));
       assert(exists('entries/out/admin.js'));
@@ -377,20 +377,20 @@ describe('Duo CLI', function () {
   });
 
   describe('duo --stdout', function () {
-    it('should output to stdout', function *() {
+    it('should output to stdout', function* () {
       var out = yield exec('--stdout index.js', 'entries');
       var index = evaluate(out.stdout);
       assert.equal(index.main, 'index');
     });
 
-    it('should error when multiple entries are passed', function *() {
+    it('should error when multiple entries are passed', function* () {
       var out = yield exec('--stdout *.js', 'entries');
       assert(contains(out.stderr, 'cannot use stdout with multiple entries'));
       rm('entries/out');
     });
 
     describe('with --development', function () {
-      it('should output an inline source-map', function *() {
+      it('should output an inline source-map', function* () {
         out = yield exec('--development --stdout index.js', 'cli-duo');
         if (out.error) throw out.error;
         assert(out.stdout);
@@ -402,7 +402,7 @@ describe('Duo CLI', function () {
     });
 
     describe('with --external-source-maps', function () {
-      it('should output an inline source-map (magic)', function *() {
+      it('should output an inline source-map (magic)', function* () {
         out = yield exec('--external-source-maps --stdout index.js', 'cli-duo');
         if (out.error) throw out.error;
         assert(out.stdout);
@@ -415,15 +415,15 @@ describe('Duo CLI', function () {
   });
 
   describe('duo ls', function () {
-    beforeEach(function *() {
+    beforeEach(function* () {
       yield exec('-q index.js > build.js', 'cli-duo-ls');
     });
 
-    afterEach(function *() {
+    afterEach(function* () {
       rm('cli-duo-ls/build.js');
     });
 
-    it('should list all dependencies', function *() {
+    it('should list all dependencies', function* () {
       var out = yield exec('ls', 'cli-duo-ls');
       if (out.error) throw out.error;
       assert(contains(out.stdout, 'duo-ls'), 'duo-ls');
@@ -434,15 +434,15 @@ describe('Duo CLI', function () {
   });
 
   describe('duo duplicates', function () {
-    beforeEach(function *() {
+    beforeEach(function* () {
       yield exec('index.js > build.js', 'cli-duo-ls');
     });
 
-    afterEach(function *() {
+    afterEach(function* () {
       rm('cli-duo-ls/build.js');
     });
 
-    it('should list all duplicates', function *() {
+    it('should list all duplicates', function* () {
       var out = yield exec('duplicates', 'cli-duo-ls');
       if (out.error) throw out.error;
       assert(contains(out.stdout, 'total duplicates : 0B'));
@@ -451,25 +451,25 @@ describe('Duo CLI', function () {
   });
 
   describe('duo clean-cache', function () {
-    beforeEach(function *() {
+    beforeEach(function* () {
       yield exec('index.js', 'simple-deps');
     });
 
-    it('should remove the mapping file', function *() {
+    it('should remove the mapping file', function* () {
       var out = yield exec('clean-cache', 'simple-deps');
       if (out.error) throw out.error;
       assert(contains(out.stderr, 'cleaned : components/duo-cache'));
       assert(!exists('simple-deps/components/duo-cache'));
     });
 
-    it('should remove the package tmp dir', function *() {
+    it('should remove the package tmp dir', function* () {
       var out = yield exec('clean-cache', 'simple-deps');
       if (out.error) throw out.error;
       assert(contains(out.stderr, '/duo'));
     });
 
     describe('with --quiet', function () {
-      it('should not have any output', function *() {
+      it('should not have any output', function* () {
         var out = yield exec('clean-cache --quiet', 'simple-deps');
         if (out.error) throw out.error;
         assert.equal(out.stderr, '');
@@ -478,7 +478,7 @@ describe('Duo CLI', function () {
   });
 
   describe('duo install file...', function () {
-    it('should download the remote dependencies', function *() {
+    it('should download the remote dependencies', function* () {
       var out = yield exec('install index.js', 'install-deps');
       if (out.error) throw out.error;
       assert(exists('install-deps/components/duo-cache'));
@@ -486,13 +486,13 @@ describe('Duo CLI', function () {
       assert(!exists('install-deps/components/suitcss-base@0.8.0'));
     });
 
-    it('should not output built files', function *() {
+    it('should not output built files', function* () {
       var out = yield exec('install index.js', 'install-deps');
       if (out.error) throw out.error;
       assert(!exists('install-deps/build'));
     });
 
-    it('should accept multiple entry files', function *() {
+    it('should accept multiple entry files', function* () {
       var out = yield exec('install index.js index.css', 'install-deps');
       if (out.error) throw out.error;
       assert(exists('install-deps/components/duo-cache'));
@@ -559,7 +559,7 @@ function rm(fixture) {
  * @return {Object}
  */
 
-function *build(fixture) {
+function* build(fixture) {
   fixture += extname(fixture) ? '' : '/build.js';
   var file = path(fixture);
   var js = yield fs.readFile(file, 'utf-8');
@@ -574,7 +574,7 @@ function *build(fixture) {
 function cleanup() {
   var dir = resolve(__dirname, 'fixtures');
   var dirs = readdir(dir);
-  dirs.forEach(function(name){
+  dirs.forEach(function (name) {
     if (name[0] === '.') return;
     var components = resolve(dir, name, 'components');
     var build = resolve(dir, name, 'build');
@@ -643,8 +643,8 @@ var exec = (function (version) {
  */
 
 function execute(cmd, opts) {
-  return function(done){
-    proc.exec(cmd, opts, function(err, stdout, stderr){
+  return function (done) {
+    proc.exec(cmd, opts, function (err, stdout, stderr) {
       done(null, {
         error: err,
         stdout: stdout,
