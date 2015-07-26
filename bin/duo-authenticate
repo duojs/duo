@@ -1,0 +1,156 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+
+var logger = require('stream-log')(process.stderr);
+var program = require('commander');
+var util = require('../lib/util');
+var netrc = require('node-netrc');
+var request = require('request');
+var conceal = require('conceal');
+var hasError = false;
+
+/**
+ * Program.
+ */
+
+program
+  .usage('[options]')
+  .description('Automatically add a github personal access token to your ~/.netrc file')
+  .option('-f, --force', 'create a new token even if there already is one')
+  .option('-t, --token <token>', 'use a previously-generated github access token')
+  .option('-u, --username <username>', 'github username (used to generate a token)')
+  .option('-p, --password <password>', 'github password (used to generate a token)')
+  .option('-c, --code <code>', 'github two-factor authentication code (if needed)')
+  .parse(process.argv);
+
+/**
+ * Success.
+ */
+
+logger
+  .type('authenticated', '32m');
+
+/**
+ * Info.
+ */
+
+logger
+  .type('generating', '36m')
+  .type('generated', '36m');
+
+/**
+ * Warning.
+ */
+
+logger
+  .type('needed', '33m');
+
+/**
+ * Error.
+ */
+
+logger.type('error', '31m', function () {
+  hasError = true;
+});
+
+/**
+ * End logger output after process exit.
+ */
+
+process.on('exit', function () {
+  logger.end();
+  if (hasError) process.exit(1);
+});
+
+/**
+ * Check current authentication
+ */
+
+var currentToken = util.token();
+
+/**
+ * Extract params.
+ */
+
+var token = program.token;
+var user = program.username;
+var pass = program.password;
+var code = program.code;
+
+/**
+ * If we detect a token already, exit early with an error.
+ * (unless the user specified us to force-authenticate)
+ */
+
+if (currentToken && !program.force) {
+  logger.error('authentication token %s already configured', mask(currentToken));
+  return;
+}
+
+if (token) {
+  save(null, token);
+} else if (user && pass) {
+  generateToken(user, pass, code, save);
+} else {
+  logger.needed('you need to specify a token or a username/password');
+  logger.needed('visit https://github.com/settings/tokens to generate tokens');
+  logger.needed('or if you do not wish to type your username and password');
+}
+
+
+// private helpers
+
+function save(err, token) {
+  if (err) return logger.error(err.message);
+
+  try {
+    netrc.update('api.github.com', {
+      login: 'x-oauth-basic',
+      password: token
+    });
+
+    logger.authenticated('your .netrc file has been updated');
+  } catch (err) {
+    logger.error(err.message);
+  }
+}
+
+function generateToken(user, pass, code, callback) {
+  logger.generating('new github personal access token for %s', user);
+
+  var options = {
+    url: 'https://api.github.com/authorizations',
+    auth: {
+      user: user,
+      pass: pass
+    },
+    headers: {
+      'User-Agent': 'duo-authenticate'
+    },
+    json: true,
+    body: {
+      note: 'Duo CLI'
+    }
+  };
+
+  if (code) options.headers['X-GitHub-OTP'] = code;
+
+  request.post(options, function (err, res, body) {
+    if (err) {
+      callback(err);
+    } else if (res.statusCode !== 201) {
+      callback(new Error(body.message));
+    } else {
+      var token = body.token;
+      logger.generated('new github token %s', mask(token));
+      callback(null, token);
+    }
+  });
+}
+
+function mask(token) {
+  return conceal(token, { start: 6 });
+}
