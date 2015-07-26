@@ -5,17 +5,19 @@
  */
 
 var logger = require('stream-log')(process.stderr);
+var parallel = require('co-parallel');
+var values = require('object-values');
 var program = require('commander');
-var join = require('path').join;
+var util = require('../lib/util');
+var chalk = require('chalk');
 var archy = require('archy');
-var cwd = process.cwd();
+var path = require('path');
 var Duo = require('..');
 var co = require('co');
-var fs = require('fs');
 var hasError = false;
 
 /**
- * Logger.
+ * Logger errors.
  */
 
 logger.type('error', '31m', function () {
@@ -23,11 +25,10 @@ logger.type('error', '31m', function () {
 });
 
 /**
- * End logger output after finished.
+ * End logger output after process exit.
  */
 
 process.on('exit', function () {
-  logger.end();
   if (hasError) process.exit(1);
 });
 
@@ -36,8 +37,15 @@ process.on('exit', function () {
  */
 
 program
-  .usage('duo ls')
-  .option('-d, --depth <depth>', 'ls depth, defaults to Infinity', Infinity)
+  .usage('duo ls [options] file...')
+  .option('-d, --development', 'include development dependencies', false)
+  .option('-D, --depth <depth>', 'depth to traverse', Number, Infinity)
+  .option('-f, --flat', 'output a machine-friendly list', false)
+  .option('-R, --no-remotes', 'exclude remotes from output', true)
+  .option('-r, --root <dir>', 'root directory to build from', null)
+  .option('-s, --stale', 'uses current cache to print', false)
+  .option('-t, --type <type>', 'set the entry type', null)
+  .option('-u, --use <plugin>', 'use transform plugin(s)', util.collect, [])
   .parse(process.argv);
 
 /**
@@ -47,62 +55,94 @@ program
 program.on('--help', function () {
   console.log('  Examples:');
   console.log();
-  console.log('    # list all dependencies');
-  console.log('    $ duo ls');
+  console.log('    # list dependency tree for index.js');
+  console.log('    $ duo ls index.js');
   console.log();
-  console.log('    # list all dependencies < 8');
-  console.log('    $ duo ls --depth 8');
+  console.log('    # list dependency tree for multiple files');
+  console.log('    $ duo ls index.js index.css');
+  console.log();
+  console.log('    # list all dependencies up to 5 levels deep');
+  console.log('    $ duo ls --depth 5 index.js');
+  console.log();
+  console.log('    # list only local dependencies for index.js');
+  console.log('    $ duo ls --no-remotes index.js');
   console.log();
   process.exit(0);
 });
 
 /**
- * Params.
+ * Depth flag.
  */
 
-var max = program.depth || Infinity;
+var max = program.depth;
+
+/**
+ * GitHub credentials.
+ */
+
+var auth = util.auth();
+
+/**
+ * Root.
+ */
+
+var root = util.findroot(program.root);
+
+/**
+ * Plugins.
+ */
+
+try {
+  var plugins = util.plugins(root, program.use);
+} catch (err) {
+  error(err);
+  return;
+}
+
+/**
+ * Specific entries are required in order to run.
+ */
+
+if (!program.args.length) {
+  return logger.error('you must provide at least 1 entry file to process');
+}
 
 /**
  * Run.
  */
 
 co(function* () {
-  /**
-   * Map.
-   */
+  var gens = program.args.map(function* (entry) {
+    var duo = build(entry);
+    var map;
 
-  var duo = new Duo(cwd);
-  var cache = yield duo.getCache();
-  var map = yield cache.read();
+    if (program.stale) {
+      var cache = yield duo.getCache();
+      map = yield cache.read();
+    } else {
+      map = yield duo.install();
+    }
 
-  /**
-   * Component.
-   */
-
-  try {
-    var component = JSON.parse(read(join(cwd, 'component.json')));
-  } catch (e) {
-    logger.error(e.stack || e);
-    return;
-  }
-
-  /**
-   * List.
-   */
-
-  var ls = list(map, 0, {
-    label: pretty(component.name + '@' + (component.version || '')),
-    name: entries(map)[0].id,
-    nodes: []
+    return { entry: entry, map: map };
   });
 
-  /**
-   * Print.
-   */
+  var results = yield parallel(gens);
 
-  console.log();
-  console.log(archy(ls, '  '));
-  console.log();
+  if (!program.flat) console.log();
+
+  results.forEach(function (result) {
+    var ls = list(result.map, 0, {
+      label: chalk.bold.underline(result.entry),
+      name: result.entry,
+      nodes: []
+    });
+
+    if (program.flat) {
+      console.log(flatten(ls));
+    } else {
+      console.log(archy(ls, '  '));
+    }
+  });
 })();
 
 /**
@@ -119,20 +159,15 @@ function list(map, depth, node) {
 
   deps.forEach(function (dep) {
     if (depth === max) return;
-    var label = pretty(dep);
-    var child = { nodes: [], label: label, name: dep };
-    var a = dep.split('@')[0];
-    var b = node.name.split('@')[0];
 
-    // don't list files of components
-    // but get their dependencies.
-    if (a === b) {
-      var realname = node.name;
-      node.name = dep;
-      list(map, depth, node);
-      node.name = realname;
-      return;
-    }
+    var child = {
+      label: pretty(dep),
+      name: dep,
+      nodes: []
+    };
+
+    var parts = dep.split(path.sep);
+    if (!program.remotes && parts[0] === 'components') return;
 
     // LAME: add if not added
     if (!has(node.nodes, child)) {
@@ -145,40 +180,6 @@ function list(map, depth, node) {
 }
 
 /**
- * Find all the entry files for a given map.
- */
-
-function entries(map) {
-  return values(map).filter(function (file) {
-    return !!file.entry;
-  });
-}
-
-/**
- * Get the values of an `obj`.
- *
- * @param {Object} obj
- * @return {Array}
- */
-
-function values(obj) {
-  var ret = [];
-  for (var k in obj) ret.push(obj[k]);
-  return ret;
-}
-
-/**
- * Read a `path` from disk.
- *
- * @param {String} path
- * @return {String}
- */
-
-function read(path) {
-  return fs.readFileSync(path, 'utf8');
-}
-
-/**
  * Color the given `dep`
  *
  * @param {String} dep
@@ -186,18 +187,34 @@ function read(path) {
  */
 
 function pretty(dep) {
-  var name = dep.split('@')[0];
-  var version = dep.split('@')[1];
+  var parts = dep.split(path.sep);
+  return parts[0] === 'components' ? remote(dep) : local(dep);
+}
 
-  if (version) version = version.split('/')[0];
-  if (~name.indexOf('/')) name = name.split('/')[1];
+/**
+ * Colors the given local dep.
+ *
+ * @param {String} dep
+ * @return {String}
+ */
 
-  return '\033[36m'
-    + name
-    + '\033[m'
-    + ' \033[90m'
-    + (version || '')
-    + '\033[m';
+function local(dep) {
+  return chalk.bold(dep);
+}
+
+/**
+ * Colors the given remote dep.
+ *
+ * @param {String} dep
+ * @return {String}
+ */
+
+function remote(dep) {
+  var parts = dep.split(path.sep)[1].split('@');
+  var name = parts[0];
+  var version = parts[1];
+
+  return [ chalk.cyan(name), chalk.grey(version) ].join(' ');
 }
 
 /**
@@ -213,4 +230,53 @@ function has(nodes, node) {
     if (nodes[i].name === node.name) return true;
   }
   return false;
+}
+
+/**
+ * Create a duo instance.
+ *
+ * @param {entry} entry
+ * @return {Duo}
+ */
+
+function build(entry) {
+  return new Duo(root)
+    .copy(program.copy)
+    .token(auth.password)
+    .cache(program.cache)
+    .use(plugins)
+    .entry(entry);
+}
+
+/**
+ * Error.
+ */
+
+function error(err) {
+  err = typeof err === 'string' ? new Error(err) : err;
+  if (err instanceof SyntaxError && err.fileName) {
+    var msg = err.message;
+    var file = path.relative(process.cwd(), err.fileName);
+    logger.error('Syntax error:', msg, 'in:', file);
+  } else {
+    logger.error(err.stack);
+  }
+}
+
+/**
+ * Output the archy object in a flat style.
+ *
+ * @param {Object} obj
+ * @param {String} ret
+ */
+
+function flatten(node, list) {
+  if (!list) list = [];
+
+  list.push(node.name);
+  node.nodes.forEach(function (node) {
+    flatten(node, list);
+  });
+
+  return list.join('\n');
 }
