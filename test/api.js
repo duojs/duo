@@ -28,12 +28,12 @@ var token = util.auth().password;
  */
 
 describe('Duo API', function () {
-  beforeEach(function *() {
+  beforeEach(function* () {
     yield cache.clean();
     cleanup();
   });
 
-  after(function *() {
+  after(function* () {
     yield cache.clean();
     cleanup();
   });
@@ -292,7 +292,7 @@ describe('Duo API', function () {
   });
 
   describe('.cleanCache()', function () {
-    it('should destroy the cache', function *() {
+    it('should destroy the cache', function* () {
       var duo = build('simple-deps');
       yield duo.run();
       assert(exists('simple-deps/components/duo-cache'));
@@ -300,7 +300,7 @@ describe('Duo API', function () {
       assert(!exists('simple-deps/components/duo-cache'));
     });
 
-    it('should not throw an error when no cache exists', function *() {
+    it('should not throw an error when no cache exists', function* () {
       var duo = build('simple-deps');
       assert(!exists('simple-deps/components/duo-cache'));
       yield duo.cleanCache();
@@ -332,18 +332,18 @@ describe('Duo API', function () {
   });
 
   describe('.run([fn])', function () {
-    it('should ignore runs without an entry or source', function *() {
+    it('should ignore runs without an entry or source', function* () {
       var js = yield Duo(__dirname).run();
       assert.deepEqual(js, { code: '' });
     });
 
-    it('should build simple modules', function *() {
+    it('should build simple modules', function* () {
       var js = yield build('simple').run();
       var ctx = evaluate(js.code);
       assert.deepEqual(['one', 'two'], ctx.main);
     });
 
-    it('should build require conflicts', function*(){
+    it('should build require conflicts', function* () {
       this.timeout(10000);
       var js = yield build('require-conflict').run();
       var ctx = evaluate(js.code);
@@ -351,37 +351,37 @@ describe('Duo API', function () {
       assert(mod.send !== mod.json, 'segmentio/json == yields/send-json');
     });
 
-    it('should build with no deps', function *() {
+    it('should build with no deps', function* () {
       var js = yield build('no-deps').run();
       var ctx = evaluate(js.code).main;
       assert.equal('a', ctx);
     });
 
-    it('resolve directories like `require(./lib)`', function *() {
+    it('resolve directories like `require(./lib)`', function* () {
       var js = yield build('resolve').run();
       var ctx = evaluate(js.code);
       assert.deepEqual('resolved', ctx.main);
     });
 
-    it('should resolve relative files like `require(../path/file.js`)', function *() {
+    it('should resolve relative files like `require(../path/file.js`)', function* () {
       var js = yield build('resolve-file').run();
       var ctx = evaluate(js.code);
       assert.equal('resolved', ctx.main);
     });
 
-    it('should resolve dependencies like require("..")', function *() {
+    it('should resolve dependencies like require("..")', function* () {
       var js = yield build('relative-path', 'test/test.js').run();
       var ctx = evaluate(js.code);
       assert.equal('index', ctx.main);
     });
 
-    it('should resolve dependencies that have dots in the name', function *() {
+    it('should resolve dependencies that have dots in the name', function* () {
       var js = yield build('file-dots', 'index.js').run();
       var ctx = evaluate(js.code);
       assert.strictEqual(ctx.a1, ctx.a2);
     });
 
-    it('should fetch and build direct dependencies', function *() {
+    it('should fetch and build direct dependencies', function* () {
       this.timeout(15000);
       var js = yield build('simple-deps').run();
       var ctx = evaluate(js.code);
@@ -391,20 +391,20 @@ describe('Duo API', function () {
       assert.equal(typeof ctx.mods[1], 'function');
     });
 
-    it('should fetch dependencies from manifest', function *() {
+    it('should fetch dependencies from manifest', function* () {
       var js = yield build('manifest-deps').run();
       var ctx = evaluate(js.code);
       var type = ctx.main;
       assert.equal('string', type(''));
     });
 
-    it('should fetch dependencies via semver ranges', function *() {
+    it('should fetch dependencies via semver ranges', function* () {
       var js = yield build('deps-semver').run();
       var ctx = evaluate(js.code).main;
       assert.equal(ctx, 'function');
     });
 
-    it('should fail when manifest has a syntax error', function *() {
+    it('should fail when manifest has a syntax error', function* () {
       try {
         var success = yield build('manifest-syntax-err').run();
       } catch (e) {
@@ -413,7 +413,7 @@ describe('Duo API', function () {
       assert(!success);
     });
 
-    it('should decorate the SyntaxError object', function *() {
+    it('should decorate the SyntaxError object', function* () {
       try {
         var success = yield build('manifest-syntax-err').run();
       } catch (e) {
@@ -423,7 +423,7 @@ describe('Duo API', function () {
       assert(!success);
     });
 
-    it('should be idempotent', function *() {
+    it('should be idempotent', function* () {
       var a = yield build('idempotent').run();
       var b = yield build('idempotent').run();
       var c = yield build('idempotent').run();
@@ -435,7 +435,7 @@ describe('Duo API', function () {
       assert.equal('string', c(''));
     });
 
-    it('should rebuild correctly when a file is touched', function *() {
+    it('should rebuild correctly when a file is touched', function* () {
       var p = join(path('rebuild'), 'index.js');
       var js = yield fs.readFile(p, 'utf8');
       var a = build('rebuild');
@@ -450,14 +450,14 @@ describe('Duo API', function () {
       assert.equal(b.code, c.code);
     });
 
-    it('should resolve repos with different names', function *() {
+    it('should resolve repos with different names', function* () {
       this.timeout(15000);
       var js = yield build('different-names').run();
       var ms = evaluate(js.code).main;
       assert.equal(36000000, ms('10h'));
     });
 
-    it('should resolve dependencies that use require("{user}-{repo}")', function *() {
+    it('should resolve dependencies that use require("{user}-{repo}")', function* () {
       var js = yield build('user-repo-dep').run();
       var type = evaluate(js.code).main;
       assert.equal('string', type(js.code));
@@ -472,7 +472,7 @@ describe('Duo API', function () {
       });
     });
 
-    it('should support multiple versions in the same file', function *() {
+    it('should support multiple versions in the same file', function* () {
       var js = yield build('multiple-versions').run();
       var mimes = evaluate(js.code).mimes;
       assert.equal('image/x-nikon-nef', mimes[0].lookup('.nef')); // 0.0.2
@@ -480,7 +480,7 @@ describe('Duo API', function () {
       assert.equal('image/jpeg', mimes[1].lookup('.jpg'));
     });
 
-    it('should properly mark local and remote files', function *() {
+    it('should properly mark local and remote files', function* () {
       var duo = build('local-vs-remote');
 
       duo.use(function test(file) {
@@ -503,7 +503,7 @@ describe('Duo API', function () {
       yield duo.run();
     });
 
-    it('should properly mark local and remote files even when installed somewhere else', function *() {
+    it('should properly mark local and remote files even when installed somewhere else', function* () {
       var duo = build('local-vs-remote');
       duo.installTo('not components');
 
@@ -527,7 +527,7 @@ describe('Duo API', function () {
       yield duo.run();
     });
 
-    it('should update dependencies when the manifest changes', function *() {
+    it('should update dependencies when the manifest changes', function* () {
       var duo = build('manifest-modify');
 
       var a = path('manifest-modify', 'component-a.json');
@@ -552,14 +552,14 @@ describe('Duo API', function () {
     });
 
     describe('with .entry(path)', function () {
-      it('should work with full paths for entry files', function *() {
+      it('should work with full paths for entry files', function* () {
         var entry = join(path('simple'), 'index.js');
         var js = yield build('simple', entry).run();
         var ctx = evaluate(js.code);
         assert.deepEqual(['one', 'two'], ctx.main);
       });
 
-      it('should throw if the entry file doesn\'t exist', function *() {
+      it('should throw if the entry file doesn\'t exist', function* () {
         var duo = Duo(__dirname).entry('zomg.js');
 
         try {
@@ -569,7 +569,7 @@ describe('Duo API', function () {
         }
       });
 
-      it('should treat entries idempotently', function *() {
+      it('should treat entries idempotently', function* () {
         var root = path('simple');
         var duo = Duo(root).entry('hi.js');
         duo.entry('index.js');
@@ -582,7 +582,7 @@ describe('Duo API', function () {
     });
 
     describe('with .entry(source, type)', function () {
-      it('should support passing raw source for entry files', function *() {
+      it('should support passing raw source for entry files', function* () {
         var src = read('simple/index.js');
         var root = path('simple');
         var duo = Duo(root).entry(src, 'js');
@@ -591,7 +591,7 @@ describe('Duo API', function () {
         assert.deepEqual(['one', 'two'], ctx.main);
       });
 
-      it('should support passing transformed raw source for entry files', function *() {
+      it('should support passing transformed raw source for entry files', function* () {
         var src = read('coffee/index.coffee');
         var root = path('coffee');
         var duo = Duo(root).use(cs).entry(src, 'coffee');
@@ -602,7 +602,7 @@ describe('Duo API', function () {
         assert.equal(ctx.c, 'c');
       });
 
-      it('should not fail when the input source code is empty', function *() {
+      it('should not fail when the input source code is empty', function* () {
         yield Duo(path('simple')).entry('', 'css').run();
       });
     });
@@ -610,7 +610,7 @@ describe('Duo API', function () {
     // describe('with .development(false)');
 
     describe('with .development(true)', function () {
-      it('should fetch and bundle development dependencies', function *() {
+      it('should fetch and bundle development dependencies', function* () {
         this.timeout(20000);
         var duo = build('simple-dev-deps');
         duo.development(true);
@@ -622,7 +622,7 @@ describe('Duo API', function () {
     });
 
     describe('with .sourceMap(false)', function () {
-      it('should not generate sourcemaps', function *() {
+      it('should not generate sourcemaps', function* () {
         var js = yield build('simple').run();
         assert.equal(js.code.indexOf('//# sourceMappingURL'), -1);
         assert(!js.map);
@@ -630,7 +630,7 @@ describe('Duo API', function () {
     });
 
     describe('with .sourceMap(true)', function () {
-      it('should generate sourcemaps', function *() {
+      it('should generate sourcemaps', function* () {
         var duo = build('simple').sourceMap(true);
         var js = yield duo.run();
         assert(js.code.indexOf('//# sourceMappingURL') > -1);
@@ -639,7 +639,7 @@ describe('Duo API', function () {
     });
 
     describe('with .sourceMap("inline")', function () {
-      it('should generate sourcemaps', function *() {
+      it('should generate sourcemaps', function* () {
         var duo = build('simple').sourceMap('inline');
         var js = yield duo.run();
         assert(js.code.indexOf('//# sourceMappingURL') > -1);
@@ -648,7 +648,7 @@ describe('Duo API', function () {
     });
 
     describe('with .copy(false)', function () {
-      it('should symlink files', function *() {
+      it('should symlink files', function* () {
         var duo = build('symlink', 'index.css');
         var file = path('symlink/build/duo.png');
         var out = read('symlink/index.out.css');
@@ -660,7 +660,7 @@ describe('Duo API', function () {
     });
 
     describe('with .copy(true)', function () {
-      it('should copy files instead of symlink', function *() {
+      it('should copy files instead of symlink', function* () {
         var duo = build('copy', 'index.css').copy(true);
         var file = path('copy/build/duo.png');
         var out = read('copy/index.out.css');
@@ -670,7 +670,7 @@ describe('Duo API', function () {
         assert(!stat.isSymbolicLink());
       });
 
-      it('should not empty the target file when symlinked then copied. fixes: #356', function *() {
+      it('should not empty the target file when symlinked then copied. fixes: #356', function* () {
         // symlink
         var duo = build('copy', 'index.css').copy(false);
         var original = read('copy/duo.png');
@@ -692,7 +692,7 @@ describe('Duo API', function () {
     });
 
     describe('with .global(name)', function () {
-      it('should expose the entry as a global', function *() {
+      it('should expose the entry as a global', function* () {
         var duo = build('global');
         duo.global('global-module');
         var js = yield duo.run();
@@ -702,7 +702,7 @@ describe('Duo API', function () {
     });
 
     describe('with .cache(false)', function () {
-      it('should have an empty mapping', function *() {
+      it('should have an empty mapping', function* () {
         var duo = build('idempotent').cache(false);
         yield duo.run();
         assert.deepEqual(duo.mapping, {});
@@ -710,7 +710,7 @@ describe('Duo API', function () {
     });
 
     describe('with .use(fn|gen)', function () {
-      it('should transform entry files', function *() {
+      it('should transform entry files', function* () {
         var duo = build('coffee', 'index.coffee');
         duo.use(cs);
         var js = yield duo.run();
@@ -720,7 +720,7 @@ describe('Duo API', function () {
         assert.equal(ctx.c, 'c');
       });
 
-      it('should transform deps', function *() {
+      it('should transform deps', function* () {
         var duo = build('coffee-deps');
         duo.use(cs);
         var js = yield duo.run();
@@ -730,10 +730,10 @@ describe('Duo API', function () {
         assert.equal(ctx.c, 'c');
       });
 
-      it('should work with generators', function *() {
+      it('should work with generators', function* () {
         var duo = build('coffee', 'index.coffee');
         var called = false;
-        duo.use(cs).use(function *() { called = true; });
+        duo.use(cs).use(function* () { called = true; });
         var js = yield duo.run();
         var ctx = evaluate(js.code).main;
         assert.equal(ctx.a, 'a');
@@ -742,7 +742,7 @@ describe('Duo API', function () {
         assert(called);
       });
 
-      it('should work async', function *() {
+      it('should work async', function* () {
         var duo = build('no-deps');
         var called = false;
         duo.use(function (file, entry, fn) {
@@ -756,7 +756,7 @@ describe('Duo API', function () {
         assert(called);
       });
 
-      it('should work sync', function *() {
+      it('should work sync', function* () {
         var duo = build('no-deps');
         var called = false;
         duo.use(function () {
@@ -780,7 +780,7 @@ describe('Duo API', function () {
     });
 
     describe('with .use(alt)', function () {
-      it('should support calling "alternate" plugins on the resulting build', function *() {
+      it('should support calling "alternate" plugins on the resulting build', function* () {
         var plugin = require(path('alt-plugin/plugin.js'));
         var duo = build('alt-plugin').use(plugin);
         var results = yield duo.run();
@@ -789,7 +789,7 @@ describe('Duo API', function () {
     });
 
     describe('with .include(name, source)', function () {
-      it('should include a string as a source', function *() {
+      it('should include a string as a source', function* () {
         var duo = build('includes');
         duo.include('some-include', 'module.exports = "a"');
         var js = yield duo.run();
@@ -797,7 +797,7 @@ describe('Duo API', function () {
         assert.equal(ctx, 'a');
       });
 
-      it('should be idempotent', function *() {
+      it('should be idempotent', function* () {
         var duo = build('includes');
         duo.include('some-include', 'module.exports = "a"');
 
@@ -812,7 +812,7 @@ describe('Duo API', function () {
     });
 
     describe('with bundles', function () {
-      it('should support multiple bundles', function *() {
+      it('should support multiple bundles', function* () {
         this.timeout(10000);
         var one = build('bundles', 'one.js');
         var two = build('bundles', 'two.js');
@@ -835,28 +835,28 @@ describe('Duo API', function () {
     });
 
     describe('with css', function () {
-      it('should work with no deps', function *() {
+      it('should work with no deps', function* () {
         var duo = build('css-no-deps', 'index.css');
         var css = yield duo.run();
         var out = read('css-no-deps/index.out.css');
         assert.equal(css.code, out);
       });
 
-      it('should resolve relative files', function *() {
+      it('should resolve relative files', function* () {
         var duo = build('css-relative-files', 'index.css');
         var css = yield duo.run();
         var out = read('css-relative-files/index.out.css');
         assert.equal(css.code, out);
       });
 
-      it('should resolve files with hashes and querystrings', function *() {
+      it('should resolve files with hashes and querystrings', function* () {
         var duo = build('css-hash-query-files', 'index.css');
         var css = yield duo.run();
         var out = read('css-hash-query-files/index.out.css');
         assert.equal(css.code.trim(), out.trim());
       });
 
-      it('should support entry css transforms', function *() {
+      it('should support entry css transforms', function* () {
         var duo = build('css-styl', 'index.styl');
         duo.use(stylus);
         var css = yield duo.run();
@@ -864,7 +864,7 @@ describe('Duo API', function () {
         assert.equal(css.code.trim(), out.trim());
       });
 
-      it('should support css transforms', function *() {
+      it('should support css transforms', function* () {
         var duo = build('css-styl-deps', 'index.css');
         duo.use(stylus);
         var css = yield duo.run();
@@ -872,7 +872,7 @@ describe('Duo API', function () {
         assert.equal(css.code, out);
       });
 
-      it('should load a simple dep', function *() {
+      it('should load a simple dep', function* () {
         this.timeout(15000);
         var duo = build('css-simple-dep', 'index.css');
         var css = yield duo.run();
@@ -880,7 +880,7 @@ describe('Duo API', function () {
         assert.equal(css.code.trim(), out.trim());
       });
 
-      it('should work with user/repo@ref:path', function *() {
+      it('should work with user/repo@ref:path', function* () {
         this.timeout(15000);
         var duo = build('user-repo-ref-path', 'index.css');
         var css = yield duo.run();
@@ -888,35 +888,35 @@ describe('Duo API', function () {
         assert.equal(css.code.trim(), out.trim());
       });
 
-      it('should work with empty deps', function *() {
+      it('should work with empty deps', function* () {
         var duo = build('empty-css-file', 'index.css');
         var css = yield duo.run();
         var out = read('empty-css-file/index.out.css');
         assert.equal(css.code, out);
       });
 
-      it('should ignore http deps', function *() {
+      it('should ignore http deps', function* () {
         var duo = build('css-http-dep', 'index.css');
         var css = yield duo.run();
         var out = read('css-http-dep/index.out.css');
         assert.equal(css.code, out);
       });
 
-      it('should ignore image urls if asset is local', function *() {
+      it('should ignore image urls if asset is local', function* () {
         var duo = build('css-url', 'lib/inline.css');
         var css = yield duo.run();
         var out = read('css-url/index.out.css');
         assert.equal(css.code, out);
       });
 
-      it('should keep duplicate references to assets', function *() {
+      it('should keep duplicate references to assets', function* () {
         var duo = build('css-dup-asset', 'index.css');
         var css = yield duo.run();
         var out = read('css-dup-asset/index.out.css');
         assert.equal(css.code.trim(), out.trim());
       });
 
-      it('should ignore unresolved remote paths', function *() {
+      it('should ignore unresolved remote paths', function* () {
         var duo = build('css-ignore-unresolved', 'index.css');
         var css = yield duo.run();
         var out = read('css-ignore-unresolved/index.out.css');
@@ -925,7 +925,7 @@ describe('Duo API', function () {
     });
 
     describe('with json', function () {
-      it('should load json files', function *() {
+      it('should load json files', function* () {
         var duo = build('json-dep');
         var js = yield duo.run();
         var ctx = evaluate(js.code).main;
@@ -935,7 +935,7 @@ describe('Duo API', function () {
     });
 
     describe('with components', function () {
-      it('should build multi-asset components', function *() {
+      it('should build multi-asset components', function* () {
         this.timeout(15000);
 
         var duo = build('js-css-dep');
@@ -949,7 +949,7 @@ describe('Duo API', function () {
         assert.equal(css.code.trim(), out.trim());
       });
 
-      it('should build components with a main object', function *() {
+      it('should build components with a main object', function* () {
         var duo = build('main-obj');
         var js = yield duo.run();
         var ctx = evaluate(js.code).main;
@@ -961,7 +961,7 @@ describe('Duo API', function () {
         assert.equal(css.code.trim(), out.trim());
       });
 
-      it('should work on a full hybrid that triggers css-compat', function *() {
+      it('should work on a full hybrid that triggers css-compat', function* () {
         this.timeout(20000);
         var duo = build('hybrid-full');
 
@@ -984,7 +984,7 @@ describe('Duo API', function () {
     });
 
     describe('with mapping', function () {
-      it('should contain keys from all instances', function *() {
+      it('should contain keys from all instances', function* () {
         var a = build('concurrent-mapping', 'index.css');
         var b = build('concurrent-mapping');
         yield [a.run(), b.run()];
@@ -994,10 +994,10 @@ describe('Duo API', function () {
         assert.equal(keys[1], 'components/component-type@1.0.0/index.js');
         assert.equal(keys[2], 'components/necolas-normalize.css@3.0.2/normalize.css');
         assert.equal(keys[3], 'index.css');
-        assert.equal(keys[4], 'index.js' );
+        assert.equal(keys[4], 'index.js');
       });
 
-      it('should have entry keys for entry files', function *() {
+      it('should have entry keys for entry files', function* () {
         var a = build('entries', 'index.js');
         var b = build('entries', 'admin.js');
         yield [a.run(), b.run()];
@@ -1008,7 +1008,7 @@ describe('Duo API', function () {
     });
 
     describe('with symlinks', function () {
-      it('should symlink images', function *() {
+      it('should symlink images', function* () {
         var duo = build('symlink-assets', 'index.css');
         var css = yield duo.run();
         var out = read('symlink-assets/index.out.css');
@@ -1024,7 +1024,7 @@ describe('Duo API', function () {
   });
 
   describe('.write([fn])', function () {
-    it('should write files to duo.assetPath', function *() {
+    it('should write files to duo.assetPath', function* () {
       var duo = build('simple');
       yield duo.write();
       var js = read('simple/build/index.js');
@@ -1046,7 +1046,7 @@ describe('Duo API', function () {
       });
     });
 
-    it('should support a path', function *() {
+    it('should support a path', function* () {
       var duo = build('simple');
       var out = join(path('simple'), 'build.js');
       yield duo.write(out);
@@ -1070,7 +1070,7 @@ describe('Duo API', function () {
       });
     });
 
-    it('should change type if duo.entryFile\'s type changes', function *() {
+    it('should change type if duo.entryFile\'s type changes', function* () {
       var expected = read('css-styl/index.out.css');
       var duo = build('css-styl', 'index.styl');
       duo.use(stylus);
@@ -1079,7 +1079,7 @@ describe('Duo API', function () {
       assert.equal(expected.trim(), css.trim());
     });
 
-    it('should bundle assets', function *() {
+    it('should bundle assets', function* () {
       this.timeout(10000);
       var expected = read('css-assets/index.out.css');
       var duo = build('css-assets', 'index.css');
@@ -1089,7 +1089,7 @@ describe('Duo API', function () {
       assert(exists('css-assets/build/components/duojs-logo@0.0.2/images/logo.svg'));
     });
 
-    it('should bundle assets even if in the cache', function *() {
+    it('should bundle assets even if in the cache', function* () {
       var expected = read('css-assets/index.out.css');
       var duo = build('css-assets', 'index.css');
       yield duo.write();
@@ -1102,7 +1102,7 @@ describe('Duo API', function () {
     });
 
     describe('with .installTo(directory)', function () {
-      it('should write to the installation directory', function *(){
+      it('should write to the installation directory', function* () {
         var duo = build('simple-deps');
         duo.installTo('deps');
         yield duo.write();
@@ -1113,7 +1113,7 @@ describe('Duo API', function () {
     });
 
     describe('with .sourceMap(false)', function () {
-      it('should not generate any sourcemaps', function *() {
+      it('should not generate any sourcemaps', function* () {
         var duo = build('simple');
         yield duo.write();
         var src = yield fs.readFile(path('simple', 'build/index.js'), 'utf8');
@@ -1124,7 +1124,7 @@ describe('Duo API', function () {
     });
 
     describe('with .sourceMap(true)', function () {
-      it('should generate external sourcemaps', function *() {
+      it('should generate external sourcemaps', function* () {
         var duo = build('simple').sourceMap(true);
         yield duo.write();
         var src = yield fs.readFile(path('simple', 'build/index.js'), 'utf8');
@@ -1135,7 +1135,7 @@ describe('Duo API', function () {
     });
 
     describe('with .sourceMap("inline")', function () {
-      it('should generate inline sourcemaps', function *() {
+      it('should generate inline sourcemaps', function* () {
         var duo = build('simple').sourceMap('inline');
         yield duo.write();
         var src = yield fs.readFile(path('simple', 'build/index.js'), 'utf8');
@@ -1221,7 +1221,7 @@ function cleanup() {
  * @return {Object}
  */
 
-function *mapping(duo) {
+function* mapping(duo) {
   var cache = yield duo.getCache();
   return yield cache.read();
 }

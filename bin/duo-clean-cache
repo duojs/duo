@@ -48,7 +48,7 @@ var quiet = program.quiet;
  * Clear the caches.
  */
 
-co(function *() {
+co(function* () {
   try {
     yield new Duo(process.cwd()).cleanCache();
     if (!quiet) logger.cleaned('components/duo-cache');

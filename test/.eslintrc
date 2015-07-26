@@ -1,3 +1,7 @@
 {
-  "extends": "duo/test"
+  "extends": "duo/test",
+  "rules": {
+    "max-len": 0,
+    "max-nested-callbacks": 0
+  }
 }
