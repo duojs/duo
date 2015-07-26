@@ -12,6 +12,7 @@
   "bin": {
     "duo": "bin/duo",
     "_duo": "bin/_duo",
+    "duo-authenticate": "bin/duo-authenticate",
     "duo-clean-cache": "bin/duo-clean-cache",
     "duo-duplicates": "bin/duo-duplicates",
     "duo-install": "bin/duo-install",
