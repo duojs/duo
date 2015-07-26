@@ -6,7 +6,7 @@ var map = require('map-stream');
 var Duo = require('../../');
 var gulp = require('gulp');
 var util = require('../../lib/util');
-var token = util.auth().password;
+var token = util.token();
 
 /**
  * Default

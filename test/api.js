@@ -21,7 +21,7 @@ var fs = require('co-fs');
 var Duo = require('..');
 var vm = require('vm');
 var slice = [].slice;
-var token = util.auth().password;
+var token = util.token();
 
 /**
  * Tests.

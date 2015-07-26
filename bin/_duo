@@ -167,7 +167,7 @@ var sourceMap = sourcemap(program.development, program.externalSourceMaps);
  * GitHub Authentication.
  */
 
-var auth = util.auth();
+var token = util.token();
 
 /**
  * Stdout.
@@ -295,7 +295,7 @@ function create(entry) {
     .development(!!program.development)
     .sourceMap(sourceMap)
     .copy(program.copy)
-    .token(auth.password)
+    .token(token)
     .cache(program.cache);
 
   // standalone
