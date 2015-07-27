@@ -37,7 +37,8 @@ process.on('exit', function () {
  */
 
 program
-  .usage('duo ls [options] file...')
+  .usage('[options] file...')
+  .description('Output the dependency tree for entry files.')
   .option('-d, --development', 'include development dependencies', false)
   .option('-D, --depth <depth>', 'depth to traverse', Number, Infinity)
   .option('-f, --flat', 'output a machine-friendly list', false)
@@ -243,7 +244,6 @@ function build(entry) {
   return new Duo(root)
     .copy(program.copy)
     .token(auth.password)
-    .cache(program.cache)
     .use(plugins)
     .entry(entry);
 }
