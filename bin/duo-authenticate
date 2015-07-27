@@ -132,7 +132,10 @@ function generateToken(user, pass, code, callback) {
     },
     json: true,
     body: {
-      note: 'Duo CLI'
+      scopes: [ 'repo' ],
+      note: 'Duo CLI',
+      /* eslint-disable camelcase */
+      note_url: 'http://duojs.org/'
     }
   };
 
