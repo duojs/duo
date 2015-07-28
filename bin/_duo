@@ -7,7 +7,6 @@
 var convert = require('convert-source-map');
 var Command = require('commander').Command;
 var relative = require('path').relative;
-var resolve = require('path').resolve;
 var Logger = require('stream-log');
 var util = require('../lib/util');
 var stdin = require('get-stdin');
@@ -15,7 +14,6 @@ var Watch = require('duo-watch');
 var pkg = require('../package');
 var Batch = require('batch');
 var stdout = process.stdout;
-var cwd = process.cwd();
 var hasError = false;
 
 /**
@@ -291,12 +289,12 @@ function write(entries) {
 
 function create(entry) {
   var duo = new Duo(root)
-    .entry(resolve(program.root || cwd, entry))
-    .development(!!program.development)
+    .development(program.development)
     .sourceMap(sourceMap)
+    .cache(program.cache)
     .copy(program.copy)
     .token(token)
-    .cache(program.cache);
+    .entry(entry);
 
   // standalone
   var name = program.standalone;

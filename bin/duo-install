@@ -5,13 +5,11 @@
  */
 
 var relative = require('path').relative;
-var resolve = require('path').resolve;
 var program = require('commander');
 var Logger = require('stream-log');
 var util = require('../lib/util');
 var stdin = require('get-stdin');
 var Batch = require('batch');
-var cwd = process.cwd();
 var hasError = false;
 
 /**
@@ -184,10 +182,10 @@ function write(entries) {
 
 function create(entry) {
   var duo = new Duo(root)
-    .entry(resolve(program.root || cwd, entry))
     .copy(program.copy)
+    .cache(program.cache)
     .token(token)
-    .cache(program.cache);
+    .entry(entry);
 
   // events
   if (!quiet) {
