@@ -9,7 +9,7 @@ var path = require('path');
 var fs = require('fs');
 var join = path.join;
 var util = require('../../lib/util');
-var token = util.auth().password;
+var token = util.token();
 
 /**
  * Paths

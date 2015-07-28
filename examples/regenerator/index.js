@@ -9,7 +9,7 @@ var regen = require('regenerator');
 var path = require('path');
 var join = path.join;
 var util = require('../../lib/util');
-var token = util.auth().password;
+var token = util.token();
 
 /**
  * Paths

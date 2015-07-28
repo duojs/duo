@@ -12,7 +12,7 @@ var relative = path.relative;
 var mkdir = require('mkdirp').sync;
 var util = require('../../lib/util');
 var join = path.join;
-var token = util.auth().password;
+var token = util.token();
 
 /**
  * Paths
