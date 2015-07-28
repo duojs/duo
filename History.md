@@ -1,4 +1,9 @@
 
+0.15.1 / 2015-07-28
+===================
+
+  * fix: handling parallel package resolution better
+
 0.15.0 / 2015-07-27
 ===================
 
