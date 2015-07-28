@@ -1,4 +1,9 @@
 
+0.15.2 / 2015-07-28
+===================
+
+  * fix: need to store a package ref for this cache to work
+
 0.15.1 / 2015-07-28
 ===================
 
