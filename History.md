@@ -1,4 +1,11 @@
 
+0.15.0 / 2015-07-27
+===================
+
+  * add: duo-authenticate
+  * add: duo/duo-install --update
+  * bugfix: check `GH_TOKEN` env var for token
+
 0.14.1 / 2015-07-22
 ===================
 
