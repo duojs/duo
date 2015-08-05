@@ -1,4 +1,9 @@
 
+0.15.3 / 2015-08-05
+===================
+
+  * sharing cached packages between parallel cli builds
+
 0.15.2 / 2015-07-28
 ===================
 
