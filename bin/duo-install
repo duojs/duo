@@ -11,6 +11,7 @@ var util = require('../lib/util');
 var stdin = require('get-stdin');
 var Batch = require('batch');
 var hasError = false;
+var packages = {};
 
 /**
  * Program.
@@ -188,6 +189,10 @@ function create(entry) {
     .update(program.update)
     .token(token)
     .entry(entry);
+
+  // FIXME: cache the packages between all builds in this process
+  // this should be handled another way
+  duo.packages = packages;
 
   // events
   if (!quiet) {
