@@ -38,7 +38,7 @@
     "duo-css-compat": "^0.3.0",
     "duo-main": "^0.0.3",
     "duo-pack": "^3.0.0",
-    "duo-package": "^0.10.1",
+    "duo-package": "^0.10.2",
     "duo-parse": "^0.2.0",
     "duo-string-to-js": "~0.1.0",
     "duo-test": "0.x",
