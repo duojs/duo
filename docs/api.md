@@ -50,7 +50,7 @@ Tells duo to include source-maps. When `value` is:
 and external source-maps.
 
 ```js
-duo.development(true);
+duo.sourceMap(true);
 ```
 
 ### `duo.cache(boolean)`
