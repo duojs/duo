@@ -398,6 +398,24 @@ describe('Duo API', function () {
       assert.strictEqual(ctx.a1, ctx.a2);
     });
 
+    it('should fail when relative requires are not found', function* () {
+      try {
+        var js = yield build('resolve-relative-missing', 'index.js').run();
+      } catch (err) {
+        assert(err instanceof Error);
+      }
+      assert(!js, 'should have failed');
+    });
+
+    it('should fail when absolute requires are not found', function* () {
+      try {
+        var js = yield build('resolve-absolute-missing', 'index.js').run();
+      } catch (err) {
+        assert(err instanceof Error);
+      }
+      assert(!js, 'should have failed');
+    });
+
     it('should fetch and build direct dependencies', function* () {
       this.timeout(15000);
       var js = yield build('simple-deps').run();
