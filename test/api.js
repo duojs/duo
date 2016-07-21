@@ -452,7 +452,7 @@ describe('Duo API', function () {
       try {
         var success = yield build('manifest-syntax-err').run();
       } catch (e) {
-        assert.equal(e.message, 'Unexpected token }');
+        assert(e.message.indexOf('Unexpected token }') > -1);
         assert.equal(e.fileName, path('manifest-syntax-err/component.json'));
       }
       assert(!success);
