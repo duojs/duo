@@ -415,21 +415,78 @@ describe('Duo CLI', function () {
   });
 
   describe('duo ls', function () {
-    beforeEach(function* () {
-      yield exec('-q index.js > build.js', 'cli-duo-ls');
-    });
-
-    afterEach(function* () {
-      rm('cli-duo-ls/build.js');
+    it('should fail without entries', function* () {
+      var out = yield exec('ls', 'cli-duo-ls');
+      assert(out.error);
+      assert(contains(out.stderr, 'must provide at least 1 entry'));
     });
 
     it('should list all dependencies', function* () {
-      var out = yield exec('ls', 'cli-duo-ls');
+      var out = yield exec('ls index.js', 'cli-duo-ls');
       if (out.error) throw out.error;
-      assert(contains(out.stdout, 'duo-ls'), 'duo-ls');
-      assert(contains(out.stdout, '├── a.js'), '├── a.js');
-      assert(contains(out.stdout, '└── b.js'), '└── b.js');
-      assert(!out.stderr.trim(), 'stderr');
+      var lines = out.stdout.split('\n');
+      assert.deepEqual(lines, [
+        '',
+        '  index.js',
+        '  ├── a.js',
+        '  └─┬ b.js',
+        '    └── yields-fmt 0.1.0',
+        '',
+        ''
+      ]);
+    });
+
+    it('should exclude remote dependencies', function* () {
+      var out = yield exec('ls index.js --no-remotes', 'cli-duo-ls');
+      if (out.error) throw out.error;
+      var lines = out.stdout.split('\n');
+      assert.deepEqual(lines, [
+        '',
+        '  index.js',
+        '  ├── a.js',
+        '  └── b.js',
+        '',
+        ''
+      ]);
+    });
+
+    it('should only output to depth 1', function* () {
+      var out = yield exec('ls index.js --depth 1', 'cli-duo-ls');
+      if (out.error) throw out.error;
+      var lines = out.stdout.split('\n');
+      assert.deepEqual(lines, [
+        '',
+        '  index.js',
+        '  ├── a.js',
+        '  └── b.js',
+        '',
+        ''
+      ]);
+    });
+
+    it('should output a flat list', function* () {
+      var out = yield exec('ls index.js --flat', 'cli-duo-ls');
+      if (out.error) throw out.error;
+      var lines = out.stdout.split('\n');
+      assert.deepEqual(lines, [
+        'index.js',
+        'a.js',
+        'b.js',
+        'components/yields-fmt@0.1.0/index.js',
+        ''
+      ]);
+    });
+
+    it('should output a flat list without remotes', function* () {
+      var out = yield exec('ls index.js --flat --no-remotes', 'cli-duo-ls');
+      if (out.error) throw out.error;
+      var lines = out.stdout.split('\n');
+      assert.deepEqual(lines, [
+        'index.js',
+        'a.js',
+        'b.js',
+        ''
+      ]);
     });
   });
 
