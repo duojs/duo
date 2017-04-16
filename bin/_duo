@@ -205,6 +205,11 @@ function input() {
     var type = program.type || util.type(src);
     if (!type) return logger.error('could not detect the file type');
     var duo = create(root).entry(src, type);
+    
+    // use plugins
+    plugins.forEach(function (plugin) {
+      duo.use(plugin);
+    });
 
     // only inline source-maps supported for stdout (if enabled at all)
     if (sourceMap) duo.sourceMap('inline');
