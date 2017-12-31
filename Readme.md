@@ -81,7 +81,7 @@ And add your bundled-up stylesheet to your page!
 <link rel="stylesheet" href="build/index.css">
 ```
 
-## Authenticate with Github
+## Authenticate with GitHub
 
 We recommend that you authenticate with Github so you can increase your rate limit and allow you to pull from private repositories. To do that, add the following entry to your `~/.netrc` file:
 
